@@ -23,3 +23,6 @@
 ##### 相关依赖：Spring framework、Spring jdbc，4.0.0以上的版本，建议使用4.2.0以上的版本。
 ##### 使用说明：将com.ewing.dandelion包全量复制到项目中，并使Spring能够扫描到，再在项目中配置一个JdbcTemplate和NamedParameterJdbcTemplate即可。测试用例使用的是Spring boot自动配置。
 
+##### GenericDao接口及实现类GenericBaseDao，普通DAO类通过继承该接口，可以让该DAO类具有特定实体专用的CRUD方法。
+##### CommonDao接口及实现类CommonBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。
+##### pagination包下是对以上两个接口的分页支持，目前支持MySql，如使用其他数据库稍作修改即可。
