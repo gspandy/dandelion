@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -28,8 +29,11 @@ public abstract class GenericPaginationDao<T> extends GenericBaseDao<T> implemen
         if (pageParam.isCount()) {
             String countSql = "SELECT COUNT(*) FROM ( " + querySql + " ) _Total_";
             pageData.setTotal(this.queryLong(countSql, params));
+            if (pageData.getTotal() == 0) {
+                pageData.setContent(new ArrayList<>(0));
+                return pageData;
+            }
         }
-        if (pageParam.isCount() && pageData.getTotal() == 0) return pageData;
         String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
         LOGGER.info(pageSql);
         pageData.setContent(this.getJdbcOperations().query(pageSql,
@@ -47,10 +51,12 @@ public abstract class GenericPaginationDao<T> extends GenericBaseDao<T> implemen
         PageData<Map<String, Object>> pageData = new PageData<>();
         if (pageParam.isCount()) {
             String countSql = "SELECT COUNT(*) FROM ( " + querySql + " ) _Total_";
-            LOGGER.info(countSql);
             pageData.setTotal(this.queryLong(countSql, params));
+            if (pageData.getTotal() == 0) {
+                pageData.setContent(new ArrayList<>(0));
+                return pageData;
+            }
         }
-        if (pageParam.isCount() && pageData.getTotal() == 0) return pageData;
         String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
         LOGGER.info(pageSql);
         pageData.setContent(this.getJdbcOperations().queryForList(pageSql, params));
