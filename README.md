@@ -5,6 +5,7 @@
 ##### 3、可使用SQL生成器生成主体SQL，少量编码即可实现自定义查询。
 ##### 4、支持MySql数据库分页查询，分页默认从0条开始取100条。
 ##### 5、清晰有序的方法命名、完善的文档注释、使用原生SQL，极低的学习成本。
+##### 6、该工具作为Spring jdbc的增强，可同时使用其中的JdbcTemplate，无后顾之忧。
 
 -----
 
@@ -21,7 +22,8 @@
 ## 相关依赖及使用说明
 
 ##### 相关依赖：Spring framework、Spring jdbc，4.0.0以上的版本，建议使用4.2.0以上的版本。
-##### 使用说明：将com.ewing.dandelion包全量复制到项目中，并使Spring能够扫描到，再在项目中配置一个JdbcTemplate和NamedParameterJdbcTemplate即可。测试用例使用的是Spring boot自动配置。
+##### 使用方式一：将com.ewing.dandelion包全量复制到项目中，并使Spring能够扫描到，再在项目中配置一个JdbcTemplate和NamedParameterJdbcTemplate即可。测试用例使用的是Spring boot自动配置。
+##### 使用方式二：将该项目打包成jar包（或作为Maven依赖）引入到开发项目中，通过xml或java的方式配置JdbcTemplate和NamedParameterJdbcTemplate两个Bean并注入CommonBaseDao，GenericBaseDao只需保证继承的子类能被扫描到即可。
 
 ##### GenericDao接口及实现类GenericBaseDao，普通DAO类通过继承该接口，可以让该DAO类具有特定实体专用的CRUD方法。
 ##### CommonDao接口及实现类CommonBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。
