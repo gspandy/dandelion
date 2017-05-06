@@ -3,7 +3,6 @@ package com.ewing.dandelion;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.stereotype.Component;
 
 import java.beans.PropertyDescriptor;
 import java.util.Locale;
@@ -14,7 +13,6 @@ import java.util.Locale;
  * @author Ewing
  * @since 2017-03-06
  **/
-@Component
 public class SqlGenerator {
 
     /**

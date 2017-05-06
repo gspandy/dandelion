@@ -189,4 +189,12 @@ public class UserDaoTests {
         Assert.assertNull(myUser);
     }
 
+    @Test
+    public void findUserTest() {
+        User user = init();
+        User myUser = userDao.findByName(user.getName());
+        // 没有异常 简单验证
+        Assert.assertNotNull(myUser);
+    }
+
 }

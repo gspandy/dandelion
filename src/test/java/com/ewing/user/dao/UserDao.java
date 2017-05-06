@@ -9,4 +9,9 @@ import com.ewing.user.entity.User;
  **/
 public interface UserDao extends GenericPageableDao<User> {
 
+    /**
+     * 自定义查询，根据名称查询。
+     */
+    User findByName(String name);
+
 }
