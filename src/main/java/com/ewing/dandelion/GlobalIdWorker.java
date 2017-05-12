@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 
 /**
- * 可独立运行的全局ID生成器，保持趋势递增，线程安全，尾数0至9随机分布。
+ * 可独立运行的全局ID生成器，保持趋势递增，线程安全，尾数均匀分布。
  * 41位(自动扩展位数)毫秒+48Mac地址+13位累加(每毫秒之后对100取余)。
  * 理想情况平均每秒可生成8190950个，实测生成百万个用时不到1秒(视配置而定)。
  * 使用32位10进制可以使用到3300年之后，使用21位36进制可使用到8500年以后，可以扩展长度。
@@ -70,7 +70,7 @@ public class GlobalIdWorker {
         }
 
         if (lastTimestamp == timestamp) {
-            // 当前毫秒内，则随机增加，避免尾数太集中
+            // 当前毫秒内，序号递增
             sequence = sequence + 1;
             if (sequence > sequenceMask) {
                 // 当前毫秒内计数满了，则等待下一毫秒
