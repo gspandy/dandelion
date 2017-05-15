@@ -7,10 +7,10 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 
 /**
- * 可独立运行的全局ID生成器，保持趋势递增，线程安全，尾数均匀分布。
- * 41位(自动扩展位数)毫秒+48Mac地址+13位累加(每毫秒之后对100取余)。
- * 理想情况平均每秒可生成8190950个，实测生成百万个用时不到1秒(视配置而定)。
- * 使用32位10进制可以使用到3300年之后，使用21位36进制可使用到8500年以后，可以扩展长度。
+ * 可独立运行的全局ID生成器，保持趋势递增，线程安全，尾数0至9随机分布。
+ * 41位(自动扩展位数)毫秒+48Mac地址+13位累加数(每毫秒之后保留后5位)。
+ * 理想情况平均每秒可生成8190968个，实测生成百万个用时不到2秒(视配置而定)。
+ * 使用32位10进制可用到3300年后，使用21位36进制可用到8500年后，可扩展长度。
  *
  * @author Ewing
  */
@@ -30,7 +30,7 @@ public class GlobalIdWorker {
     private static long sequence = 0L;
 
     // 尾数离散度 可以分散ID的尾数分布
-    private static long discreteRate = 100L;
+    private static long discreteRate = 1L << 5L;
 
     private static String macAddressBit;
 
@@ -70,14 +70,14 @@ public class GlobalIdWorker {
         }
 
         if (lastTimestamp == timestamp) {
-            // 当前毫秒内，序号递增
-            sequence = sequence + 1;
-            if (sequence > sequenceMask) {
+            // 当前毫秒内，计数器增加，满了则为0
+            sequence = (sequence + 1) & sequenceMask;
+            if (sequence == 0) {
                 // 当前毫秒内计数满了，则等待下一毫秒
                 timestamp = tilNextMillis(lastTimestamp);
             }
         } else {
-            sequence = sequence % discreteRate;
+            sequence = sequence & discreteRate;
         }
 
         lastTimestamp = timestamp;
