@@ -84,7 +84,7 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
      * 把对象实例的所有属性插入到数据库。
      */
     @Override
-    public boolean save(T object) {
+    public boolean add(T object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
         String sql = SqlGenerator.getInsertValues(object);
@@ -96,7 +96,7 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public boolean savePositive(T object, T config) {
+    public boolean addPositive(T object, T config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
         String sql = SqlGenerator.getInsertPositiveValues(object, config);
@@ -108,7 +108,7 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public boolean saveNegative(T object, T config) {
+    public boolean addNegative(T object, T config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
         String sql = SqlGenerator.getInsertNegativeValues(object, config);

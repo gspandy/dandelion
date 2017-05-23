@@ -50,7 +50,7 @@ public interface CommonDao {
      * @param object 要插入到数据库的对象。
      * @return 是否插入成功。
      */
-    boolean save(Object object);
+    boolean add(Object object);
 
     /**
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
@@ -59,7 +59,7 @@ public interface CommonDao {
      * @param config 配置对象。
      * @return 是否插入成功。
      */
-    boolean savePositive(Object object, Object config);
+    boolean addPositive(Object object, Object config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
@@ -68,7 +68,7 @@ public interface CommonDao {
      * @param config 配置对象。
      * @return 是否插入成功。
      */
-    boolean saveNegative(Object object, Object config);
+    boolean addNegative(Object object, Object config);
 
     /**
      * 把对象实例的所有属性更新到数据库。

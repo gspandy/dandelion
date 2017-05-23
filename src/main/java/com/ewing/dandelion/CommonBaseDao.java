@@ -73,7 +73,7 @@ public class CommonBaseDao implements CommonDao {
      * 把对象实例的所有属性插入到数据库。
      */
     @Override
-    public boolean save(Object object) {
+    public boolean add(Object object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
         String sql = SqlGenerator.getInsertValues(object);
@@ -85,7 +85,7 @@ public class CommonBaseDao implements CommonDao {
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public boolean savePositive(Object object, Object config) {
+    public boolean addPositive(Object object, Object config) {
         if (object == null || config == null || !object.getClass().equals(config.getClass()))
             throw new DaoException("实例对象或配置对象为空或类型不匹配！");
         String sql = SqlGenerator.getInsertPositiveValues(object, config);
@@ -97,7 +97,7 @@ public class CommonBaseDao implements CommonDao {
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public boolean saveNegative(Object object, Object config) {
+    public boolean addNegative(Object object, Object config) {
         if (object == null || config == null || !object.getClass().equals(config.getClass()))
             throw new DaoException("实例对象或配置对象为空或类型不匹配！");
         String sql = SqlGenerator.getInsertNegativeValues(object, config);

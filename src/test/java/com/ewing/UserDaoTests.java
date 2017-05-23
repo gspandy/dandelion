@@ -61,7 +61,7 @@ public class UserDaoTests {
         user.setFloatValue(343.434F);
         user.setShortValue((short) 123);
         user.setBytesValue(new byte[]{1, 5, 12});
-        userDao.save(user);
+        userDao.add(user);
         return user;
     }
 
@@ -86,7 +86,7 @@ public class UserDaoTests {
         user.setFloatValue(343.434F);
         user.setShortValue((short) 123);
         user.setBytesValue(new byte[]{1, 5, 12});
-        userDao.save(user);
+        userDao.add(user);
         // 没有异常 简单验证
         Assert.assertTrue(StringUtils.hasText(user.getUserId()));
         // 清理测试数据
@@ -96,7 +96,7 @@ public class UserDaoTests {
         user.setUserId(null);
         User config = new User();
         config.setName("");
-        userDao.savePositive(user, config);
+        userDao.addPositive(user, config);
         // 没有异常 简单验证
         User myUser = userDao.getObject(user.getUserId());
         Assert.assertNotNull(myUser.getName());
@@ -108,7 +108,7 @@ public class UserDaoTests {
         user.setUserId(null);
         config = new User();
         config.setBytesValue(new byte[]{});
-        userDao.saveNegative(user, config);
+        userDao.addNegative(user, config);
         // 没有异常 简单验证
         myUser = userDao.getObject(user.getUserId());
         Assert.assertNotNull(myUser.getName());
