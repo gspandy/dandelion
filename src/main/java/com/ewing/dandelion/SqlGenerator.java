@@ -24,6 +24,28 @@ public class SqlGenerator {
     private static final boolean UNDERSCORE = false;
 
     /**
+     * 转换对象与属性命名规则。
+     */
+    protected static String convertName(String name) {
+        if (UNDERSCORE) {
+            StringBuilder result = new StringBuilder();
+            result.append(name.substring(0, 1).toLowerCase(Locale.US));
+            for (int i = 1; i < name.length(); i++) {
+                String s = name.substring(i, i + 1);
+                String slc = s.toLowerCase(Locale.US);
+                if (!s.equals(slc)) {
+                    result.append("_").append(slc);
+                } else {
+                    result.append(s);
+                }
+            }
+            return result.toString();
+        } else {
+            return name;
+        }
+    }
+
+    /**
      * 根据Class获取类的信息。
      */
     protected static BeanInfo getBeanInfo(Class clazz) {
@@ -107,28 +129,6 @@ public class SqlGenerator {
             }
         }
         return false;
-    }
-
-    /**
-     * 转换对象与属性命名规则。
-     */
-    protected static String convertName(String name) {
-        if (UNDERSCORE) {
-            StringBuilder result = new StringBuilder();
-            result.append(name.substring(0, 1).toLowerCase(Locale.US));
-            for (int i = 1; i < name.length(); i++) {
-                String s = name.substring(i, i + 1);
-                String slc = s.toLowerCase(Locale.US);
-                if (!s.equals(slc)) {
-                    result.append("_").append(slc);
-                } else {
-                    result.append(s);
-                }
-            }
-            return result.toString();
-        } else {
-            return name;
-        }
     }
 
     /**
@@ -295,7 +295,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的Delete语句。
      */
-    public static String getDeleteFromWhereTrue(Class<?> clazz) {
+    public static String getDeleteWhereTrue(Class<?> clazz) {
         return new StringBuilder("DELETE FROM ").append(convertName(clazz.getSimpleName()))
                 .append(" WHERE 1=1").toString();
     }
@@ -303,7 +303,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的Delete语句带ID条件。
      */
-    public static String getDeleteFromWhereIdEquals(Class<?> clazz, boolean isNamed) {
+    public static String getDeleteWhereIdEquals(Class<?> clazz, boolean isNamed) {
         StringBuilder sqlDelete = new StringBuilder("DELETE FROM ")
                 .append(convertName(clazz.getSimpleName()));
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
@@ -382,7 +382,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的Select主体。
      */
-    public static String getSelectFromWhereTrue(Class<?> clazz) {
+    public static String getSelectWhereTrue(Class<?> clazz) {
         return "SELECT " + getResultColumns(clazz) + " FROM " +
                 convertName(clazz.getSimpleName()) + " WHERE 1=1";
     }
@@ -390,7 +390,7 @@ public class SqlGenerator {
     /**
      * 生成与配置类的积极属性对应的Select主体。
      */
-    public static String getSelectPositiveFromWhereTrue(Object config) {
+    public static String getSelectPositiveWhereTrue(Object config) {
         return "SELECT " + getResultColumnsPositive(config) + " FROM " +
                 convertName(config.getClass().getSimpleName()) + " WHERE 1=1";
     }
@@ -398,7 +398,7 @@ public class SqlGenerator {
     /**
      * 生成与配置类的消极属性对应的Select主体。
      */
-    public static String getSelectNegativeFromWhereTrue(Object config) {
+    public static String getSelectNegativeWhereTrue(Object config) {
         return "SELECT " + getResultColumnsNegative(config) + " FROM " +
                 convertName(config.getClass().getSimpleName()) + " WHERE 1=1";
     }
@@ -406,7 +406,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的Select语句带ID条件。
      */
-    public static String getSelectFromWhereIdEquals(Class<?> clazz) {
+    public static String getSelectWhereIdEquals(Class<?> clazz) {
         StringBuilder sqlSelect = new StringBuilder("SELECT ");
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
         StringBuilder idBuilder = new StringBuilder();
@@ -447,14 +447,14 @@ public class SqlGenerator {
     /**
      * 生成与配置类的积极属性对应的Select语句带ID条件。
      */
-    public static String getSelectPositiveFromWhereIdEquals(Object config) {
+    public static String getSelectPositiveWhereIdEquals(Object config) {
         return getSelectBodyByConfig(config, true);
     }
 
     /**
      * 生成与配置类的消极属性对应的Select语句带ID条件。
      */
-    public static String getSelectNegativeFromWhereIdEquals(Object config) {
+    public static String getSelectNegativeWhereIdEquals(Object config) {
         return getSelectBodyByConfig(config, false);
     }
 
@@ -546,14 +546,14 @@ public class SqlGenerator {
     /**
      * 生成与配置类的积极属性对应的Update语句。
      */
-    public static String getUpdatePositiveSetWhereIdEquals(Object config) {
+    public static String getUpdatePositiveWhereIdEquals(Object config) {
         return getUpdateBodyByConfig(config, true);
     }
 
     /**
      * 生成与配置类的消极属性对应的Update语句。
      */
-    public static String getUpdateNegativeSetWhereIdEquals(Object config) {
+    public static String getUpdateNegativeWhereIdEquals(Object config) {
         return getUpdateBodyByConfig(config, false);
     }
 }

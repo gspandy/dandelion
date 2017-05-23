@@ -17,7 +17,7 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
      */
     @Override
     public MyUser findByName(String name) {
-        String sql = SqlGenerator.getSelectFromWhereTrue(getEntityClass()) + " AND name = ?";
+        String sql = SqlGenerator.getSelectWhereTrue(getEntityClass()) + " AND name = ?";
         return this.queryObject(sql, name);
     }
 }

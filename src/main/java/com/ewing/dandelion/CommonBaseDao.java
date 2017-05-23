@@ -124,7 +124,7 @@ public class CommonBaseDao implements CommonDao {
     public boolean updatePositive(Object object, Object config) {
         if (object == null || config == null || !object.getClass().equals(config.getClass()))
             throw new DaoException("实例对象或配置对象为空或类型不匹配！");
-        String sql = SqlGenerator.getUpdatePositiveSetWhereIdEquals(config);
+        String sql = SqlGenerator.getUpdatePositiveWhereIdEquals(config);
         LOGGER.info(sql);
         return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
     }
@@ -136,7 +136,7 @@ public class CommonBaseDao implements CommonDao {
     public boolean updateNegative(Object object, Object config) {
         if (object == null || config == null || !object.getClass().equals(config.getClass()))
             throw new DaoException("实例对象或配置对象为空或类型不匹配！");
-        String sql = SqlGenerator.getUpdateNegativeSetWhereIdEquals(config);
+        String sql = SqlGenerator.getUpdateNegativeWhereIdEquals(config);
         LOGGER.info(sql);
         return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
     }
@@ -148,7 +148,7 @@ public class CommonBaseDao implements CommonDao {
     public <T> T getObject(Class<T> clazz, Object... id) {
         if (clazz == null || id == null || id.length == 0)
             throw new DaoException("对象类型或对象ID为空！");
-        String sql = SqlGenerator.getSelectFromWhereIdEquals(clazz);
+        String sql = SqlGenerator.getSelectWhereIdEquals(clazz);
         LOGGER.info(sql);
         try {
             return this.getJdbcOperations().queryForObject(sql, BeanPropertyRowMapper.newInstance(clazz), id);
@@ -164,7 +164,7 @@ public class CommonBaseDao implements CommonDao {
     public <T> T getPositive(T config, Object... id) {
         if (config == null || id == null || id.length == 0)
             throw new DaoException("配置对象或对象ID为空！");
-        String sql = SqlGenerator.getSelectPositiveFromWhereIdEquals(config);
+        String sql = SqlGenerator.getSelectPositiveWhereIdEquals(config);
         LOGGER.info(sql);
         try {
             return this.getJdbcOperations().queryForObject(sql, BeanPropertyRowMapper.newInstance((Class<T>) config.getClass()), id);
@@ -180,7 +180,7 @@ public class CommonBaseDao implements CommonDao {
     public <T> T getNegative(T config, Object... id) {
         if (config == null || id == null || id.length == 0)
             throw new DaoException("配置对象或对象ID为空！");
-        String sql = SqlGenerator.getSelectNegativeFromWhereIdEquals(config);
+        String sql = SqlGenerator.getSelectNegativeWhereIdEquals(config);
         LOGGER.info(sql);
         try {
             return this.getJdbcOperations().queryForObject(sql, BeanPropertyRowMapper.newInstance((Class<T>) config.getClass()), id);
@@ -196,7 +196,7 @@ public class CommonBaseDao implements CommonDao {
     public boolean delete(Object object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = SqlGenerator.getDeleteFromWhereIdEquals(object.getClass(), true);
+        String sql = SqlGenerator.getDeleteWhereIdEquals(object.getClass(), true);
         LOGGER.info(sql);
         return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
     }
@@ -208,7 +208,7 @@ public class CommonBaseDao implements CommonDao {
     public boolean deleteById(Class<?> clazz, Object... id) {
         if (clazz == null || id == null || id.length == 0)
             throw new DaoException("对象类型或ID对象为空！");
-        String sql = SqlGenerator.getDeleteFromWhereIdEquals(clazz, false);
+        String sql = SqlGenerator.getDeleteWhereIdEquals(clazz, false);
         LOGGER.info(sql);
         return this.getJdbcOperations().update(sql, id) > 0;
     }
