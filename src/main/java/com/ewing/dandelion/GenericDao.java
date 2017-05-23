@@ -1,5 +1,7 @@
 package com.ewing.dandelion;
 
+import com.ewing.dandelion.pagination.PageData;
+import com.ewing.dandelion.pagination.PageParam;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
@@ -175,5 +177,21 @@ public interface GenericDao<T> {
      * @return 存储结果的Map集合。
      */
     List<Map<String, Object>> queryMapList(String querySql, Object... params);
+
+    /**
+     * 分页查询多条记录并封装成指定类型的对象集合。
+     *
+     * @param querySql 查询语句。
+     * @return 指定类型的对象。
+     */
+    PageData<T> queryPageData(PageParam pageParam, String querySql, Object... params);
+
+    /**
+     * 分页查询多条记录并封装成Map集合。
+     *
+     * @param querySql 查询语句。
+     * @return 存储结果的Map集合。
+     */
+    PageData<Map<String, Object>> queryPageMap(PageParam pageParam, String querySql, Object... params);
 
 }

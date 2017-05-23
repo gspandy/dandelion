@@ -1,7 +1,7 @@
 package com.ewing.user.dao;
 
+import com.ewing.dandelion.GenericBaseDao;
 import com.ewing.dandelion.SqlGenerator;
-import com.ewing.dandelion.pagination.GenericPaginationDao;
 import com.ewing.user.entity.User;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
  * @since 2017-04-21
  **/
 @Repository
-public class UserDaoImpl extends GenericPaginationDao<User> implements UserDao {
+public class UserDaoImpl extends GenericBaseDao<User> implements UserDao {
 
     /**
      * 自定义查询，根据名称查询。
