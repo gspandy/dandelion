@@ -155,7 +155,7 @@ public class SqlGenerator {
                 if (!findId && name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
                     if (pd.getPropertyType() == String.class &&
                             isBlankString((String) beanWrapper.getPropertyValue(name))) {
-                        beanWrapper.setPropertyValue(name, GlobalIdWorker.nextBigInteger().toString(36));
+                        beanWrapper.setPropertyValue(name, GlobalIdWorker.nextString());
                     }
                     findId = true; // 已找到ID。
                 }
@@ -194,7 +194,7 @@ public class SqlGenerator {
                 if (idName == null && name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
                     BeanWrapper entityWrapper = PropertyAccessorFactory.forBeanPropertyAccess(object);
                     if (pd.getPropertyType() == String.class && entityWrapper.getPropertyValue(name) == null) {
-                        entityWrapper.setPropertyValue(name, GlobalIdWorker.nextBigInteger().toString(36));
+                        entityWrapper.setPropertyValue(name, GlobalIdWorker.nextString());
                     }
                     idName = name; // 已找到ID。
                 }

@@ -1,7 +1,6 @@
 package com.ewing.dandelion;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -29,10 +28,13 @@ public class GlobalIdWorker {
 
     private static long sequence = 0L;
 
-    // 尾数离散度 可以分散ID的尾数分布
-    private static long discreteRate = 1L << 5L;
-
     private static String macAddressBit;
+
+    // 尾数离散度 可以分散ID的尾数分布
+    private final static long discreteRate = 1L << 5L;
+
+    // String类型的ID小于该值填充0 保证长度为21位
+    private final static BigInteger fillFlag = new BigInteger("100000000000000000000", 36);
 
     /**
      * 初始化worker
@@ -101,17 +103,18 @@ public class GlobalIdWorker {
     }
 
     /**
-     * 获取时间
+     * 获取当前时间
      */
     private static long timeGen() {
         return System.currentTimeMillis();
     }
 
     /**
-     * 获取BigDecimal类型的ID
+     * 获取36进制21位长度的String类型的ID
      */
-    public static BigDecimal nextBigDecimal() {
-        return new BigDecimal(nextBigInteger());
+    public static String nextString() {
+        BigInteger integer = nextBigInteger();
+        return integer.compareTo(fillFlag) < 0 ? "0" + integer.toString(36) : integer.toString(36);
     }
 
 } 
