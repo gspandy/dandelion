@@ -1,5 +1,6 @@
 package com.ewing.dandelion;
 
+import com.ewing.dandelion.annotation.Temporary;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -47,6 +48,19 @@ public class SqlGenerator {
     }
 
     /**
+     * 判断该属性是否为可用的。
+     */
+    protected static boolean isPropertyAvailable(Class clazz, PropertyDescriptor pd) {
+        try {
+            if (clazz.getDeclaredField(pd.getName()).getAnnotation(Temporary.class) != null)
+                return false;
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
+        return pd.getWriteMethod() != null && pd.getReadMethod() != null;
+    }
+
+    /**
      * 转换对象与属性命名规则。
      */
     protected static String convertName(String name) {
@@ -76,12 +90,14 @@ public class SqlGenerator {
         PropertyDescriptor[] pds = BeanUtils.getPropertyDescriptors(clazz);
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
+            if (isPropertyAvailable(clazz, pd)) {
                 if (hasOne) columns.append(", ");
                 columns.append(convertName(pd.getName()));
                 hasOne = true;
             }
         }
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现任何有效的属性！");
         return columns.toString();
     }
 
@@ -89,18 +105,20 @@ public class SqlGenerator {
      * 生成与配置类的属性对应的结果列。
      */
     public static String getColumnsByProperty(Object config, boolean positive) {
+        Class clazz = config.getClass();
         StringBuilder columns = new StringBuilder();
         BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(config);
         PropertyDescriptor[] pds = beanWrapper.getPropertyDescriptors();
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null
-                    && isPropertyPositive(beanWrapper, pd) == positive) {
+            if (isPropertyAvailable(clazz, pd) && isPropertyPositive(beanWrapper, pd) == positive) {
                 if (hasOne) columns.append(", ");
                 columns.append(convertName(pd.getName()));
                 hasOne = true;
             }
         }
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现任何有效的属性！");
         return columns.toString();
     }
 
@@ -122,6 +140,7 @@ public class SqlGenerator {
      * 生成与实体类对应的Insert语句，如果ID为String类型的null值则生成ID。
      */
     public static String getInsertValues(Object object) {
+        Class clazz = object.getClass();
         StringBuilder insert = new StringBuilder("INSERT INTO ")
                 .append(convertName(object.getClass().getSimpleName())).append(" (");
         StringBuilder values = new StringBuilder(") VALUES (");
@@ -130,10 +149,10 @@ public class SqlGenerator {
         boolean findId = false;
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
+            if (isPropertyAvailable(clazz, pd)) {
                 String name = pd.getName();
                 // 自动查找ID，如果ID为String类型的null值则生成ID。
-                if (!findId && name.equalsIgnoreCase(object.getClass().getSimpleName() + "Id")) {
+                if (!findId && name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
                     if (pd.getPropertyType() == String.class &&
                             isBlankString((String) beanWrapper.getPropertyValue(name))) {
                         beanWrapper.setPropertyValue(name, GlobalIdWorker.nextBigInteger().toString(36));
@@ -149,6 +168,8 @@ public class SqlGenerator {
                 hasOne = true;
             }
         }
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现任何有效的属性！");
         return insert.append(values).append(")").toString();
     }
 
@@ -158,18 +179,19 @@ public class SqlGenerator {
     public static String getInsertValuesByPropertity(Object object, Object config, boolean positive) {
         if (object == null || config == null || !object.getClass().equals(config.getClass()))
             throw new DaoException("实例对象或配置对象为空或类型不匹配！");
+        Class clazz = config.getClass();
         StringBuilder insert = new StringBuilder("INSERT INTO ")
-                .append(convertName(config.getClass().getSimpleName())).append(" (");
+                .append(convertName(clazz.getSimpleName())).append(" (");
         StringBuilder values = new StringBuilder(") VALUES (");
         BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(config);
         PropertyDescriptor[] pds = beanWrapper.getPropertyDescriptors();
         String idName = null;
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
+            if (isPropertyAvailable(clazz, pd)) {
                 String name = pd.getName();
                 // 自动查找ID，如果ID为String类型的null值则生成ID。
-                if (idName == null && name.equalsIgnoreCase(config.getClass().getSimpleName() + "Id")) {
+                if (idName == null && name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
                     BeanWrapper entityWrapper = PropertyAccessorFactory.forBeanPropertyAccess(object);
                     if (pd.getPropertyType() == String.class && entityWrapper.getPropertyValue(name) == null) {
                         entityWrapper.setPropertyValue(name, GlobalIdWorker.nextBigInteger().toString(36));
@@ -187,6 +209,8 @@ public class SqlGenerator {
                 }
             }
         }
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现任何有效的属性！");
         return insert.append(values).append(")").toString();
     }
 
@@ -221,7 +245,7 @@ public class SqlGenerator {
         PropertyDescriptor[] pds = BeanUtils.getPropertyDescriptors(clazz);
         String autoIdName = null;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
+            if (isPropertyAvailable(clazz, pd)) {
                 String name = pd.getName();
                 // 自动查找ID。
                 if (name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
@@ -241,16 +265,17 @@ public class SqlGenerator {
      * 生成与配置类的属性对应的Select语句带ID条件。
      */
     public static String getSelectBodyByProperty(Object config, boolean positive) {
+        Class clazz = config.getClass();
         StringBuilder sqlSelect = new StringBuilder("SELECT ");
         BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(config);
         PropertyDescriptor[] pds = beanWrapper.getPropertyDescriptors();
         String autoIdName = null;
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
+            if (isPropertyAvailable(clazz, pd)) {
                 String name = pd.getName();
                 // 自动查找ID。
-                if (autoIdName == null && name.equalsIgnoreCase(config.getClass().getSimpleName() + "Id")) {
+                if (autoIdName == null && name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
                     autoIdName = name;
                 }
                 if (isPropertyPositive(beanWrapper, pd) == positive) {
@@ -260,10 +285,12 @@ public class SqlGenerator {
                 }
             }
         }
-        sqlSelect.append(" FROM ").append(convertName(config.getClass().getSimpleName()));
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现任何有效的属性！");
+        sqlSelect.append(" FROM ").append(convertName(clazz.getSimpleName()));
         // 拼装要查询的ID条件。
         if (autoIdName == null)
-            throw new DaoException("未找到类" + config.getClass().getName() + "的ID属性！");
+            throw new DaoException("未找到类" + clazz.getName() + "的ID属性！");
         return sqlSelect.append(" WHERE ").append(convertName(autoIdName)).append(" = ?").toString();
     }
 
@@ -300,7 +327,7 @@ public class SqlGenerator {
         String autoIdName = null;
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
+            if (isPropertyAvailable(clazz, pd)) {
                 String name = pd.getName();
                 // 自动查找ID。
                 if (autoIdName == null && name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
@@ -311,6 +338,8 @@ public class SqlGenerator {
                 hasOne = true;
             }
         }
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现任何有效的属性！");
         sqlSelect.append(" FROM ").append(convertName(clazz.getSimpleName()));
         // 拼装要查询的ID条件。
         if (autoIdName == null)
@@ -336,17 +365,18 @@ public class SqlGenerator {
      * 生成与配置类的属性对应的Update语句。
      */
     public static String getUpdateBodyByProperty(Object config, boolean positive) {
+        Class clazz = config.getClass();
         StringBuilder sqlUpdate = new StringBuilder("UPDATE ")
-                .append(convertName(config.getClass().getSimpleName())).append(" SET ");
+                .append(convertName(clazz.getSimpleName())).append(" SET ");
         BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(config);
         PropertyDescriptor[] pds = beanWrapper.getPropertyDescriptors();
         String autoIdName = null;
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
+            if (isPropertyAvailable(clazz, pd)) {
                 String name = pd.getName();
                 // 自动查找ID，并且不做为要更新的属性。
-                if (autoIdName == null && name.equalsIgnoreCase(config.getClass().getSimpleName() + "Id")) {
+                if (autoIdName == null && name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
                     autoIdName = name;
                     continue;
                 }
@@ -357,9 +387,11 @@ public class SqlGenerator {
                 }
             }
         }
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现任何有效的属性！");
         // 拼装要更新的条件。
         if (autoIdName == null)
-            throw new DaoException("未找到类" + config.getClass().getName() + "的ID属性！");
+            throw new DaoException("未找到类" + clazz.getName() + "的ID属性！");
         return sqlUpdate.append(" WHERE ").append(convertName(autoIdName)).append(" = :").append(autoIdName).toString();
     }
 
@@ -373,7 +405,7 @@ public class SqlGenerator {
         String autoIdName = null;
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
-            if (pd.getWriteMethod() != null && pd.getReadMethod() != null) {
+            if (isPropertyAvailable(clazz, pd)) {
                 String name = pd.getName();
                 // 自动查找ID，并且不做为要更新的属性。
                 if (autoIdName == null && name.equalsIgnoreCase(clazz.getSimpleName() + "Id")) {
@@ -385,6 +417,8 @@ public class SqlGenerator {
                 }
             }
         }
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现任何有效的属性！");
         // 拼装要更新的条件。
         if (autoIdName == null)
             throw new DaoException("未找到类" + clazz.getName() + "的ID属性！");
