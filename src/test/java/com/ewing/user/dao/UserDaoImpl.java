@@ -2,7 +2,7 @@ package com.ewing.user.dao;
 
 import com.ewing.dandelion.GenericBaseDao;
 import com.ewing.dandelion.SqlGenerator;
-import com.ewing.user.entity.User;
+import com.ewing.user.entity.MyUser;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -10,13 +10,13 @@ import org.springframework.stereotype.Repository;
  * @since 2017-04-21
  **/
 @Repository
-public class UserDaoImpl extends GenericBaseDao<User> implements UserDao {
+public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
 
     /**
      * 自定义查询，根据名称查询。
      */
     @Override
-    public User findByName(String name) {
+    public MyUser findByName(String name) {
         String sql = SqlGenerator.getSelectFromWhereTrue(getEntityClass()) + " AND name = ?";
         return this.queryObject(sql, name);
     }

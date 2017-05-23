@@ -112,7 +112,7 @@ public class CommonBaseDao implements CommonDao {
     public boolean update(Object object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = SqlGenerator.getUpdateSetWhereIdEquals(object.getClass());
+        String sql = SqlGenerator.getUpdateWhereIdEquals(object.getClass());
         LOGGER.info(sql);
         return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
     }
@@ -145,8 +145,8 @@ public class CommonBaseDao implements CommonDao {
      * 根据ID获取指定类型的对象的所有属性。
      */
     @Override
-    public <T> T getObject(Class<T> clazz, Object id) {
-        if (clazz == null || id == null)
+    public <T> T getObject(Class<T> clazz, Object... id) {
+        if (clazz == null || id == null || id.length == 0)
             throw new DaoException("对象类型或对象ID为空！");
         String sql = SqlGenerator.getSelectFromWhereIdEquals(clazz);
         LOGGER.info(sql);
@@ -161,8 +161,8 @@ public class CommonBaseDao implements CommonDao {
      * 根据ID获取配置对象积极属性对应的对象属性。
      */
     @Override
-    public <T> T getPositive(Object id, T config) {
-        if (config == null || id == null)
+    public <T> T getPositive(T config, Object... id) {
+        if (config == null || id == null || id.length == 0)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = SqlGenerator.getSelectPositiveFromWhereIdEquals(config);
         LOGGER.info(sql);
@@ -177,8 +177,8 @@ public class CommonBaseDao implements CommonDao {
      * 根据ID获取配置对象消极属性对应的对象属性。
      */
     @Override
-    public <T> T getNegative(Object id, T config) {
-        if (config == null || id == null)
+    public <T> T getNegative(T config, Object... id) {
+        if (config == null || id == null || id.length == 0)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = SqlGenerator.getSelectNegativeFromWhereIdEquals(config);
         LOGGER.info(sql);
@@ -205,8 +205,8 @@ public class CommonBaseDao implements CommonDao {
      * 根据对象的ID属性删除指定类型的对象。
      */
     @Override
-    public boolean deleteById(Class<?> clazz, Object id) {
-        if (clazz == null || id == null)
+    public boolean deleteById(Class<?> clazz, Object... id) {
+        if (clazz == null || id == null || id.length == 0)
             throw new DaoException("对象类型或ID对象为空！");
         String sql = SqlGenerator.getDeleteFromWhereIdEquals(clazz, false);
         LOGGER.info(sql);

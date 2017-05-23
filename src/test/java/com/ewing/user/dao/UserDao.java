@@ -1,17 +1,17 @@
 package com.ewing.user.dao;
 
 import com.ewing.dandelion.GenericDao;
-import com.ewing.user.entity.User;
+import com.ewing.user.entity.MyUser;
 
 /**
  * @author Ewing
  * @since 2017-04-21
  **/
-public interface UserDao extends GenericDao<User> {
+public interface UserDao extends GenericDao<MyUser> {
 
     /**
      * 自定义查询，根据名称查询。
      */
-    User findByName(String name);
+    MyUser findByName(String name);
 
 }

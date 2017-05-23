@@ -102,25 +102,25 @@ public interface GenericDao<T> {
      * @param id 对象ID。
      * @return 指定类型的对象。
      */
-    T getObject(Object id);
+    T getObject(Object... id);
 
     /**
      * 根据ID获取配置对象积极属性对应的对象属性。
      *
-     * @param id     对象ID。
      * @param config 指定对象配置，必须包含ID值。
+     * @param id     对象ID。
      * @return 指定类型的对象。
      */
-    T getPositive(Object id, T config);
+    T getPositive(T config, Object... id);
 
     /**
      * 根据ID获取配置对象消极属性对应的对象属性。
      *
-     * @param id     对象ID。
      * @param config 指定对象配置，必须包含ID值。
      * @return 指定类型的对象。
+     * @param id     对象ID。
      */
-    T getNegative(Object id, T config);
+    T getNegative(T config, Object... id);
 
     /**
      * 根据对象的ID属性删除对象。
@@ -136,7 +136,7 @@ public interface GenericDao<T> {
      * @param id 要删除的对象ID。
      * @return 是否删除成功。
      */
-    boolean deleteById(Object id);
+    boolean deleteById(Object... id);
 
     /**
      * 查询一个整数并封装成长整数。

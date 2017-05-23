@@ -1,5 +1,6 @@
 package com.ewing.user.entity;
 
+import com.ewing.dandelion.annotation.Identity;
 import com.ewing.dandelion.annotation.Temporary;
 
 import java.math.BigDecimal;
@@ -9,15 +10,16 @@ import java.util.Date;
  * @author Ewing
  * @since 2017-04-21
  **/
-public class User {
+public class MyUser {
 
+    @Identity(generate = true)
     private String userId;
 
     private String name;
 
-    @Temporary
     private Boolean boolValue;
 
+    @Temporary
     private Date dateValue;
 
     private BigDecimal bigDecimal;
