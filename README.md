@@ -26,10 +26,15 @@
 ##### 使用方式一：将com.ewing.dandelion包全量复制到项目中，并使Spring能够扫描到，再在项目中配置一个JdbcTemplate和NamedParameterJdbcTemplate即可。测试用例使用的是Spring boot自动配置。
 ##### 使用方式二：将该项目打包成jar包（或作为Maven依赖）引入到开发项目中，通过xml或java的方式配置JdbcTemplate和NamedParameterJdbcTemplate两个Bean并注入CommonBaseDao，GenericBaseDao只需保证继承的子类能被扫描到即可。
 
+-----
+
+## 接口及实现类包说明
+
 ##### GenericDao接口及实现类GenericBaseDao，普通DAO类通过继承该接口，可以让该DAO类具有特定实体专用的CRUD方法。
 ##### CommonDao接口及实现类CommonBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。
 ##### SqlGenerator可以生成任意实体的查询SQL语句主体，可自由使用原生SQL追加条件和参数，灵活度非常高。
-##### annotation包中定义注解，Identity可以标记属性为ID，参数generate表示是否生成ID值，默认为否，支持多个ID（联合主键）；Temporary注解可解除实体属性与数据库列的关联，成为临时属性，但不影响Spring Jdbc使用该属性。
+##### annotation包中定义注解，Identity可以标记属性为ID，参数generate表示是否生成ID值，默认为否，支持多个ID（联合主键）。
+##### Temporary注解可解除实体属性与数据库列的关联，成为临时属性（常用于传输数据），但不影响Spring Jdbc使用该属性。
 
 ##### 注：可配合Spring Cache使用，使用注解声明式的本地缓存或Redis共享缓存，可很好地降低数据库访问次数。
 
