@@ -225,6 +225,26 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
     }
 
     /**
+     * 查询总数。
+     */
+    @Override
+    public long countAll() {
+        String sql = SqlGenerator.getCountWhereTrue(entityClass);
+        LOGGER.info(sql);
+        return this.getJdbcOperations().queryForObject(sql, Long.class);
+    }
+
+    /**
+     * 查询所有记录。
+     */
+    @Override
+    public List<T> queryAll() {
+        String querySql = SqlGenerator.getSelectWhereTrue(entityClass);
+        LOGGER.info(querySql);
+        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(entityClass));
+    }
+
+    /**
      * 查询一个整数并封装成长整数。
      */
     @Override

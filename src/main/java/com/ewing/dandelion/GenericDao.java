@@ -117,8 +117,8 @@ public interface GenericDao<T> {
      * 根据ID获取配置对象消极属性对应的对象属性。
      *
      * @param config 指定对象配置，必须包含ID值。
-     * @return 指定类型的对象。
      * @param id     对象ID。
+     * @return 指定类型的对象。
      */
     T getNegative(T config, Object... id);
 
@@ -137,6 +137,20 @@ public interface GenericDao<T> {
      * @return 是否删除成功。
      */
     boolean deleteById(Object... id);
+
+    /**
+     * 查询总数。
+     *
+     * @return 总记录数。
+     */
+    long countAll();
+
+    /**
+     * 查询所有记录。
+     *
+     * @return 所有记录数据。
+     */
+    List<T> queryAll();
 
     /**
      * 查询一个整数并封装成长整数。

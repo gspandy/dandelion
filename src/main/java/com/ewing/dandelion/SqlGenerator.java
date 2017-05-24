@@ -338,6 +338,13 @@ public class SqlGenerator {
     /**
      * 生成与配置类的属性对应的Select语句带ID条件。
      */
+    public static String getCountWhereTrue(Class<?> clazz) {
+        return "SELECT COUNT(*) FROM " + convertName(clazz.getSimpleName()) + " WHERE 1=1";
+    }
+
+    /**
+     * 生成与配置类的属性对应的Select语句带ID条件。
+     */
     public static String getSelectBodyByConfig(Object config, boolean positive) {
         Class clazz = config.getClass();
         StringBuilder sqlSelect = new StringBuilder("SELECT ");

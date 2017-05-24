@@ -214,6 +214,30 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
+     * 查询总数。
+     */
+    @Override
+    public long countAll(Class<?> clazz) {
+        if (clazz == null)
+            throw new DaoException("对象类型为空！");
+        String sql = SqlGenerator.getCountWhereTrue(clazz);
+        LOGGER.info(sql);
+        return this.getJdbcOperations().queryForObject(sql, Long.class);
+    }
+
+    /**
+     * 查询所有记录。
+     */
+    @Override
+    public <T> List<T> queryAll(Class<T> clazz) {
+        if (clazz == null)
+            throw new DaoException("查询语句为空！");
+        String querySql = SqlGenerator.getSelectWhereTrue(clazz);
+        LOGGER.info(querySql);
+        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(clazz));
+    }
+
+    /**
      * 查询一个整数并封装成长整数。
      */
     @Override

@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -73,7 +74,7 @@ public class UserDaoTests {
     }
 
     @Test
-    public void saveUserTest() {
+    public void addUserTest() {
         // 保存全部属性
         MyUser user = new MyUser();
         user.setName(RandomString.randomChinese(3));
@@ -98,9 +99,9 @@ public class UserDaoTests {
         config.setName("");
         userDao.addPositive(user, config);
         // 没有异常 简单验证
-        MyUser myMyUser = userDao.getObject(user.getUserId());
-        Assert.assertNotNull(myMyUser.getName());
-        Assert.assertNull(myMyUser.getDateValue());
+        MyUser myUser = userDao.getObject(user.getUserId());
+        Assert.assertNotNull(myUser.getName());
+        Assert.assertNull(myUser.getDateValue());
         // 清理测试数据
         clean(user);
 
@@ -110,9 +111,9 @@ public class UserDaoTests {
         config.setBytesValue(new byte[]{});
         userDao.addNegative(user, config);
         // 没有异常 简单验证
-        myMyUser = userDao.getObject(user.getUserId());
-        Assert.assertNotNull(myMyUser.getName());
-        Assert.assertNull(myMyUser.getBytesValue());
+        myUser = userDao.getObject(user.getUserId());
+        Assert.assertNotNull(myUser.getName());
+        Assert.assertNull(myUser.getBytesValue());
         // 清理测试数据
         clean(user);
     }
@@ -150,25 +151,25 @@ public class UserDaoTests {
     @Test
     public void getUserTest() {
         MyUser user = init();
-        MyUser myMyUser = userDao.getObject(user.getUserId());
+        MyUser myUser = userDao.getObject(user.getUserId());
         // 没有异常 简单验证
-        Assert.assertTrue(user.getUserId().equals(myMyUser.getUserId()));
+        Assert.assertTrue(user.getUserId().equals(myUser.getUserId()));
 
         // 只取name属性
         MyUser config = new MyUser();
         config.setName("");
         // 没有异常 简单验证
-        myMyUser = userDao.getPositive( config,user.getUserId());
-        Assert.assertNull(myMyUser.getDateValue());
-        Assert.assertNotNull(myMyUser.getName());
+        myUser = userDao.getPositive(config, user.getUserId());
+        Assert.assertNull(myUser.getDateValue());
+        Assert.assertNotNull(myUser.getName());
 
         // 屏蔽bytesValue属性
         config = new MyUser();
         config.setBytesValue(new byte[]{});
         // 没有异常 简单验证
-        myMyUser = userDao.getNegative(config,user.getUserId());
-        Assert.assertNull(myMyUser.getBytesValue());
-        Assert.assertNotNull(myMyUser.getName());
+        myUser = userDao.getNegative(config, user.getUserId());
+        Assert.assertNull(myUser.getBytesValue());
+        Assert.assertNotNull(myUser.getName());
 
         // 清理测试数据
         clean(user);
@@ -179,22 +180,35 @@ public class UserDaoTests {
         MyUser user = init();
         userDao.delete(user);
         // 没有异常 简单验证
-        MyUser myMyUser = userDao.getObject(user.getUserId());
-        Assert.assertNull(myMyUser);
+        MyUser myUser = userDao.getObject(user.getUserId());
+        Assert.assertNull(myUser);
 
         user = init();
         userDao.deleteById(user.getUserId());
         // 没有异常 简单验证
-        myMyUser = userDao.getObject(user.getUserId());
-        Assert.assertNull(myMyUser);
+        myUser = userDao.getObject(user.getUserId());
+        Assert.assertNull(myUser);
     }
 
     @Test
-    public void findUserTest() {
+    public void queryUserTest() {
         MyUser user = init();
-        MyUser myMyUser = userDao.findByName(user.getName());
+        MyUser myUser = userDao.findByName(user.getName());
         // 没有异常 简单验证
-        Assert.assertNotNull(myMyUser);
+        Assert.assertNotNull(myUser);
+
+        // 统计测试
+        long count = userDao.countAll();
+        // 没有异常 简单验证
+        Assert.assertTrue(count > 0);
+
+        // 查询所有
+        List<MyUser> myUsers = userDao.queryAll();
+        // 没有异常 简单验证
+        Assert.assertTrue(myUsers.size() > 0);
+
+        // 清理测试数据
+        clean(user);
     }
 
 }

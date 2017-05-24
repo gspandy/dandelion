@@ -103,7 +103,7 @@ public interface CommonDao {
      * @param id    对象ID。
      * @return 指定类型的对象。
      */
-    <T> T getObject(Class<T> clazz, Object...id);
+    <T> T getObject(Class<T> clazz, Object... id);
 
     /**
      * 根据ID获取配置对象积极属性对应的对象属性。
@@ -112,7 +112,7 @@ public interface CommonDao {
      * @param id     对象ID。
      * @return 指定类型的对象。
      */
-    <T> T getPositive( T config,Object...id);
+    <T> T getPositive(T config, Object... id);
 
     /**
      * 根据ID获取配置对象消极属性对应的对象属性。
@@ -121,7 +121,7 @@ public interface CommonDao {
      * @param id     对象ID。
      * @return 指定类型的对象。
      */
-    <T> T getNegative(T config,Object... id);
+    <T> T getNegative(T config, Object... id);
 
     /**
      * 根据对象的ID属性删除对象。
@@ -138,7 +138,23 @@ public interface CommonDao {
      * @param id    要删除的对象ID。
      * @return 是否删除成功。
      */
-    boolean deleteById(Class<?> clazz, Object...id);
+    boolean deleteById(Class<?> clazz, Object... id);
+
+    /**
+     * 查询总数。
+     *
+     * @param clazz 指定对象类型。
+     * @return 总记录数。
+     */
+    long countAll(Class<?> clazz);
+
+    /**
+     * 查询所有记录。
+     *
+     * @param clazz 指定对象类型。
+     * @return 所有记录数据。
+     */
+    <T> List<T> queryAll(Class<T> clazz);
 
     /**
      * 查询一个整数并封装成长整数。
