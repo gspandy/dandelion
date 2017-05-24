@@ -21,26 +21,27 @@ public class SqlGeneratorTest {
 
         // 功能测试
         System.out.println(SqlGenerator.getColumnsByConfig(config, true));
-        System.out.println(SqlGenerator.getResultColumns(myUser.getClass()));
+        System.out.println(SqlGenerator.getResultColumns(MyUser.class));
         System.out.println(SqlGenerator.getResultColumnsPositive(config));
         System.out.println(SqlGenerator.getResultColumnsNegative(config));
         System.out.println(SqlGenerator.getInsertValues(myUser));
         System.out.println(SqlGenerator.getInsertValuesByConfig(myUser, config, true));
         System.out.println(SqlGenerator.getInsertPositiveValues(myUser, config));
         System.out.println(SqlGenerator.getInsertNegativeValues(myUser, config));
+        System.out.println(SqlGenerator.getCountWhereTrue(MyUser.class));
         System.out.println(SqlGenerator.getSelectBodyByConfig(config, true));
-        System.out.println(SqlGenerator.getSelectWhereIdEquals(myUser.getClass()));
-        System.out.println(SqlGenerator.getSelectWhereTrue(myUser.getClass()));
+        System.out.println(SqlGenerator.getSelectWhereIdEquals(MyUser.class));
+        System.out.println(SqlGenerator.getSelectWhereTrue(MyUser.class));
         System.out.println(SqlGenerator.getSelectPositiveWhereTrue(config));
         System.out.println(SqlGenerator.getSelectPositiveWhereIdEquals(config));
         System.out.println(SqlGenerator.getSelectNegativeWhereTrue(config));
         System.out.println(SqlGenerator.getSelectNegativeWhereIdEquals(config));
         System.out.println(SqlGenerator.getUpdateBodyByConfig(config, true));
-        System.out.println(SqlGenerator.getUpdateWhereIdEquals(myUser.getClass()));
+        System.out.println(SqlGenerator.getUpdateWhereIdEquals(MyUser.class));
         System.out.println(SqlGenerator.getUpdatePositiveWhereIdEquals(config));
         System.out.println(SqlGenerator.getUpdateNegativeWhereIdEquals(config));
-        System.out.println(SqlGenerator.getDeleteWhereIdEquals(myUser.getClass(), true));
-        System.out.println(SqlGenerator.getDeleteWhereTrue(myUser.getClass()));
+        System.out.println(SqlGenerator.getDeleteWhereIdEquals(MyUser.class, true));
+        System.out.println(SqlGenerator.getDeleteWhereTrue(MyUser.class));
 
         // 性能测试
         int times = 1000000;
@@ -51,7 +52,7 @@ public class SqlGeneratorTest {
 
         time = System.currentTimeMillis();
         for (int i = 0; i < times; i++)
-            SqlGenerator.getDeleteWhereIdEquals(myUser.getClass(), true);
+            SqlGenerator.getDeleteWhereIdEquals(MyUser.class, true);
         System.out.println("根据ID删除 " + times + " 次用时：" + (System.currentTimeMillis() - time) + " 毫秒");
 
         time = System.currentTimeMillis();
