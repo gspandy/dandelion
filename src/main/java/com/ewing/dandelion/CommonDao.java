@@ -45,6 +45,16 @@ public interface CommonDao {
     void setNamedParamOperations(NamedParameterJdbcOperations namedParamOperations);
 
     /**
+     * 追加Sql子句并添加参数到参数列表。
+     */
+    void appendToSql(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams);
+
+    /**
+     * 当存在参数时追加Sql语句并添加参数。
+     */
+    boolean appendHasParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams);
+
+    /**
      * 把对象实例的所有属性插入到数据库。
      *
      * @param object 要插入到数据库的对象。

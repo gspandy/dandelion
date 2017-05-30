@@ -70,6 +70,35 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
+     * 追加Sql子句并添加参数到参数列表。
+     */
+    @Override
+    public void appendToSql(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
+        sqlBuilder.append(sqlPart);
+        for (Object param : newParams)
+            allParams.add(param);
+    }
+
+    /**
+     * 当存在参数时追加Sql语句并添加参数。
+     */
+    @Override
+    public boolean appendHasParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
+        boolean hasOne = false;
+        for (Object param : newParams)
+            if (param != null && (!(param instanceof String) || ((String) param).trim().length() > 0)) {
+                hasOne = true;
+                break;
+            }
+        if (hasOne) { // 存在非null的参数
+            sqlBuilder.append(sqlPart);
+            for (Object param : newParams)
+                allParams.add(param);
+        }
+        return hasOne;
+    }
+
+    /**
      * 把对象实例的所有属性插入到数据库。
      */
     @Override

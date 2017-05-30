@@ -1,0 +1,8 @@
+# \u6570\u636E\u5E93\u914D\u7F6E
+spring:
+  datasource:
+    schema: classpath:firstdata.sql
+    url: jdbc:h2:file:./resources/h2
+    driverClassName: org.h2.Driver
+    username: test
+    password: test

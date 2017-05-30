@@ -4,12 +4,10 @@ import com.ewing.common.RandomString;
 import com.ewing.user.dao.UserDao;
 import com.ewing.user.entity.MyUser;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
 
@@ -23,29 +21,6 @@ public class UserDaoTests {
 
     @Autowired
     private UserDao userDao;
-
-    /**
-     * 创建表结构。
-     */
-    @Before
-    public void before() {
-        JdbcOperations operations = userDao.getJdbcOperations();
-        operations.execute("DROP TABLE IF EXISTS `MyUser`");
-        operations.execute("CREATE TABLE `MyUser` (\n" +
-                "  `userId` varchar(22) NOT NULL,\n" +
-                "  `name` varchar(64) DEFAULT NULL,\n" +
-                "  `boolValue` bit(1) DEFAULT NULL,\n" +
-                "  `dateValue` datetime DEFAULT NULL,\n" +
-                "  `bigDecimal` decimal(32,0) DEFAULT NULL,\n" +
-                "  `intValue` int(11) DEFAULT NULL,\n" +
-                "  `longValue` int(20) DEFAULT NULL,\n" +
-                "  `floatValue` float(32,0) DEFAULT NULL,\n" +
-                "  `doubleValue` double(64,0) DEFAULT NULL,\n" +
-                "  `shortValue` smallint(8) DEFAULT NULL,\n" +
-                "  `bytesValue` binary(255) DEFAULT NULL,\n" +
-                "  PRIMARY KEY (`userId`)\n" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    }
 
     /**
      * 初始化数据。
@@ -194,6 +169,10 @@ public class UserDaoTests {
     public void queryUserTest() {
         MyUser user = init();
         MyUser myUser = userDao.findByName(user.getName());
+        // 没有异常 简单验证
+        Assert.assertNotNull(myUser);
+
+        myUser = userDao.findNameAndLong(user.getName(), user.getLongValue());
         // 没有异常 简单验证
         Assert.assertNotNull(myUser);
 

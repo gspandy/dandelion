@@ -14,4 +14,8 @@ public interface UserDao extends GenericDao<MyUser> {
      */
     MyUser findByName(String name);
 
+    /**
+     * 当名称存在时根据名称查询。
+     */
+    MyUser findNameAndLong(String name, Long along);
 }
