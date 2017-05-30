@@ -1,6 +1,9 @@
 package com.ewing;
 
 import com.ewing.common.RandomString;
+import com.ewing.dandelion.SqlGenerator;
+import com.ewing.dandelion.pagination.PageData;
+import com.ewing.dandelion.pagination.PageParam;
 import com.ewing.user.dao.UserDao;
 import com.ewing.user.entity.MyUser;
 import org.junit.Assert;
@@ -185,6 +188,12 @@ public class UserDaoTests {
         List<MyUser> myUsers = userDao.queryAll();
         // 没有异常 简单验证
         Assert.assertTrue(myUsers.size() > 0);
+
+        // 分页查询
+        String sql = SqlGenerator.getSelectWhereTrue(MyUser.class);
+        PageData<MyUser> users = userDao.queryPageData(new PageParam(), sql);
+        // 没有异常 简单验证
+        Assert.assertTrue(users.getTotal() > 0);
 
         // 清理测试数据
         clean(user);
