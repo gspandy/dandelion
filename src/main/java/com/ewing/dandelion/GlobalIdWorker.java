@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.UUID;
 
 /**
  * 可独立运行的全局ID生成器，保持趋势递增，线程安全，尾数0至9随机分布。
@@ -115,6 +116,21 @@ public class GlobalIdWorker {
     public static String nextString() {
         BigInteger integer = nextBigInteger();
         return integer.compareTo(fillFlag) < 0 ? "0" + integer.toString(36) : integer.toString(36);
+    }
+
+    /**
+     * 使用JDK生成UUID并转换成25位36进制字符串
+     */
+    public static String uuidString() {
+        UUID id = UUID.randomUUID();
+        // 直接toString是36位16进制带下划线的 需要转换 采用高低位转换比直接转换快一些
+        StringBuilder mb = new StringBuilder(Long.toHexString(id.getMostSignificantBits()));
+        while (mb.length() < 16) mb.insert(0, '0');
+        StringBuilder lb = new StringBuilder(Long.toHexString(id.getLeastSignificantBits()));
+        while (lb.length() < 16) lb.insert(0, '0');
+        StringBuilder idb = new StringBuilder(new BigInteger(mb.append(lb).toString(), 16).toString(36));
+        while (idb.length() < 25) idb.insert(0, '0');
+        return idb.toString();
     }
 
 } 
