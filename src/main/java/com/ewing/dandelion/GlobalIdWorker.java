@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GlobalIdWorker {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalIdWorker.class);
     // 机器标识及进程标识
-    private static String runMacProcBit;
+    private static final String runMacProcBit;
     // 计数器 可以溢出可循环使用 实际取后16位
     private static final AtomicInteger counter = new AtomicInteger(new SecureRandom().nextInt());
     // 序号掩码（16个1）也是最大值65535
