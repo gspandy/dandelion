@@ -34,7 +34,7 @@ public class GlobalIdWorker {
     /**
      * 生成唯一ID
      */
-    public static synchronized BigInteger nextBigInteger() {
+    public static BigInteger nextBigInteger() {
         long timestamp = System.currentTimeMillis();
 
         int count = counter.getAndIncrement() & counterMask;
