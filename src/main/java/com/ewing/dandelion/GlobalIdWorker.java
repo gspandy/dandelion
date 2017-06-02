@@ -24,14 +24,12 @@ public class GlobalIdWorker {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalIdWorker.class);
     // 机器标识及进程标识
     private static String runMacProcBit;
-    private static final AtomicInteger counter = new AtomicInteger(Integer.MAX_VALUE - 10);
-    // 序号掩码（16个1）也是最大值 65535
+    // 计数器 可以溢出可循环使用 实际取后16位
+    private static final AtomicInteger counter = new AtomicInteger(new SecureRandom().nextInt());
+    // 序号掩码（16个1）也是最大值65535
     private final static int counterMask = 0xffff;
     // 序号标志位 保证长度一定是16+1位 再用substring去掉标志位
     private final static int counterFlag = 1 << 16;
-
-    // String类型的ID小于该值填充0 保证长度为21位
-    private final static BigInteger fillFlag = new BigInteger("100000000000000000000", 36);
 
     /**
      * 生成唯一ID
@@ -39,7 +37,7 @@ public class GlobalIdWorker {
     public static synchronized BigInteger nextBigInteger() {
         long timestamp = System.currentTimeMillis();
 
-        int count = GlobalIdWorker.counter.getAndIncrement() & counterMask;
+        int count = counter.getAndIncrement() & counterMask;
 
         // ID偏移组合生成最终的ID，并返回ID
         String idBit = Long.toBinaryString(timestamp) + runMacProcBit +
