@@ -1,121 +1,72 @@
 package com.ewing.dandelion;
 
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
+import java.security.SecureRandom;
+import java.util.Enumeration;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 可独立运行的全局ID生成器，保持趋势递增，线程安全，尾数0至9随机分布。
- * 41位(自动扩展位数)毫秒+48Mac地址+13位累加数(每毫秒之后保留后5位)。
- * 理想情况平均每秒可生成8190968个，实测生成百万个用时不到2秒(视配置而定)。
- * 使用32位10进制可用到3300年后，使用21位36进制可用到8500年后，可扩展长度。
+ * 全局ID生成器，保持趋势递增，尾数均匀，每毫秒获取不超过65535个就不会重复。
+ * 值位组成：41位(自动扩展位数)毫秒+24位机器标识+16位进程标识+16位累加数。
+ * 使用31位10进制整数或20位36进制字符串可用到6300年后，可认为无限使用。
+ * 实测生成百万个用时不到2秒(视配置而定)，每毫秒500个，相对于65535来说是非常安全的。
  *
  * @author Ewing
  */
 public class GlobalIdWorker {
-    // Mac地址掩码（48个1）
-    private final static long macAddressMask = ~(-1L << 48L);
-    // Mac标志位 保证长度一定是48+1位 再用substring去掉标志位
-    private final static long macAddressFlag = 1L << 48L;
-
-    // 序号掩码（13个1）也是最大值
-    private final static long sequenceMask = ~(-1L << 13L);
-    // 序号标志位 保证长度一定是13+1位 再用substring去掉标志位
-    private final static long sequenceFlag = 1L << 13L;
-
-    private static long lastTimestamp = System.currentTimeMillis();
-
-    private static long sequence = 0L;
-
-    private static String macAddressBit;
-
-    // 尾数离散度 可以分散ID的尾数分布
-    private final static long discreteRate = 1L << 5L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalIdWorker.class);
+    // 机器标识及进程标识
+    private static String runMacProcBit;
+    private static final AtomicInteger counter = new AtomicInteger(Integer.MAX_VALUE - 10);
+    // 序号掩码（16个1）也是最大值 65535
+    private final static int counterMask = 0xffff;
+    // 序号标志位 保证长度一定是16+1位 再用substring去掉标志位
+    private final static int counterFlag = 1 << 16;
 
     // String类型的ID小于该值填充0 保证长度为21位
     private final static BigInteger fillFlag = new BigInteger("100000000000000000000", 36);
 
     /**
-     * 初始化worker
-     */
-    static {
-        try {
-            long macAddress = macAddressLong();
-            macAddressBit = Long.toBinaryString((macAddress & macAddressMask) | macAddressFlag).substring(1);
-        } catch (IOException e) {
-            throw new RuntimeException("Init mac address fail.", e);
-        }
-    }
-
-    /**
-     * 获取机器的Mac地址（48位）
-     */
-    private static long macAddressLong() throws IOException {
-        byte[] macs = NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress();
-        int shift = 0;
-        long macLong = 0;
-        for (int i = 0; i < macs.length; i++) {
-            macLong = (macLong << shift) | (macs[i] & 0xFF);
-            shift += 8;
-        }
-        return macLong;
-    }
-
-    /**
      * 生成唯一ID
      */
     public static synchronized BigInteger nextBigInteger() {
-        long timestamp = timeGen();
-        if (timestamp < lastTimestamp) {
-            tilNextMillis(lastTimestamp);
-        }
+        long timestamp = System.currentTimeMillis();
 
-        if (lastTimestamp == timestamp) {
-            // 当前毫秒内，计数器增加，满了则为0
-            sequence = (sequence + 1) & sequenceMask;
-            if (sequence == 0) {
-                // 当前毫秒内计数满了，则等待下一毫秒
-                timestamp = tilNextMillis(lastTimestamp);
-            }
-        } else {
-            sequence = sequence & discreteRate;
-        }
-
-        lastTimestamp = timestamp;
+        int count = GlobalIdWorker.counter.getAndIncrement() & counterMask;
 
         // ID偏移组合生成最终的ID，并返回ID
-        String idBit = Long.toBinaryString(timestamp) + macAddressBit +
-                Long.toBinaryString(sequence | sequenceFlag).substring(1);
+        String idBit = Long.toBinaryString(timestamp) + runMacProcBit +
+                Integer.toBinaryString(count | counterFlag).substring(1);
 
         return new BigInteger(idBit, 2);
     }
 
     /**
-     * 循环到下一毫秒
+     * 初始化worker
      */
-    private static long tilNextMillis(final long lastTimestamp) {
-        long timestamp = timeGen();
-        while (timestamp <= lastTimestamp) {
-            timestamp = timeGen();
-        }
-        return timestamp;
+    static {
+        // 保证一定是24位机器ID + 16位进程ID
+        int machineId = createMachineIdentifier() & 0xffffff | (1 << 24);
+        int processId = createProcessIdentifier() & 0xffff | (1 << 16);
+        String machineIdBit = Integer.toBinaryString(machineId).substring(1);
+        String processIdBit = Integer.toBinaryString(processId).substring(1);
+        runMacProcBit = machineIdBit + processIdBit;
     }
 
     /**
-     * 获取当前时间
-     */
-    private static long timeGen() {
-        return System.currentTimeMillis();
-    }
-
-    /**
-     * 获取36进制21位长度的String类型的ID
+     * 获取36进制20位长度的String类型的ID
      */
     public static String nextString() {
-        BigInteger integer = nextBigInteger();
-        return integer.compareTo(fillFlag) < 0 ? "0" + integer.toString(36) : integer.toString(36);
+        StringBuilder idStr = new StringBuilder(nextBigInteger().toString(36));
+        while (idStr.length() < 20) idStr.insert(0, '0');
+        return idStr.toString();
     }
 
     /**
@@ -131,6 +82,56 @@ public class GlobalIdWorker {
         StringBuilder idb = new StringBuilder(new BigInteger(mb.append(lb).toString(), 16).toString(36));
         while (idb.length() < 25) idb.insert(0, '0');
         return idb.toString();
+    }
+
+    /**
+     * 获取机器标识的HashCode。
+     */
+    private static int createMachineIdentifier() {
+        int machineHash;
+        try {
+            StringBuilder sb = new StringBuilder();
+            Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+            while (e.hasMoreElements()) {
+                NetworkInterface ni = e.nextElement();
+                sb.append(ni.toString());
+                byte[] mac = ni.getHardwareAddress();
+                if (mac != null) {
+                    ByteBuffer bb = ByteBuffer.wrap(mac);
+                    try {
+                        sb.append(bb.getChar());
+                        sb.append(bb.getChar());
+                        sb.append(bb.getChar());
+                    } catch (BufferUnderflowException bue) {
+                        // Mac地址少于6字节 继续
+                    }
+                }
+            }
+            machineHash = sb.toString().hashCode();
+        } catch (Throwable t) {
+            machineHash = new SecureRandom().nextInt();
+            LOGGER.warn("无法获取机器标识，使用随机数值替代！", t);
+        }
+        return machineHash;
+    }
+
+    /**
+     * 获取进程标识，转换双字节型。
+     */
+    private static short createProcessIdentifier() {
+        short processId;
+        try {
+            String processName = java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
+            if (processName.contains("@")) {
+                processId = (short) Integer.parseInt(processName.substring(0, processName.indexOf('@')));
+            } else {
+                processId = (short) java.lang.management.ManagementFactory.getRuntimeMXBean().getName().hashCode();
+            }
+        } catch (Throwable t) {
+            processId = (short) new SecureRandom().nextInt();
+            LOGGER.warn("无法获取进程标识，使用随机数值替代！", t);
+        }
+        return processId;
     }
 
 } 
