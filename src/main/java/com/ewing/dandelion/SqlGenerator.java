@@ -205,7 +205,7 @@ public class SqlGenerator {
     }
 
     /**
-     * 生成与实体类对应的Insert语句。
+     * 生成实体类的ID。
      */
     public static void generateId(Object object) {
         if (object == null) return;
