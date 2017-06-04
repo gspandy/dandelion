@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -141,6 +142,34 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
         String sql = SqlGenerator.getInsertNegativeValues(object, config);
         LOGGER.info(sql);
         return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
+    }
+
+    /**
+     * 批量把对象实例的所有属性插入到数据库。
+     */
+    @Override
+    public boolean[] addBatch(T... objects) {
+        if (objects == null)
+            throw new DaoException("实例对象列表为空！");
+        Class clazz = null;
+        SqlParameterSource[] sources = new SqlParameterSource[objects.length];
+        for (int i = 0; i < objects.length; i++) {
+            Object object = objects[i];
+            if (object == null)
+                throw new DaoException("包含为空的实例对象！");
+            if (clazz == null)
+                clazz = object.getClass();
+            else if (!clazz.equals(object.getClass()))
+                throw new DaoException("对象类型必须相同！");
+            sources[i] = new BeanPropertySqlParameterSource(object);
+        }
+        String sql = SqlGenerator.getInsertValues(clazz);
+        LOGGER.info(sql);
+        int[] results = this.getNamedParamOperations().batchUpdate(sql, sources);
+        boolean[] bools = new boolean[results.length];
+        for (int i = 0; i < results.length; i++)
+            bools[i] = results[i] > 0;
+        return bools;
     }
 
     /**

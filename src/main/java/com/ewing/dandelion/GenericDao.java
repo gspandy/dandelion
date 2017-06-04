@@ -71,6 +71,14 @@ public interface GenericDao<T> {
     boolean addNegative(T object, T config);
 
     /**
+     * 批量把对象实例的所有属性插入到数据库。
+     *
+     * @param objects 对象数组。
+     * @return 结果是否成功。
+     */
+    boolean[] addBatch(T... objects);
+
+    /**
      * 把对象实例的所有属性更新到数据库。
      *
      * @param object 要更新到数据库的对象。
