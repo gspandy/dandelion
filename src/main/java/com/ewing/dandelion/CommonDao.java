@@ -151,6 +151,14 @@ public interface CommonDao {
     boolean deleteById(Class<?> clazz, Object... id);
 
     /**
+     * 删除所有对象。
+     *
+     * @param clazz 对象类型。
+     * @return 是否删除成功。
+     */
+    boolean deleteAll(Class<?> clazz);
+
+    /**
      * 查询总数。
      *
      * @param clazz 指定对象类型。

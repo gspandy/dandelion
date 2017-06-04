@@ -252,6 +252,16 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
     }
 
     /**
+     * 删除全部对象。
+     */
+    @Override
+    public boolean deleteAll() {
+        String sql = SqlGenerator.getDeleteWhereTrue(getEntityClass());
+        LOGGER.info(sql);
+        return this.getJdbcOperations().update(sql) >= 0;
+    }
+
+    /**
      * 查询总数。
      */
     @Override

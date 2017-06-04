@@ -139,6 +139,13 @@ public interface GenericDao<T> {
     boolean deleteById(Object... id);
 
     /**
+     * 删除所有对象。
+     *
+     * @return 是否删除成功。
+     */
+    boolean deleteAll();
+
+    /**
      * 查询总数。
      *
      * @return 总记录数。

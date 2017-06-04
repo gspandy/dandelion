@@ -243,6 +243,16 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
+     * 删除全部对象。
+     */
+    @Override
+    public boolean deleteAll(Class<?> clazz) {
+        String sql = SqlGenerator.getDeleteWhereTrue(clazz);
+        LOGGER.info(sql);
+        return this.getJdbcOperations().update(sql) >= 0;
+    }
+
+    /**
      * 查询总数。
      */
     @Override
