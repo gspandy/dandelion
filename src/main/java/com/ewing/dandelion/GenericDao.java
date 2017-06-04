@@ -14,7 +14,7 @@ import java.util.Map;
  * @author Ewing
  * @since 2017-03-01
  **/
-public interface GenericDao<T> {
+public interface GenericDao<E> {
 
     /**
      * 设置操作数据库的JdbcOperations。
@@ -36,7 +36,7 @@ public interface GenericDao<T> {
      * @param object 要插入到数据库的对象。
      * @return 是否插入成功。
      */
-    boolean add(T object);
+    boolean add(E object);
 
     /**
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
@@ -45,7 +45,7 @@ public interface GenericDao<T> {
      * @param config 配置对象。
      * @return 是否插入成功。
      */
-    boolean addPositive(T object, T config);
+    boolean addPositive(E object, E config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
@@ -54,7 +54,7 @@ public interface GenericDao<T> {
      * @param config 配置对象。
      * @return 是否插入成功。
      */
-    boolean addNegative(T object, T config);
+    boolean addNegative(E object, E config);
 
     /**
      * 批量把对象实例的所有属性插入到数据库。
@@ -62,7 +62,7 @@ public interface GenericDao<T> {
      * @param objects 对象数组。
      * @return 结果是否成功。
      */
-    boolean[] addBatch(T... objects);
+    boolean[] addBatch(E... objects);
 
     /**
      * 把对象实例的所有属性更新到数据库。
@@ -70,7 +70,7 @@ public interface GenericDao<T> {
      * @param object 要更新到数据库的对象。
      * @return 是否更新成功。
      */
-    boolean update(T object);
+    boolean update(E object);
 
     /**
      * 把配置对象积极属性对应的对象实例属性更新到数据库。
@@ -79,7 +79,7 @@ public interface GenericDao<T> {
      * @param config 配置对象。
      * @return 是否更新成功。
      */
-    boolean updatePositive(T object, T config);
+    boolean updatePositive(E object, E config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性更新到数据库。
@@ -88,7 +88,7 @@ public interface GenericDao<T> {
      * @param config 配置对象。
      * @return 是否更新成功。
      */
-    boolean updateNegative(T object, T config);
+    boolean updateNegative(E object, E config);
 
     /**
      * 根据ID获取指定类型的对象的所有属性。
@@ -96,7 +96,7 @@ public interface GenericDao<T> {
      * @param id 对象ID。
      * @return 指定类型的对象。
      */
-    T getObject(Object... id);
+    E getObject(Object... id);
 
     /**
      * 根据ID获取配置对象积极属性对应的对象属性。
@@ -105,7 +105,7 @@ public interface GenericDao<T> {
      * @param id     对象ID。
      * @return 指定类型的对象。
      */
-    T getPositive(T config, Object... id);
+    E getPositive(E config, Object... id);
 
     /**
      * 根据ID获取配置对象消极属性对应的对象属性。
@@ -114,7 +114,7 @@ public interface GenericDao<T> {
      * @param id     对象ID。
      * @return 指定类型的对象。
      */
-    T getNegative(T config, Object... id);
+    E getNegative(E config, Object... id);
 
     /**
      * 查询总数。
@@ -128,7 +128,7 @@ public interface GenericDao<T> {
      *
      * @return 所有记录数据。
      */
-    List<T> getAll();
+    List<E> getAll();
 
     /**
      * 根据对象的ID属性删除对象。
@@ -136,7 +136,7 @@ public interface GenericDao<T> {
      * @param object 要删除的数据对象。
      * @return 是否删除成功。
      */
-    boolean delete(T object);
+    boolean delete(E object);
 
     /**
      * 根据对象的ID属性删除指定类型的对象。
@@ -164,18 +164,20 @@ public interface GenericDao<T> {
     /**
      * 查询一条记录并封装成指定类型的对象。
      *
+     * @param clazz    指定对象类型。
      * @param querySql 查询语句。
      * @return 指定类型的对象。
      */
-    T queryObject(String querySql, Object... params);
+    <T> T queryObject(Class<T> clazz, String querySql, Object... params);
 
     /**
      * 查询多条记录并封装成指定类型的对象集合。
      *
+     * @param clazz    指定对象类型。
      * @param querySql 查询语句。
      * @return 指定类型的对象。
      */
-    List<T> queryObjectList(String querySql, Object... params);
+    <T> List<T> queryObjectList(Class<T> clazz, String querySql, Object... params);
 
     /**
      * 查询一条记录并封装成Map。
@@ -196,10 +198,11 @@ public interface GenericDao<T> {
     /**
      * 分页查询多条记录并封装成指定类型的对象集合。
      *
+     * @param clazz    指定对象类型。
      * @param querySql 查询语句。
      * @return 指定类型的对象。
      */
-    PageData<T> queryPageData(PageParam pageParam, String querySql, Object... params);
+    <T> PageData<T> queryPageData(PageParam pageParam, Class<T> clazz, String querySql, Object... params);
 
     /**
      * 分页查询多条记录并封装成Map集合。

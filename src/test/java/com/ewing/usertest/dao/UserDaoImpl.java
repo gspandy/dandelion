@@ -21,7 +21,7 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
     @Override
     public MyUser findByName(String name) {
         String sql = SqlGenerator.getSelectWhereTrue(getEntityClass()) + " AND name = ?";
-        return this.queryObject(sql, name);
+        return this.queryObject(getEntityClass(), sql, name);
     }
 
     /**
@@ -33,6 +33,6 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
         List<Object> params = new ArrayList<>();
         this.appendSqlParam(sql, " AND name = ?", params, name);
         this.appendHasParam(sql, " AND longValue = ?", params, longValue);
-        return this.queryObject(sql.toString(), params.toArray());
+        return this.queryObject(getEntityClass(), sql.toString(), params.toArray());
     }
 }
