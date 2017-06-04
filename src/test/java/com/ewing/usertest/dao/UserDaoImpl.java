@@ -1,8 +1,8 @@
-package com.ewing.user.dao;
+package com.ewing.usertest.dao;
 
 import com.ewing.dandelion.GenericBaseDao;
 import com.ewing.dandelion.SqlGenerator;
-import com.ewing.user.entity.MyUser;
+import com.ewing.usertest.entity.MyUser;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

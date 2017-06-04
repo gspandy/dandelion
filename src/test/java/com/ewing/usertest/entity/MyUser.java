@@ -1,4 +1,4 @@
-package com.ewing.user.entity;
+package com.ewing.usertest.entity;
 
 import com.ewing.dandelion.annotation.Identity;
 import com.ewing.dandelion.annotation.Temporary;

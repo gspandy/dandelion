@@ -1,7 +1,7 @@
-package com.ewing.user.dao;
+package com.ewing.usertest.dao;
 
 import com.ewing.dandelion.GenericDao;
-import com.ewing.user.entity.MyUser;
+import com.ewing.usertest.entity.MyUser;
 
 /**
  * @author Ewing

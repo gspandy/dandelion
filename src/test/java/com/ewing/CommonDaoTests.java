@@ -2,7 +2,7 @@ package com.ewing;
 
 import com.ewing.common.RandomString;
 import com.ewing.dandelion.CommonDao;
-import com.ewing.user.entity.MyUser;
+import com.ewing.usertest.entity.MyUser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,7 +1,7 @@
 package com.ewing;
 
 import com.ewing.dandelion.SqlGenerator;
-import com.ewing.user.entity.MyUser;
+import com.ewing.usertest.entity.MyUser;
 
 import java.math.BigDecimal;
 

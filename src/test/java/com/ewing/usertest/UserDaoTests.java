@@ -1,11 +1,11 @@
-package com.ewing;
+package com.ewing.usertest;
 
 import com.ewing.common.RandomString;
 import com.ewing.dandelion.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
-import com.ewing.user.dao.UserDao;
-import com.ewing.user.entity.MyUser;
+import com.ewing.usertest.dao.UserDao;
+import com.ewing.usertest.entity.MyUser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
