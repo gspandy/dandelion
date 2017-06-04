@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class GlobalIdWorker {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalIdWorker.class);
+    // 将时间截掉后8位（相当于除以256）约精确到1/4秒
     private final static int timeTruncate = 8;
     // 机器标识及进程标识
     private static final String runMacProcBit;
