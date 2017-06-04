@@ -47,8 +47,9 @@ public class UserDaoTests {
     /**
      * 清理测试数据。
      */
-    private void clean(MyUser myUser) {
-        userDao.delete(myUser);
+    private void clean(MyUser... myUsers) {
+        for (MyUser myUser : myUsers)
+            userDao.delete(myUser);
     }
 
     @Test
@@ -70,6 +71,13 @@ public class UserDaoTests {
         Assert.assertTrue(StringUtils.hasText(user.getUserId()));
         // 清理测试数据
         clean(user);
+
+        // 批量添加
+        MyUser[] users = {user, new MyUser(), new MyUser()};
+        userDao.addBatch(users);
+        // 没有异常 简单验证
+        Assert.assertTrue(userDao.countAll() >= users.length);
+        clean(users);
 
         // 只保存name属性
         user.setUserId(null);
@@ -166,6 +174,12 @@ public class UserDaoTests {
         // 没有异常 简单验证
         myUser = userDao.getObject(user.getUserId());
         Assert.assertNull(myUser);
+
+        user = init();
+        userDao.deleteAll();
+        // 没有异常 简单验证
+        myUser = userDao.getObject(user.getUserId());
+        Assert.assertNull(myUser);
     }
 
     @Test
@@ -185,7 +199,7 @@ public class UserDaoTests {
         Assert.assertTrue(count > 0);
 
         // 查询所有
-        List<MyUser> myUsers = userDao.queryAll();
+        List<MyUser> myUsers = userDao.getAll();
         // 没有异常 简单验证
         Assert.assertTrue(myUsers.size() > 0);
 

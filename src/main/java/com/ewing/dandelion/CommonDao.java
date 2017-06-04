@@ -142,6 +142,22 @@ public interface CommonDao {
     <T> T getNegative(T config, Object... id);
 
     /**
+     * 查询总数。
+     *
+     * @param clazz 指定对象类型。
+     * @return 总记录数。
+     */
+    long countAll(Class<?> clazz);
+
+    /**
+     * 获取所有记录。
+     *
+     * @param clazz 指定对象类型。
+     * @return 所有记录数据。
+     */
+    <T> List<T> getAll(Class<T> clazz);
+
+    /**
      * 根据对象的ID属性删除对象。
      *
      * @param object 要删除的数据对象。
@@ -165,22 +181,6 @@ public interface CommonDao {
      * @return 是否删除成功。
      */
     boolean deleteAll(Class<?> clazz);
-
-    /**
-     * 查询总数。
-     *
-     * @param clazz 指定对象类型。
-     * @return 总记录数。
-     */
-    long countAll(Class<?> clazz);
-
-    /**
-     * 查询所有记录。
-     *
-     * @param clazz 指定对象类型。
-     * @return 所有记录数据。
-     */
-    <T> List<T> queryAll(Class<T> clazz);
 
     /**
      * 查询一个整数并封装成长整数。

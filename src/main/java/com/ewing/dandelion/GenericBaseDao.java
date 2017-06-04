@@ -149,21 +149,17 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
      */
     @Override
     public boolean[] addBatch(T... objects) {
-        if (objects == null)
+        if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
-        Class clazz = null;
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
         for (int i = 0; i < objects.length; i++) {
             Object object = objects[i];
             if (object == null)
                 throw new DaoException("包含为空的实例对象！");
-            if (clazz == null)
-                clazz = object.getClass();
-            else if (!clazz.equals(object.getClass()))
-                throw new DaoException("对象类型必须相同！");
+            SqlGenerator.generateId(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
         }
-        String sql = SqlGenerator.getInsertValues(clazz);
+        String sql = SqlGenerator.getInsertValues(objects[0]);
         LOGGER.info(sql);
         int[] results = this.getNamedParamOperations().batchUpdate(sql, sources);
         boolean[] bools = new boolean[results.length];
@@ -257,6 +253,26 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
     }
 
     /**
+     * 查询总数。
+     */
+    @Override
+    public long countAll() {
+        String sql = SqlGenerator.getCountWhereTrue(entityClass);
+        LOGGER.info(sql);
+        return this.getJdbcOperations().queryForObject(sql, Long.class);
+    }
+
+    /**
+     * 获取所有记录。
+     */
+    @Override
+    public List<T> getAll() {
+        String querySql = SqlGenerator.getSelectWhereTrue(entityClass);
+        LOGGER.info(querySql);
+        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(entityClass));
+    }
+
+    /**
      * 根据对象的ID属性删除对象。
      */
     @Override
@@ -288,26 +304,6 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
         String sql = SqlGenerator.getDeleteWhereTrue(getEntityClass());
         LOGGER.info(sql);
         return this.getJdbcOperations().update(sql) >= 0;
-    }
-
-    /**
-     * 查询总数。
-     */
-    @Override
-    public long countAll() {
-        String sql = SqlGenerator.getCountWhereTrue(entityClass);
-        LOGGER.info(sql);
-        return this.getJdbcOperations().queryForObject(sql, Long.class);
-    }
-
-    /**
-     * 查询所有记录。
-     */
-    @Override
-    public List<T> queryAll() {
-        String querySql = SqlGenerator.getSelectWhereTrue(entityClass);
-        LOGGER.info(querySql);
-        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(entityClass));
     }
 
     /**

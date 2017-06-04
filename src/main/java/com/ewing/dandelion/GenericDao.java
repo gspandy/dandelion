@@ -131,6 +131,20 @@ public interface GenericDao<T> {
     T getNegative(T config, Object... id);
 
     /**
+     * 查询总数。
+     *
+     * @return 总记录数。
+     */
+    long countAll();
+
+    /**
+     * 查询所有记录。
+     *
+     * @return 所有记录数据。
+     */
+    List<T> getAll();
+
+    /**
      * 根据对象的ID属性删除对象。
      *
      * @param object 要删除的数据对象。
@@ -152,20 +166,6 @@ public interface GenericDao<T> {
      * @return 是否删除成功。
      */
     boolean deleteAll();
-
-    /**
-     * 查询总数。
-     *
-     * @return 总记录数。
-     */
-    long countAll();
-
-    /**
-     * 查询所有记录。
-     *
-     * @return 所有记录数据。
-     */
-    List<T> queryAll();
 
     /**
      * 查询一个整数并封装成长整数。

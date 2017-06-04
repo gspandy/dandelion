@@ -140,7 +140,7 @@ public class CommonBaseDao implements CommonDao {
      */
     @Override
     public boolean[] addBatch(Object... objects) {
-        if (objects == null)
+        if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
         Class clazz = null;
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
@@ -152,9 +152,10 @@ public class CommonBaseDao implements CommonDao {
                 clazz = object.getClass();
             else if (!clazz.equals(object.getClass()))
                 throw new DaoException("对象类型必须相同！");
+            SqlGenerator.generateId(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
         }
-        String sql = SqlGenerator.getInsertValues(clazz);
+        String sql = SqlGenerator.getInsertValues(objects[0]);
         LOGGER.info(sql);
         int[] results = this.getNamedParamOperations().batchUpdate(sql, sources);
         boolean[] bools = new boolean[results.length];
@@ -248,6 +249,30 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
+     * 查询总数。
+     */
+    @Override
+    public long countAll(Class<?> clazz) {
+        if (clazz == null)
+            throw new DaoException("对象类型为空！");
+        String sql = SqlGenerator.getCountWhereTrue(clazz);
+        LOGGER.info(sql);
+        return this.getJdbcOperations().queryForObject(sql, Long.class);
+    }
+
+    /**
+     * 获取所有记录。
+     */
+    @Override
+    public <T> List<T> getAll(Class<T> clazz) {
+        if (clazz == null)
+            throw new DaoException("查询语句为空！");
+        String querySql = SqlGenerator.getSelectWhereTrue(clazz);
+        LOGGER.info(querySql);
+        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(clazz));
+    }
+
+    /**
      * 根据对象的ID属性删除对象。
      */
     @Override
@@ -281,30 +306,6 @@ public class CommonBaseDao implements CommonDao {
         String sql = SqlGenerator.getDeleteWhereTrue(clazz);
         LOGGER.info(sql);
         return this.getJdbcOperations().update(sql) >= 0;
-    }
-
-    /**
-     * 查询总数。
-     */
-    @Override
-    public long countAll(Class<?> clazz) {
-        if (clazz == null)
-            throw new DaoException("对象类型为空！");
-        String sql = SqlGenerator.getCountWhereTrue(clazz);
-        LOGGER.info(sql);
-        return this.getJdbcOperations().queryForObject(sql, Long.class);
-    }
-
-    /**
-     * 查询所有记录。
-     */
-    @Override
-    public <T> List<T> queryAll(Class<T> clazz) {
-        if (clazz == null)
-            throw new DaoException("查询语句为空！");
-        String querySql = SqlGenerator.getSelectWhereTrue(clazz);
-        LOGGER.info(querySql);
-        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(clazz));
     }
 
     /**

@@ -207,6 +207,25 @@ public class SqlGenerator {
     /**
      * 生成与实体类对应的Insert语句。
      */
+    public static void generateId(Object object) {
+        if (object == null) return;
+        Class clazz = object.getClass();
+        PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
+        for (PropertyDescriptor pd : pds) {
+            // 需要可用的属性
+            if (!isPropertyAvailable(pd)) continue;
+            String name = pd.getName();
+            Field field = getPropertyField(clazz, name);
+            // 排除临时的属性
+            if (isPropertyTemporary(field)) continue;
+            // 处理ID 可能有0个或多个ID属性
+            identityResolver(field, pd, object);
+        }
+    }
+
+    /**
+     * 生成与实体类对应的Insert语句。
+     */
     public static String getInsertValues(Object object) {
         Class clazz = object.getClass();
         StringBuilder insert = new StringBuilder("INSERT INTO ")
