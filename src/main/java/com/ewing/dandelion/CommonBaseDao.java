@@ -247,6 +247,8 @@ public class CommonBaseDao implements CommonDao {
      */
     @Override
     public boolean deleteAll(Class<?> clazz) {
+        if (clazz == null)
+            throw new DaoException("对象类型为空！");
         String sql = SqlGenerator.getDeleteWhereTrue(clazz);
         LOGGER.info(sql);
         return this.getJdbcOperations().update(sql) >= 0;
