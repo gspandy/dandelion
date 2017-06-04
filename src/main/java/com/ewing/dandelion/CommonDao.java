@@ -47,7 +47,7 @@ public interface CommonDao {
     /**
      * 追加Sql子句并添加参数到参数列表。
      */
-    void appendToSql(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams);
+    void appendSqlParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams);
 
     /**
      * 当存在参数时追加Sql语句并添加参数。

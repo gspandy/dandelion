@@ -50,8 +50,7 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
     /**
      * 获取操作数据库的JdbcOperations。
      */
-    @Override
-    public JdbcOperations getJdbcOperations() {
+    protected JdbcOperations getJdbcOperations() {
         return jdbcOperations;
     }
 
@@ -67,8 +66,7 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
     /**
      * 获取操作数据库的命名JdbcOperations。
      */
-    @Override
-    public NamedParameterJdbcOperations getNamedParamOperations() {
+    protected NamedParameterJdbcOperations getNamedParamOperations() {
         return namedParamOperations;
     }
 
@@ -84,7 +82,7 @@ public abstract class GenericBaseDao<T> implements GenericDao<T> {
     /**
      * 追加Sql子句并添加参数到参数列表。
      */
-    protected void appendToSql(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
+    protected void appendSqlParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
         sqlBuilder.append(sqlPart);
         for (Object param : newParams)
             allParams.add(param);

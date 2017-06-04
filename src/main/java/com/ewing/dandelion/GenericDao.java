@@ -17,25 +17,11 @@ import java.util.Map;
 public interface GenericDao<T> {
 
     /**
-     * 获取操作数据库的JdbcOperations。
-     *
-     * @return JdbcOperations。
-     */
-    JdbcOperations getJdbcOperations();
-
-    /**
      * 设置操作数据库的JdbcOperations。
      *
      * @param jdbcOperations JdbcOperations。
      */
     void setJdbcOperations(JdbcOperations jdbcOperations);
-
-    /**
-     * 获取命名的操作数据库的JdbcOperations。
-     *
-     * @return 命名的操作数据库的JdbcOperations。
-     */
-    NamedParameterJdbcOperations getNamedParamOperations();
 
     /**
      * 设置命名的操作数据库的JdbcOperations。

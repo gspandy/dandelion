@@ -25,14 +25,14 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
     }
 
     /**
-     * 当名称存在时根据名称查询。
+     * 根据自定义参数条件查询。
      */
     @Override
-    public MyUser findNameAndLong(String name, Long along) {
+    public MyUser findNameAndLong(String name, Long longValue) {
         StringBuilder sql = new StringBuilder(SqlGenerator.getSelectWhereTrue(getEntityClass()));
         List<Object> params = new ArrayList<>();
-        this.appendHasParam(sql, " AND name = ?", params, name);
-        this.appendHasParam(sql, " AND longValue = ?", params, along);
+        this.appendSqlParam(sql, " AND name = ?", params, name);
+        this.appendHasParam(sql, " AND longValue = ?", params, longValue);
         return this.queryObject(sql.toString(), params.toArray());
     }
 }
