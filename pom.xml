@@ -5,9 +5,8 @@
 
     <groupId>com.ewing</groupId>
     <artifactId>dandelion</artifactId>
-    <version>1.2.1</version>
+    <version>1.5.2</version>
     <packaging>jar</packaging>
-
     <name>Dandelion</name>
     <description>Dandelion</description>
 
@@ -38,6 +37,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.195</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

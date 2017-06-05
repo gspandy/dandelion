@@ -27,7 +27,7 @@ import java.util.Map;
 public abstract class GenericBaseDao<E> implements GenericDao<E> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericBaseDao.class);
 
-    private Class<E> entityClass;
+    private final Class<E> entityClass;
     private JdbcOperations jdbcOperations;
     private NamedParameterJdbcOperations namedParamOperations;
 
