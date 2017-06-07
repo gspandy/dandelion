@@ -105,9 +105,9 @@ public class CommonDaoTests {
     public void updateUserTest() {
         MyUser myUser = init();
         myUser.setName(RandomString.randomChinese(3));
-        boolean result = commonDao.update(myUser);
+        MyUser result = commonDao.update(myUser);
         // 没有异常 简单验证
-        Assert.assertTrue(result);
+        Assert.assertNotNull(result);
 
         // 只更新name属性
         MyUser config = new MyUser();
@@ -116,7 +116,7 @@ public class CommonDaoTests {
         myUser.setIntValue(234567);
         result = commonDao.updatePositive(myUser, config);
         // 没有异常 简单验证
-        Assert.assertTrue(result);
+        Assert.assertNotNull(result);
 
         // 屏蔽更新longValue属性
         config = new MyUser();
@@ -125,7 +125,7 @@ public class CommonDaoTests {
         myUser.setLongValue(456978L);
         result = commonDao.updateNegative(myUser, config);
         // 没有异常 简单验证
-        Assert.assertTrue(result);
+        Assert.assertNotNull(result);
 
         // 清理测试数据
         clean(myUser);

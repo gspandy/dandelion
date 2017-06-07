@@ -110,36 +110,42 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 把对象实例的所有属性插入到数据库。
      */
     @Override
-    public boolean add(E object) {
+    public E add(E object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
         String sql = SqlGenerator.getInsertValues(object);
         LOGGER.info(sql);
-        return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
+        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+            throw new DaoException("保存对象失败！");
+        return object;
     }
 
     /**
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public boolean addPositive(E object, E config) {
+    public E addPositive(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
         String sql = SqlGenerator.getInsertPositiveValues(object, config);
         LOGGER.info(sql);
-        return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
+        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+            throw new DaoException("保存对象失败！");
+        return object;
     }
 
     /**
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public boolean addNegative(E object, E config) {
+    public E addNegative(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
         String sql = SqlGenerator.getInsertNegativeValues(object, config);
         LOGGER.info(sql);
-        return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
+        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+            throw new DaoException("保存对象失败！");
+        return object;
     }
 
     /**
@@ -170,36 +176,42 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 把对象实例的所有属性更新到数据库。
      */
     @Override
-    public boolean update(E object) {
+    public E update(E object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
         String sql = SqlGenerator.getUpdateWhereIdEquals(entityClass);
         LOGGER.info(sql);
-        return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
+        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+            throw new DaoException("更新对象失败！");
+        return object;
     }
 
     /**
      * 把配置对象积极属性对应的对象实例属性更新到数据库。
      */
     @Override
-    public boolean updatePositive(E object, E config) {
+    public E updatePositive(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
         String sql = SqlGenerator.getUpdatePositiveWhereIdEquals(config);
         LOGGER.info(sql);
-        return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
+        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+            throw new DaoException("更新对象失败！");
+        return object;
     }
 
     /**
      * 把配置对象消极属性对应的对象实例属性更新到数据库。
      */
     @Override
-    public boolean updateNegative(E object, E config) {
+    public E updateNegative(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
         String sql = SqlGenerator.getUpdateNegativeWhereIdEquals(config);
         LOGGER.info(sql);
-        return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
+        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+            throw new DaoException("更新对象失败！");
+        return object;
     }
 
     /**
@@ -274,34 +286,37 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 根据对象的ID属性删除对象。
      */
     @Override
-    public boolean delete(E object) {
+    public void delete(E object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
         String sql = SqlGenerator.getDeleteWhereIdEquals(object.getClass(), true);
         LOGGER.info(sql);
-        return this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) > 0;
+        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 0)
+            throw new DaoException("删除对象失败！");
     }
 
     /**
      * 根据对象的ID属性删除指定类型的对象。
      */
     @Override
-    public boolean deleteById(Object... id) {
+    public void deleteById(Object... id) {
         if (id == null || id.length == 0)
             throw new DaoException("对象ID为空！");
         String sql = SqlGenerator.getDeleteWhereIdEquals(entityClass, false);
         LOGGER.info(sql);
-        return this.getJdbcOperations().update(sql, id) > 0;
+        if (this.getJdbcOperations().update(sql, id) < 0)
+            throw new DaoException("删除对象失败！");
+        ;
     }
 
     /**
      * 删除全部对象。
      */
     @Override
-    public boolean deleteAll() {
+    public void deleteAll() {
         String sql = SqlGenerator.getDeleteWhereTrue(entityClass);
         LOGGER.info(sql);
-        return this.getJdbcOperations().update(sql) >= 0;
+        this.getJdbcOperations().update(sql);
     }
 
     /**

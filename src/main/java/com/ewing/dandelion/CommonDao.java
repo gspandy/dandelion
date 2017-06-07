@@ -58,27 +58,27 @@ public interface CommonDao {
      * 把对象实例的所有属性插入到数据库。
      *
      * @param object 要插入到数据库的对象。
-     * @return 是否插入成功。
+     * @return 插入成功的对象。
      */
-    boolean add(Object object);
+    <T> T add(T object);
 
     /**
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
      *
      * @param object 要插入到数据库的对象。
      * @param config 配置对象。
-     * @return 是否插入成功。
+     * @return 插入成功的对象。
      */
-    boolean addPositive(Object object, Object config);
+    <T> T addPositive(T object, T config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
      *
      * @param object 要插入到数据库的对象。
      * @param config 配置对象。
-     * @return 是否插入成功。
+     * @return 插入成功的对象。
      */
-    boolean addNegative(Object object, Object config);
+    <T> T addNegative(T object, T config);
 
     /**
      * 批量把对象实例的所有属性插入到数据库。
@@ -92,27 +92,27 @@ public interface CommonDao {
      * 把对象实例的所有属性更新到数据库。
      *
      * @param object 要更新到数据库的对象。
-     * @return 是否更新成功。
+     * @return 更新成功的对象。
      */
-    boolean update(Object object);
+    <T> T update(T object);
 
     /**
      * 把配置对象积极属性对应的对象实例属性更新到数据库。
      *
      * @param object 要更新到数据库的对象。
      * @param config 配置对象。
-     * @return 是否更新成功。
+     * @return 更新成功的对象。
      */
-    boolean updatePositive(Object object, Object config);
+    <T> T updatePositive(T object, T config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性更新到数据库。
      *
      * @param object 要更新到数据库的对象。
      * @param config 配置对象。
-     * @return 是否更新成功。
+     * @return 更新成功的对象。
      */
-    boolean updateNegative(Object object, Object config);
+    <T> T updateNegative(T object, T config);
 
     /**
      * 根据ID获取指定类型的对象的所有属性。
@@ -161,26 +161,23 @@ public interface CommonDao {
      * 根据对象的ID属性删除对象。
      *
      * @param object 要删除的数据对象。
-     * @return 是否删除成功。
      */
-    boolean delete(Object object);
+    void delete(Object object);
 
     /**
      * 根据对象的ID属性删除指定类型的对象。
      *
      * @param clazz 指定对象类型。
      * @param id    要删除的对象ID。
-     * @return 是否删除成功。
      */
-    boolean deleteById(Class<?> clazz, Object... id);
+    void deleteById(Class<?> clazz, Object... id);
 
     /**
      * 删除所有对象。
      *
      * @param clazz 对象类型。
-     * @return 是否删除成功。
      */
-    boolean deleteAll(Class<?> clazz);
+    void deleteAll(Class<?> clazz);
 
     /**
      * 查询一个整数并封装成长整数。

@@ -34,27 +34,27 @@ public interface GenericDao<E> {
      * 把对象实例的所有属性插入到数据库。
      *
      * @param object 要插入到数据库的对象。
-     * @return 是否插入成功。
+     * @return 插入成功的对象。
      */
-    boolean add(E object);
+    E add(E object);
 
     /**
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
      *
      * @param object 要插入到数据库的对象。
      * @param config 配置对象。
-     * @return 是否插入成功。
+     * @return 插入成功的对象。
      */
-    boolean addPositive(E object, E config);
+    E addPositive(E object, E config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
      *
      * @param object 要插入到数据库的对象。
      * @param config 配置对象。
-     * @return 是否插入成功。
+     * @return 插入成功的对象。
      */
-    boolean addNegative(E object, E config);
+    E addNegative(E object, E config);
 
     /**
      * 批量把对象实例的所有属性插入到数据库。
@@ -68,27 +68,27 @@ public interface GenericDao<E> {
      * 把对象实例的所有属性更新到数据库。
      *
      * @param object 要更新到数据库的对象。
-     * @return 是否更新成功。
+     * @return 更新成功的对象。
      */
-    boolean update(E object);
+    E update(E object);
 
     /**
      * 把配置对象积极属性对应的对象实例属性更新到数据库。
      *
      * @param object 要更新到数据库的对象。
      * @param config 配置对象。
-     * @return 是否更新成功。
+     * @return 更新成功的对象。
      */
-    boolean updatePositive(E object, E config);
+    E updatePositive(E object, E config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性更新到数据库。
      *
      * @param object 要更新到数据库的对象。
      * @param config 配置对象。
-     * @return 是否更新成功。
+     * @return 更新成功的对象。
      */
-    boolean updateNegative(E object, E config);
+    E updateNegative(E object, E config);
 
     /**
      * 根据ID获取指定类型的对象的所有属性。
@@ -134,9 +134,8 @@ public interface GenericDao<E> {
      * 根据对象的ID属性删除对象。
      *
      * @param object 要删除的数据对象。
-     * @return 是否删除成功。
      */
-    boolean delete(E object);
+    void delete(E object);
 
     /**
      * 根据对象的ID属性删除指定类型的对象。
@@ -144,14 +143,12 @@ public interface GenericDao<E> {
      * @param id 要删除的对象ID。
      * @return 是否删除成功。
      */
-    boolean deleteById(Object... id);
+    void deleteById(Object... id);
 
     /**
      * 删除所有对象。
-     *
-     * @return 是否删除成功。
      */
-    boolean deleteAll();
+    void deleteAll();
 
     /**
      * 查询一个整数并封装成长整数。

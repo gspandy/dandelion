@@ -108,9 +108,9 @@ public class UserDaoTests {
     public void updateUserTest() {
         MyUser myUser = init();
         myUser.setName(RandomString.randomChinese(3));
-        boolean result = userDao.update(myUser);
+        MyUser result = userDao.update(myUser);
         // 没有异常 简单验证
-        Assert.assertTrue(result);
+        Assert.assertNotNull(result);
 
         // 只更新name属性
         MyUser config = new MyUser();
@@ -119,7 +119,7 @@ public class UserDaoTests {
         myUser.setIntValue(234567);
         result = userDao.updatePositive(myUser, config);
         // 没有异常 简单验证
-        Assert.assertTrue(result);
+        Assert.assertNotNull(result);
 
         // 屏蔽更新longValue属性
         config = new MyUser();
@@ -128,7 +128,7 @@ public class UserDaoTests {
         myUser.setLongValue(456978L);
         result = userDao.updateNegative(myUser, config);
         // 没有异常 简单验证
-        Assert.assertTrue(result);
+        Assert.assertNotNull(result);
 
         // 清理测试数据
         clean(myUser);
