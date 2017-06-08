@@ -4,18 +4,19 @@ import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 全局ID生成器，初始化instance参数不能重复，最多可使用到2248年。
- * 每2048毫秒内生成不超过16777216个（约每秒8百万个）就不会重复。
+ * 全局ID生成器，初始化instance[0~2047]参数不能重复，最多可使用到2248年。
+ * 每1024毫秒最多可生成不超过1048576个（即每秒1024000个），永不重复。
  */
 public class LiteIdWorker {
-    // 时间预算到2248年长度是43位，而我只给它留了32位，去掉后11位
-    private static final int TIME_RIGHT_SHIFT = 11;
-    private static final int TIME_LEFT_SHIFT = 32;
-    private static final int INSTANCE_SHIFT = 24;
-    private static final int SEQ_MASK = ~(-1 << 24);
-    private static final int INSTANCE_MAX = ~(-1 << 8);
-    private static final AtomicInteger COUNTER = new AtomicInteger(new SecureRandom().nextInt());
-
+    // 时间预算到2248年长度是43位，而我只给它留了33位，去掉后10位
+    private static final int TIME_TRUNCATE = 10;
+    private static final int TIME_SHIFT = 31;
+    private static final int INSTANCE_SHIFT = 20;
+    private static final int SEQ_MASK = ~(-1 << 20);
+    private static final int INSTANCE_MAX = ~(-1 << 11);
+    private static final int FIRST = new SecureRandom().nextInt() & SEQ_MASK;
+    private int count = FIRST;
+    private long timeNow = getTruncateTime();
     private final long instance;
 
     public LiteIdWorker(int instance) {
@@ -24,14 +25,40 @@ public class LiteIdWorker {
         this.instance = instance << INSTANCE_SHIFT;
     }
 
-    public long nextLong() {
-        long currentTime = System.currentTimeMillis();
+    public synchronized long nextLong() {
+        long currentTime = getTruncateTime();
+        // 时间滞后 等待时间同步
+        while (currentTime < timeNow) {
+            sleepOneMilis();
+            currentTime = getTruncateTime();
+        }
+        count = ++count & SEQ_MASK;
+        // 计数器已满 等待下个时间段
+        if (count == FIRST)
+            while (currentTime == timeNow) {
+                sleepOneMilis();
+                currentTime = getTruncateTime();
+            }
+        timeNow = currentTime;
+        return (currentTime << TIME_SHIFT) | instance | count;
+    }
 
-        currentTime = currentTime >>> TIME_RIGHT_SHIFT;
+    /**
+     * 获取去掉后几位的时间。
+     */
+    private static long getTruncateTime() {
+        return System.currentTimeMillis() >>> TIME_TRUNCATE;
+    }
 
-        int count = COUNTER.getAndIncrement() & SEQ_MASK;
-
-        return (currentTime << TIME_LEFT_SHIFT) | instance | count;
+    /**
+     * 线程睡眠一毫秒。
+     */
+    private static void sleepOneMilis() {
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            // 休眠异常 继续执行
+        }
     }
 
     /**
@@ -43,8 +70,8 @@ public class LiteIdWorker {
         System.out.println(date + "时间：" + Long.toBinaryString(time) + " 长度：" + Long.toBinaryString(time).length());
         // 高并发性能测试
         int threads = 1000;
-        int perThread = 10000;
-        LiteIdWorker liteIdWorker = new LiteIdWorker(100);
+        int perThread = 1000;
+        LiteIdWorker liteIdWorker = new LiteIdWorker(0);
         java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(threads);
         long[] longs = new long[threads * perThread];
         final AtomicInteger index = new AtomicInteger();
