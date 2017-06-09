@@ -158,6 +158,15 @@ public interface CommonDao {
     <T> List<T> getAll(Class<T> clazz);
 
     /**
+     * 分页查询所有记录。
+     *
+     * @param clazz     查询对象类型。
+     * @param pageParam 分页参数。
+     * @return 所有记录数据。
+     */
+    <T> PageData<T> getByPage(Class<T> clazz, PageParam pageParam);
+
+    /**
      * 根据对象的ID属性删除对象。
      *
      * @param object 要删除的数据对象。

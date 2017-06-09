@@ -11,6 +11,20 @@ public class PageParam {
     private int limit = 100;
     private boolean count = true;
 
+    public PageParam() {
+    }
+
+    public PageParam(int offset, int limit) {
+        this.offset = offset;
+        this.limit = limit;
+    }
+
+    public PageParam(int offset, int limit, boolean count) {
+        this.offset = offset;
+        this.limit = limit;
+        this.count = count;
+    }
+
     public int getOffset() {
         return offset;
     }

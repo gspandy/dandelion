@@ -203,6 +203,11 @@ public class UserDaoTests {
         // 没有异常 简单验证
         Assert.assertTrue(myUsers.size() > 0);
 
+        // 分页查询所有
+        PageData<MyUser> pageUsers = userDao.getByPage(new PageParam(0, 10));
+        // 没有异常 简单验证
+        Assert.assertTrue(pageUsers.getContent().size() > 0);
+
         // 分页查询
         String sql = SqlGenerator.getSelectWhereTrue(MyUser.class);
         PageData<MyUser> users = userDao.queryPageData(new PageParam(), MyUser.class, sql);

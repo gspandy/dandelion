@@ -285,6 +285,14 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
+     * 分页查询所有记录。
+     */
+    public <T> PageData<T> getByPage(Class<T> clazz, PageParam pageParam) {
+        String querySql = SqlGenerator.getSelectWhereTrue(clazz);
+        return this.queryPageData(pageParam, clazz, querySql);
+    }
+
+    /**
      * 根据对象的ID属性删除对象。
      */
     @Override

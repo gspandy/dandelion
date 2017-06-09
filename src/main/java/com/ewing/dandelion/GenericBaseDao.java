@@ -283,6 +283,14 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     }
 
     /**
+     * 分页查询所有记录。
+     */
+    public PageData<E> getByPage(PageParam pageParam) {
+        String querySql = SqlGenerator.getSelectWhereTrue(entityClass);
+        return this.queryPageData(pageParam, entityClass, querySql);
+    }
+
+    /**
      * 根据对象的ID属性删除对象。
      */
     @Override

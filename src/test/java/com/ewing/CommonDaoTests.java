@@ -2,6 +2,8 @@ package com.ewing;
 
 import com.ewing.common.RandomString;
 import com.ewing.dandelion.CommonDao;
+import com.ewing.dandelion.pagination.PageData;
+import com.ewing.dandelion.pagination.PageParam;
 import com.ewing.usertest.entity.MyUser;
 import org.junit.Assert;
 import org.junit.Test;
@@ -191,6 +193,11 @@ public class CommonDaoTests {
         List<MyUser> myUsers = commonDao.getAll(MyUser.class);
         // 没有异常 简单验证
         Assert.assertTrue(myUsers.size() > 0);
+
+        // 分页查询所有
+        PageData<MyUser> pageUsers = commonDao.getByPage(MyUser.class, new PageParam(0, 10));
+        // 没有异常 简单验证
+        Assert.assertTrue(pageUsers.getContent().size() > 0);
 
         // 清理测试数据
         clean(user);

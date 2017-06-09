@@ -131,6 +131,14 @@ public interface GenericDao<E> {
     List<E> getAll();
 
     /**
+     * 分页查询所有记录。
+     *
+     * @param pageParam 分页参数。
+     * @return 所有记录数据。
+     */
+    PageData<E> getByPage(PageParam pageParam);
+
+    /**
      * 根据对象的ID属性删除对象。
      *
      * @param object 要删除的数据对象。
