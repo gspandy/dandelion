@@ -24,7 +24,6 @@ public interface CommonDao {
      */
     SqlGenerator getSqlGenerator();
 
-
     /**
      * 设置Sql生成器。
      *
