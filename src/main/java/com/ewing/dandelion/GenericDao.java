@@ -17,6 +17,13 @@ import java.util.Map;
 public interface GenericDao<E> {
 
     /**
+     * 设置Sql生成器。
+     *
+     * @param sqlGenerator Sql生成器。
+     */
+    void setSqlGenerator(SqlGenerator sqlGenerator);
+
+    /**
      * 设置操作数据库的JdbcOperations。
      *
      * @param jdbcOperations JdbcOperations。

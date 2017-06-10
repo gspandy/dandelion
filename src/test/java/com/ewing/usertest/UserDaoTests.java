@@ -209,7 +209,7 @@ public class UserDaoTests {
         Assert.assertTrue(pageUsers.getContent().size() > 0);
 
         // 分页查询
-        String sql = SqlGenerator.getSelectWhereTrue(MyUser.class);
+        String sql = new SqlGenerator().getSelectWhereTrue(MyUser.class);
         PageData<MyUser> users = userDao.queryPageData(new PageParam(), MyUser.class, sql);
         // 没有异常 简单验证
         Assert.assertTrue(users.getTotal() > 0);

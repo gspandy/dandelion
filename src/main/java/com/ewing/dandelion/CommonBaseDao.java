@@ -29,11 +29,29 @@ public class CommonBaseDao implements CommonDao {
 
     private JdbcOperations jdbcOperations;
     private NamedParameterJdbcOperations namedParamOperations;
+    private SqlGenerator sqlGenerator;
 
     /**
      * 快速初始化的构造方法。
      */
     public CommonBaseDao() {
+    }
+
+    /**
+     * 获取Sql生成器。
+     */
+    @Override
+    public SqlGenerator getSqlGenerator() {
+        return sqlGenerator;
+    }
+
+    /**
+     * 设置Sql生成器。
+     */
+    @Override
+    @Autowired
+    public void setSqlGenerator(SqlGenerator sqlGenerator) {
+        this.sqlGenerator = sqlGenerator;
     }
 
     /**
@@ -106,9 +124,9 @@ public class CommonBaseDao implements CommonDao {
     public <T> T add(T object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = SqlGenerator.getInsertValues(object);
+        String sql = sqlGenerator.getInsertValues(object);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("保存对象失败！");
         return object;
     }
@@ -120,9 +138,9 @@ public class CommonBaseDao implements CommonDao {
     public <T> T addPositive(T object, T config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = SqlGenerator.getInsertPositiveValues(object, config);
+        String sql = sqlGenerator.getInsertPositiveValues(object, config);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("保存对象失败！");
         return object;
     }
@@ -134,9 +152,9 @@ public class CommonBaseDao implements CommonDao {
     public <T> T addNegative(T object, T config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = SqlGenerator.getInsertNegativeValues(object, config);
+        String sql = sqlGenerator.getInsertNegativeValues(object, config);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("保存对象失败！");
         return object;
     }
@@ -158,12 +176,12 @@ public class CommonBaseDao implements CommonDao {
                 clazz = object.getClass();
             else if (!clazz.equals(object.getClass()))
                 throw new DaoException("对象类型必须相同！");
-            SqlGenerator.generateId(object);
+            sqlGenerator.generateId(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
         }
-        String sql = SqlGenerator.getInsertValues(objects[0]);
+        String sql = sqlGenerator.getInsertValues(objects[0]);
         LOGGER.info(sql);
-        int[] results = this.getNamedParamOperations().batchUpdate(sql, sources);
+        int[] results = namedParamOperations.batchUpdate(sql, sources);
         boolean[] bools = new boolean[results.length];
         for (int i = 0; i < results.length; i++)
             bools[i] = results[i] > 0;
@@ -177,9 +195,9 @@ public class CommonBaseDao implements CommonDao {
     public <T> T update(T object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = SqlGenerator.getUpdateWhereIdEquals(object.getClass());
+        String sql = sqlGenerator.getUpdateWhereIdEquals(object.getClass());
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
     }
@@ -191,9 +209,9 @@ public class CommonBaseDao implements CommonDao {
     public <T> T updatePositive(T object, T config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = SqlGenerator.getUpdatePositiveWhereIdEquals(config);
+        String sql = sqlGenerator.getUpdatePositiveWhereIdEquals(config);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
     }
@@ -205,9 +223,9 @@ public class CommonBaseDao implements CommonDao {
     public <T> T updateNegative(T object, T config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = SqlGenerator.getUpdateNegativeWhereIdEquals(config);
+        String sql = sqlGenerator.getUpdateNegativeWhereIdEquals(config);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
     }
@@ -219,10 +237,10 @@ public class CommonBaseDao implements CommonDao {
     public <T> T getObject(Class<T> clazz, Object... id) {
         if (clazz == null || id == null || id.length == 0)
             throw new DaoException("对象类型或对象ID为空！");
-        String sql = SqlGenerator.getSelectWhereIdEquals(clazz);
+        String sql = sqlGenerator.getSelectWhereIdEquals(clazz);
         LOGGER.info(sql);
         try {
-            return this.getJdbcOperations().queryForObject(sql, BeanPropertyRowMapper.newInstance(clazz), id);
+            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(clazz), id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -235,10 +253,10 @@ public class CommonBaseDao implements CommonDao {
     public <T> T getPositive(T config, Object... id) {
         if (config == null || id == null || id.length == 0)
             throw new DaoException("配置对象或对象ID为空！");
-        String sql = SqlGenerator.getSelectPositiveWhereIdEquals(config);
+        String sql = sqlGenerator.getSelectPositiveWhereIdEquals(config);
         LOGGER.info(sql);
         try {
-            return (T) this.getJdbcOperations().queryForObject(sql, new BeanPropertyRowMapper(config.getClass()), id);
+            return (T) jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper(config.getClass()), id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -251,10 +269,10 @@ public class CommonBaseDao implements CommonDao {
     public <T> T getNegative(T config, Object... id) {
         if (config == null || id == null || id.length == 0)
             throw new DaoException("配置对象或对象ID为空！");
-        String sql = SqlGenerator.getSelectNegativeWhereIdEquals(config);
+        String sql = sqlGenerator.getSelectNegativeWhereIdEquals(config);
         LOGGER.info(sql);
         try {
-            return (T) this.getJdbcOperations().queryForObject(sql, new BeanPropertyRowMapper(config.getClass()), id);
+            return (T) jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper(config.getClass()), id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -267,9 +285,9 @@ public class CommonBaseDao implements CommonDao {
     public long countAll(Class<?> clazz) {
         if (clazz == null)
             throw new DaoException("对象类型为空！");
-        String sql = SqlGenerator.getCountWhereTrue(clazz);
+        String sql = sqlGenerator.getCountWhereTrue(clazz);
         LOGGER.info(sql);
-        return this.getJdbcOperations().queryForObject(sql, Long.class);
+        return jdbcOperations.queryForObject(sql, Long.class);
     }
 
     /**
@@ -279,17 +297,17 @@ public class CommonBaseDao implements CommonDao {
     public <T> List<T> getAll(Class<T> clazz) {
         if (clazz == null)
             throw new DaoException("查询语句为空！");
-        String querySql = SqlGenerator.getSelectWhereTrue(clazz);
+        String querySql = sqlGenerator.getSelectWhereTrue(clazz);
         LOGGER.info(querySql);
-        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(clazz));
+        return jdbcOperations.query(querySql, BeanPropertyRowMapper.newInstance(clazz));
     }
 
     /**
      * 分页查询所有记录。
      */
     public <T> PageData<T> getByPage(Class<T> clazz, PageParam pageParam) {
-        String querySql = SqlGenerator.getSelectWhereTrue(clazz);
-        return this.queryPageData(pageParam, clazz, querySql);
+        String querySql = sqlGenerator.getSelectWhereTrue(clazz);
+        return queryPageData(pageParam, clazz, querySql);
     }
 
     /**
@@ -299,9 +317,9 @@ public class CommonBaseDao implements CommonDao {
     public void delete(Object object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = SqlGenerator.getDeleteWhereIdEquals(object.getClass(), true);
+        String sql = sqlGenerator.getDeleteWhereIdEquals(object.getClass(), true);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("删除对象失败！");
     }
 
@@ -312,9 +330,9 @@ public class CommonBaseDao implements CommonDao {
     public void deleteById(Class<?> clazz, Object... id) {
         if (clazz == null || id == null || id.length == 0)
             throw new DaoException("对象类型或ID对象为空！");
-        String sql = SqlGenerator.getDeleteWhereIdEquals(clazz, false);
+        String sql = sqlGenerator.getDeleteWhereIdEquals(clazz, false);
         LOGGER.info(sql);
-        if (this.getJdbcOperations().update(sql, id) < 1)
+        if (jdbcOperations.update(sql, id) < 1)
             throw new DaoException("删除对象失败！");
     }
 
@@ -325,9 +343,9 @@ public class CommonBaseDao implements CommonDao {
     public void deleteAll(Class<?> clazz) {
         if (clazz == null)
             throw new DaoException("对象类型为空！");
-        String sql = SqlGenerator.getDeleteWhereTrue(clazz);
+        String sql = sqlGenerator.getDeleteWhereTrue(clazz);
         LOGGER.info(sql);
-        this.getJdbcOperations().update(sql);
+        jdbcOperations.update(sql);
     }
 
     /**
@@ -338,7 +356,7 @@ public class CommonBaseDao implements CommonDao {
         if (sql == null)
             throw new DaoException("查询语句为空！");
         LOGGER.info(sql);
-        return this.getJdbcOperations().queryForObject(sql, Long.class, params);
+        return jdbcOperations.queryForObject(sql, Long.class, params);
     }
 
     /**
@@ -350,7 +368,7 @@ public class CommonBaseDao implements CommonDao {
             throw new DaoException("对象类型或查询语句为空！");
         LOGGER.info(querySql);
         try {
-            return this.getJdbcOperations().queryForObject(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
+            return jdbcOperations.queryForObject(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -364,7 +382,7 @@ public class CommonBaseDao implements CommonDao {
         if (clazz == null || querySql == null)
             throw new DaoException("对象类型或查询语句为空！");
         LOGGER.info(querySql);
-        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
+        return jdbcOperations.query(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
     }
 
     /**
@@ -376,7 +394,7 @@ public class CommonBaseDao implements CommonDao {
             throw new DaoException("查询语句为空！");
         LOGGER.info(querySql);
         try {
-            return this.getJdbcOperations().queryForMap(querySql, params);
+            return jdbcOperations.queryForMap(querySql, params);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -390,7 +408,7 @@ public class CommonBaseDao implements CommonDao {
         if (querySql == null)
             throw new DaoException("查询语句为空！");
         LOGGER.info(querySql);
-        return this.getJdbcOperations().queryForList(querySql, params);
+        return jdbcOperations.queryForList(querySql, params);
     }
 
     /**
@@ -403,7 +421,7 @@ public class CommonBaseDao implements CommonDao {
         PageData<T> pageData = new PageData<>();
         if (pageParam.isCount()) {
             String countSql = "SELECT COUNT(*) FROM ( " + querySql + " ) _Total_";
-            pageData.setTotal(this.queryLong(countSql, params));
+            pageData.setTotal(queryLong(countSql, params));
             if (pageData.getTotal() == 0) {
                 pageData.setContent(new ArrayList<>(0));
                 return pageData;
@@ -411,7 +429,7 @@ public class CommonBaseDao implements CommonDao {
         }
         String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
         LOGGER.info(pageSql);
-        pageData.setContent(this.getJdbcOperations().query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params));
+        pageData.setContent(jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params));
         return pageData;
     }
 
@@ -425,7 +443,7 @@ public class CommonBaseDao implements CommonDao {
         PageData<Map<String, Object>> pageData = new PageData<>();
         if (pageParam.isCount()) {
             String countSql = "SELECT COUNT(*) FROM ( " + querySql + " ) _Total_";
-            pageData.setTotal(this.queryLong(countSql, params));
+            pageData.setTotal(queryLong(countSql, params));
             if (pageData.getTotal() == 0) {
                 pageData.setContent(new ArrayList<>(0));
                 return pageData;
@@ -433,7 +451,7 @@ public class CommonBaseDao implements CommonDao {
         }
         String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
         LOGGER.info(pageSql);
-        pageData.setContent(this.getJdbcOperations().queryForList(pageSql, params));
+        pageData.setContent(jdbcOperations.queryForList(pageSql, params));
         return pageData;
     }
 

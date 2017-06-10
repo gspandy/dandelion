@@ -2,6 +2,7 @@ package com.ewing.dandelion;
 
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
@@ -15,6 +16,22 @@ import java.util.Map;
  * @since 2017-03-01
  **/
 public interface CommonDao {
+
+    /**
+     * 获取Sql生成器。
+     *
+     * @return Sql生成器。
+     */
+    SqlGenerator getSqlGenerator();
+
+
+    /**
+     * 设置Sql生成器。
+     *
+     * @param sqlGenerator Sql生成器。
+     */
+    @Autowired
+    void setSqlGenerator(SqlGenerator sqlGenerator);
 
     /**
      * 获取操作数据库的JdbcOperations。

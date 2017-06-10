@@ -2,6 +2,7 @@ package com.ewing.dandelion;
 
 import com.ewing.dandelion.annotation.Identity;
 import com.ewing.dandelion.annotation.Temporary;
+import org.springframework.stereotype.Component;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -16,18 +17,35 @@ import java.util.Locale;
  * @author Ewing
  * @since 2017-03-06
  **/
+@Component
 public class SqlGenerator {
 
     /**
      * 是否启用下划线风格。
      */
-    private static final boolean UNDERSCORE = false;
+    private final boolean underscore;
+
+    /**
+     * 默认构造方法。
+     */
+    public SqlGenerator() {
+        this.underscore = false;
+    }
+
+    /**
+     * 初始化方法，可配置是否启用下划线风格。
+     *
+     * @param underscore 是否启用下划线风格。
+     */
+    public SqlGenerator(boolean underscore) {
+        this.underscore = underscore;
+    }
 
     /**
      * 转换对象与属性命名规则。
      */
-    protected static String convertName(String name) {
-        if (UNDERSCORE) {
+    protected String convertName(String name) {
+        if (underscore) {
             StringBuilder result = new StringBuilder();
             result.append(name.substring(0, 1).toLowerCase(Locale.US));
             for (int i = 1; i < name.length(); i++) {
@@ -48,7 +66,7 @@ public class SqlGenerator {
     /**
      * 根据Class获取类的信息。
      */
-    protected static BeanInfo getBeanInfo(Class clazz) {
+    protected BeanInfo getBeanInfo(Class clazz) {
         try {
             return Introspector.getBeanInfo(clazz);
         } catch (IntrospectionException e) {
@@ -59,7 +77,7 @@ public class SqlGenerator {
     /**
      * 根据属性名获取类的属性字段。
      */
-    protected static Field getPropertyField(Class clazz, String name) {
+    protected Field getPropertyField(Class clazz, String name) {
         try {
             return clazz.getDeclaredField(name);
         } catch (NoSuchFieldException e) {
@@ -70,28 +88,28 @@ public class SqlGenerator {
     /**
      * 判断该属性是否为可用的。
      */
-    protected static boolean isPropertyAvailable(PropertyDescriptor pd) {
+    protected boolean isPropertyAvailable(PropertyDescriptor pd) {
         return pd.getWriteMethod() != null && pd.getReadMethod() != null;
     }
 
     /**
      * 判断该属性是否为临时的。
      */
-    protected static boolean isPropertyTemporary(Field field) {
+    protected boolean isPropertyTemporary(Field field) {
         return field.getAnnotation(Temporary.class) != null;
     }
 
     /**
      * 判断该属性是否为ID属性。
      */
-    protected static boolean isPropertyIdentity(Field field) {
+    protected boolean isPropertyIdentity(Field field) {
         return field.getAnnotation(Identity.class) != null;
     }
 
     /**
      * 判断该属性是否为积极的。
      */
-    protected static boolean isPropertyPositive(PropertyDescriptor pd, Object object) {
+    protected boolean isPropertyPositive(PropertyDescriptor pd, Object object) {
         Object propertyValue;
         try {
             propertyValue = pd.getReadMethod().invoke(object);
@@ -115,7 +133,7 @@ public class SqlGenerator {
     /**
      * 根据注解判断是否生成ID值。
      */
-    protected static boolean identityResolver(Field field, PropertyDescriptor pd, Object object) {
+    protected boolean identityResolver(Field field, PropertyDescriptor pd, Object object) {
         if (String.class.equals(field.getType())) {
             Identity identity = field.getAnnotation(Identity.class);
             if (identity != null) {
@@ -134,7 +152,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的结果列。
      */
-    public static String getResultColumns(Class<?> clazz) {
+    public String getResultColumns(Class<?> clazz) {
         StringBuilder columns = new StringBuilder();
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
         boolean hasOne = false;
@@ -163,7 +181,7 @@ public class SqlGenerator {
     /**
      * 生成与配置类的属性对应的结果列。
      */
-    public static String getColumnsByConfig(Object config, boolean positive) {
+    public String getColumnsByConfig(Object config, boolean positive) {
         Class clazz = config.getClass();
         StringBuilder columns = new StringBuilder();
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
@@ -193,21 +211,21 @@ public class SqlGenerator {
     /**
      * 生成与配置类的积极属性对应的结果列。
      */
-    public static String getResultColumnsPositive(Object config) {
+    public String getResultColumnsPositive(Object config) {
         return getColumnsByConfig(config, true);
     }
 
     /**
      * 生成与配置类的消极属性对应的结果列。
      */
-    public static String getResultColumnsNegative(Object config) {
+    public String getResultColumnsNegative(Object config) {
         return getColumnsByConfig(config, false);
     }
 
     /**
      * 生成实体类的ID。
      */
-    public static void generateId(Object object) {
+    public void generateId(Object object) {
         if (object == null) return;
         Class clazz = object.getClass();
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
@@ -226,7 +244,7 @@ public class SqlGenerator {
     /**
      * 生成与实体类对应的Insert语句。
      */
-    public static String getInsertValues(Object object) {
+    public String getInsertValues(Object object) {
         Class clazz = object.getClass();
         StringBuilder insert = new StringBuilder("INSERT INTO ")
                 .append(convertName(object.getClass().getSimpleName())).append(" (");
@@ -261,7 +279,7 @@ public class SqlGenerator {
     /**
      * 生成与配置类对应的Insert语句。
      */
-    public static String getInsertValuesByConfig(Object object, Object config, boolean positive) {
+    public String getInsertValuesByConfig(Object object, Object config, boolean positive) {
         if (object == null || config == null || !object.getClass().equals(config.getClass()))
             throw new DaoException("实例对象或配置对象为空或类型不匹配！");
         Class clazz = config.getClass();
@@ -300,21 +318,21 @@ public class SqlGenerator {
     /**
      * 生成与配置类积极属性对应的Insert语句。
      */
-    public static String getInsertPositiveValues(Object object, Object config) {
+    public String getInsertPositiveValues(Object object, Object config) {
         return getInsertValuesByConfig(object, config, true);
     }
 
     /**
      * 生成与配置类积极属性对应的Insert语句。
      */
-    public static String getInsertNegativeValues(Object object, Object config) {
+    public String getInsertNegativeValues(Object object, Object config) {
         return getInsertValuesByConfig(object, config, false);
     }
 
     /**
      * 生成与Class对应的Delete语句。
      */
-    public static String getDeleteWhereTrue(Class<?> clazz) {
+    public String getDeleteWhereTrue(Class<?> clazz) {
         return new StringBuilder("DELETE FROM ").append(convertName(clazz.getSimpleName()))
                 .append(" WHERE 1=1").toString();
     }
@@ -322,7 +340,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的Delete语句带ID条件。
      */
-    public static String getDeleteWhereIdEquals(Class<?> clazz, boolean isNamed) {
+    public String getDeleteWhereIdEquals(Class<?> clazz, boolean isNamed) {
         StringBuilder sqlDelete = new StringBuilder("DELETE FROM ")
                 .append(convertName(clazz.getSimpleName()));
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
@@ -357,14 +375,14 @@ public class SqlGenerator {
     /**
      * 生成与配置类的属性对应的Select语句带ID条件。
      */
-    public static String getCountWhereTrue(Class<?> clazz) {
+    public String getCountWhereTrue(Class<?> clazz) {
         return "SELECT COUNT(*) FROM " + convertName(clazz.getSimpleName()) + " WHERE 1=1";
     }
 
     /**
      * 生成与配置类的属性对应的Select语句带ID条件。
      */
-    public static String getSelectBodyByConfig(Object config, boolean positive) {
+    public String getSelectBodyByConfig(Object config, boolean positive) {
         Class clazz = config.getClass();
         StringBuilder sqlSelect = new StringBuilder("SELECT ");
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
@@ -408,7 +426,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的Select主体。
      */
-    public static String getSelectWhereTrue(Class<?> clazz) {
+    public String getSelectWhereTrue(Class<?> clazz) {
         return "SELECT " + getResultColumns(clazz) + " FROM " +
                 convertName(clazz.getSimpleName()) + " WHERE 1=1";
     }
@@ -416,7 +434,7 @@ public class SqlGenerator {
     /**
      * 生成与配置类的积极属性对应的Select主体。
      */
-    public static String getSelectPositiveWhereTrue(Object config) {
+    public String getSelectPositiveWhereTrue(Object config) {
         return "SELECT " + getResultColumnsPositive(config) + " FROM " +
                 convertName(config.getClass().getSimpleName()) + " WHERE 1=1";
     }
@@ -424,7 +442,7 @@ public class SqlGenerator {
     /**
      * 生成与配置类的消极属性对应的Select主体。
      */
-    public static String getSelectNegativeWhereTrue(Object config) {
+    public String getSelectNegativeWhereTrue(Object config) {
         return "SELECT " + getResultColumnsNegative(config) + " FROM " +
                 convertName(config.getClass().getSimpleName()) + " WHERE 1=1";
     }
@@ -432,7 +450,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的Select语句带ID条件。
      */
-    public static String getSelectWhereIdEquals(Class<?> clazz) {
+    public String getSelectWhereIdEquals(Class<?> clazz) {
         StringBuilder sqlSelect = new StringBuilder("SELECT ");
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
         StringBuilder idBuilder = new StringBuilder();
@@ -473,21 +491,21 @@ public class SqlGenerator {
     /**
      * 生成与配置类的积极属性对应的Select语句带ID条件。
      */
-    public static String getSelectPositiveWhereIdEquals(Object config) {
+    public String getSelectPositiveWhereIdEquals(Object config) {
         return getSelectBodyByConfig(config, true);
     }
 
     /**
      * 生成与配置类的消极属性对应的Select语句带ID条件。
      */
-    public static String getSelectNegativeWhereIdEquals(Object config) {
+    public String getSelectNegativeWhereIdEquals(Object config) {
         return getSelectBodyByConfig(config, false);
     }
 
     /**
      * 生成与配置类的属性对应的Update语句。
      */
-    public static String getUpdateBodyByConfig(Object config, boolean positive) {
+    public String getUpdateBodyByConfig(Object config, boolean positive) {
         Class clazz = config.getClass();
         StringBuilder sqlUpdate = new StringBuilder("UPDATE ")
                 .append(convertName(clazz.getSimpleName())).append(" SET ");
@@ -530,7 +548,7 @@ public class SqlGenerator {
     /**
      * 生成与Class对应的Update语句。
      */
-    public static String getUpdateWhereIdEquals(Class<?> clazz) {
+    public String getUpdateWhereIdEquals(Class<?> clazz) {
         StringBuilder sqlUpdate = new StringBuilder("UPDATE ")
                 .append(convertName(clazz.getSimpleName())).append(" SET ");
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
@@ -572,14 +590,14 @@ public class SqlGenerator {
     /**
      * 生成与配置类的积极属性对应的Update语句。
      */
-    public static String getUpdatePositiveWhereIdEquals(Object config) {
+    public String getUpdatePositiveWhereIdEquals(Object config) {
         return getUpdateBodyByConfig(config, true);
     }
 
     /**
      * 生成与配置类的消极属性对应的Update语句。
      */
-    public static String getUpdateNegativeWhereIdEquals(Object config) {
+    public String getUpdateNegativeWhereIdEquals(Object config) {
         return getUpdateBodyByConfig(config, false);
     }
 }

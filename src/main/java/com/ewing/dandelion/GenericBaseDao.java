@@ -30,6 +30,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     private final Class<E> entityClass;
     private JdbcOperations jdbcOperations;
     private NamedParameterJdbcOperations namedParamOperations;
+    private SqlGenerator sqlGenerator;
 
     /**
      * 快速初始化的构造方法。
@@ -45,6 +46,22 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      */
     public Class<E> getEntityClass() {
         return entityClass;
+    }
+
+    /**
+     * 获取Sql生成器。
+     */
+    protected SqlGenerator getSqlGenerator() {
+        return sqlGenerator;
+    }
+
+    /**
+     * 设置Sql生成器。
+     */
+    @Override
+    @Autowired
+    public void setSqlGenerator(SqlGenerator sqlGenerator) {
+        this.sqlGenerator = sqlGenerator;
     }
 
     /**
@@ -113,9 +130,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E add(E object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = SqlGenerator.getInsertValues(object);
+        String sql = sqlGenerator.getInsertValues(object);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("保存对象失败！");
         return object;
     }
@@ -127,9 +144,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E addPositive(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = SqlGenerator.getInsertPositiveValues(object, config);
+        String sql = sqlGenerator.getInsertPositiveValues(object, config);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("保存对象失败！");
         return object;
     }
@@ -141,9 +158,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E addNegative(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = SqlGenerator.getInsertNegativeValues(object, config);
+        String sql = sqlGenerator.getInsertNegativeValues(object, config);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("保存对象失败！");
         return object;
     }
@@ -160,12 +177,12 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             Object object = objects[i];
             if (object == null)
                 throw new DaoException("包含为空的实例对象！");
-            SqlGenerator.generateId(object);
+            sqlGenerator.generateId(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
         }
-        String sql = SqlGenerator.getInsertValues(objects[0]);
+        String sql = sqlGenerator.getInsertValues(objects[0]);
         LOGGER.info(sql);
-        int[] results = this.getNamedParamOperations().batchUpdate(sql, sources);
+        int[] results = namedParamOperations.batchUpdate(sql, sources);
         boolean[] bools = new boolean[results.length];
         for (int i = 0; i < results.length; i++)
             bools[i] = results[i] > 0;
@@ -179,9 +196,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E update(E object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = SqlGenerator.getUpdateWhereIdEquals(entityClass);
+        String sql = sqlGenerator.getUpdateWhereIdEquals(entityClass);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
     }
@@ -193,9 +210,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E updatePositive(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = SqlGenerator.getUpdatePositiveWhereIdEquals(config);
+        String sql = sqlGenerator.getUpdatePositiveWhereIdEquals(config);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
     }
@@ -207,9 +224,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E updateNegative(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = SqlGenerator.getUpdateNegativeWhereIdEquals(config);
+        String sql = sqlGenerator.getUpdateNegativeWhereIdEquals(config);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
     }
@@ -221,10 +238,10 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E getObject(Object... id) {
         if (id == null || id.length == 0)
             throw new DaoException("对象ID为空！");
-        String sql = SqlGenerator.getSelectWhereIdEquals(entityClass);
+        String sql = sqlGenerator.getSelectWhereIdEquals(entityClass);
         LOGGER.info(sql);
         try {
-            return this.getJdbcOperations().queryForObject(sql, BeanPropertyRowMapper.newInstance(entityClass), id);
+            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(entityClass), id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -237,10 +254,10 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E getPositive(E config, Object... id) {
         if (config == null || id == null || id.length == 0)
             throw new DaoException("配置对象或对象ID为空！");
-        String sql = SqlGenerator.getSelectPositiveWhereIdEquals(config);
+        String sql = sqlGenerator.getSelectPositiveWhereIdEquals(config);
         LOGGER.info(sql);
         try {
-            return this.getJdbcOperations().queryForObject(sql, BeanPropertyRowMapper.newInstance(entityClass), id);
+            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(entityClass), id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -253,10 +270,10 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public E getNegative(E config, Object... id) {
         if (config == null || id == null || id.length == 0)
             throw new DaoException("配置对象或对象ID为空！");
-        String sql = SqlGenerator.getSelectNegativeWhereIdEquals(config);
+        String sql = sqlGenerator.getSelectNegativeWhereIdEquals(config);
         LOGGER.info(sql);
         try {
-            return this.getJdbcOperations().queryForObject(sql, BeanPropertyRowMapper.newInstance(entityClass), id);
+            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(entityClass), id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -267,9 +284,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      */
     @Override
     public long countAll() {
-        String sql = SqlGenerator.getCountWhereTrue(entityClass);
+        String sql = sqlGenerator.getCountWhereTrue(entityClass);
         LOGGER.info(sql);
-        return this.getJdbcOperations().queryForObject(sql, Long.class);
+        return jdbcOperations.queryForObject(sql, Long.class);
     }
 
     /**
@@ -277,17 +294,17 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      */
     @Override
     public List<E> getAll() {
-        String querySql = SqlGenerator.getSelectWhereTrue(entityClass);
+        String querySql = sqlGenerator.getSelectWhereTrue(entityClass);
         LOGGER.info(querySql);
-        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(entityClass));
+        return jdbcOperations.query(querySql, BeanPropertyRowMapper.newInstance(entityClass));
     }
 
     /**
      * 分页查询所有记录。
      */
     public PageData<E> getByPage(PageParam pageParam) {
-        String querySql = SqlGenerator.getSelectWhereTrue(entityClass);
-        return this.queryPageData(pageParam, entityClass, querySql);
+        String querySql = sqlGenerator.getSelectWhereTrue(entityClass);
+        return queryPageData(pageParam, entityClass, querySql);
     }
 
     /**
@@ -297,9 +314,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public void delete(E object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = SqlGenerator.getDeleteWhereIdEquals(object.getClass(), true);
+        String sql = sqlGenerator.getDeleteWhereIdEquals(object.getClass(), true);
         LOGGER.info(sql);
-        if (this.getNamedParamOperations().update(sql, new BeanPropertySqlParameterSource(object)) < 0)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 0)
             throw new DaoException("删除对象失败！");
     }
 
@@ -310,11 +327,10 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public void deleteById(Object... id) {
         if (id == null || id.length == 0)
             throw new DaoException("对象ID为空！");
-        String sql = SqlGenerator.getDeleteWhereIdEquals(entityClass, false);
+        String sql = sqlGenerator.getDeleteWhereIdEquals(entityClass, false);
         LOGGER.info(sql);
-        if (this.getJdbcOperations().update(sql, id) < 0)
+        if (jdbcOperations.update(sql, id) < 0)
             throw new DaoException("删除对象失败！");
-        ;
     }
 
     /**
@@ -322,9 +338,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      */
     @Override
     public void deleteAll() {
-        String sql = SqlGenerator.getDeleteWhereTrue(entityClass);
+        String sql = sqlGenerator.getDeleteWhereTrue(entityClass);
         LOGGER.info(sql);
-        this.getJdbcOperations().update(sql);
+        jdbcOperations.update(sql);
     }
 
     /**
@@ -335,7 +351,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (sql == null)
             throw new DaoException("查询语句为空！");
         LOGGER.info(sql);
-        return this.getJdbcOperations().queryForObject(sql, Long.class, params);
+        return jdbcOperations.queryForObject(sql, Long.class, params);
     }
 
     /**
@@ -347,7 +363,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             throw new DaoException("对象类型或查询语句为空！");
         LOGGER.info(querySql);
         try {
-            return this.getJdbcOperations().queryForObject(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
+            return jdbcOperations.queryForObject(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -361,7 +377,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (clazz == null || querySql == null)
             throw new DaoException("对象类型或查询语句为空！");
         LOGGER.info(querySql);
-        return this.getJdbcOperations().query(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
+        return jdbcOperations.query(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
     }
 
     /**
@@ -373,7 +389,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             throw new DaoException("查询语句为空！");
         LOGGER.info(querySql);
         try {
-            return this.getJdbcOperations().queryForMap(querySql, params);
+            return jdbcOperations.queryForMap(querySql, params);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -387,7 +403,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (querySql == null)
             throw new DaoException("查询语句为空！");
         LOGGER.info(querySql);
-        return this.getJdbcOperations().queryForList(querySql, params);
+        return jdbcOperations.queryForList(querySql, params);
     }
 
     /**
@@ -400,7 +416,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         PageData<T> pageData = new PageData<>();
         if (pageParam.isCount()) {
             String countSql = "SELECT COUNT(*) FROM ( " + querySql + " ) _Total_";
-            pageData.setTotal(this.queryLong(countSql, params));
+            pageData.setTotal(queryLong(countSql, params));
             if (pageData.getTotal() == 0) {
                 pageData.setContent(new ArrayList<>(0));
                 return pageData;
@@ -408,7 +424,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         }
         String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
         LOGGER.info(pageSql);
-        pageData.setContent(this.getJdbcOperations().query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params));
+        pageData.setContent(jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params));
         return pageData;
     }
 
@@ -422,7 +438,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         PageData<Map<String, Object>> pageData = new PageData<>();
         if (pageParam.isCount()) {
             String countSql = "SELECT COUNT(*) FROM ( " + querySql + " ) _Total_";
-            pageData.setTotal(this.queryLong(countSql, params));
+            pageData.setTotal(queryLong(countSql, params));
             if (pageData.getTotal() == 0) {
                 pageData.setContent(new ArrayList<>(0));
                 return pageData;
@@ -430,7 +446,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         }
         String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
         LOGGER.info(pageSql);
-        pageData.setContent(this.getJdbcOperations().queryForList(pageSql, params));
+        pageData.setContent(jdbcOperations.queryForList(pageSql, params));
         return pageData;
     }
 

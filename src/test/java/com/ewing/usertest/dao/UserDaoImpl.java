@@ -1,7 +1,6 @@
 package com.ewing.usertest.dao;
 
 import com.ewing.dandelion.GenericBaseDao;
-import com.ewing.dandelion.SqlGenerator;
 import com.ewing.usertest.entity.MyUser;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +19,8 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
      */
     @Override
     public MyUser findByName(String name) {
-        String sql = SqlGenerator.getSelectWhereTrue(getEntityClass()) + " AND name = ?";
-        return this.queryObject(getEntityClass(), sql, name);
+        String sql = getSqlGenerator().getSelectWhereTrue(getEntityClass()) + " AND name = ?";
+        return queryObject(getEntityClass(), sql, name);
     }
 
     /**
@@ -29,10 +28,10 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
      */
     @Override
     public MyUser findNameAndLong(String name, Long longValue) {
-        StringBuilder sql = new StringBuilder(SqlGenerator.getSelectWhereTrue(getEntityClass()));
+        StringBuilder sql = new StringBuilder(getSqlGenerator().getSelectWhereTrue(getEntityClass()));
         List<Object> params = new ArrayList<>();
-        this.appendSqlParam(sql, " AND name = ?", params, name);
-        this.appendHasParam(sql, " AND longValue = ?", params, longValue);
-        return this.queryObject(getEntityClass(), sql.toString(), params.toArray());
+        appendSqlParam(sql, " AND name = ?", params, name);
+        appendHasParam(sql, " AND longValue = ?", params, longValue);
+        return queryObject(getEntityClass(), sql.toString(), params.toArray());
     }
 }

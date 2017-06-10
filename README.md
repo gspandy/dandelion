@@ -2,7 +2,7 @@
 
 ##### 1、对象基本CRUD操作，可轻松选取或屏蔽部分属性，支持定义临时属性，零配置转换对象及参数。
 ##### 2、支持生成全局唯一ID，支持多ID组成的联合主键，手动赋值和自动生成两种方式可选。
-##### 3、可使用SQL生成器生成主体SQL，少量编码即可实现自定义查询。
+##### 3、该工具使用原生SQL，可使用SQL生成器生成主体SQL，少量编码即可实现自定义查询。
 ##### 4、支持MySql和H2数据库分页查询，其他数据库须简单修改一下，分页默认从0条开始取100条。
 ##### 5、清晰有序的方法命名、完善的文档注释、使用原生SQL，极低的学习成本。
 ##### 6、该工具作为Spring jdbc的增强，可同时使用其中的JdbcTemplate，无后顾之忧。
@@ -22,8 +22,9 @@
 ## 相关依赖及使用说明
 
 ##### 相关依赖：Spring framework、Spring jdbc，4.0.0或以上的版本，日志扩展slf4j，可自行选择日志实现包。
-##### 使用方式一：将com.ewing.dandelion包全量复制到项目中，并使Spring能够扫描到，再在项目中配置一个JdbcTemplate和NamedParameterJdbcTemplate即可。测试用例使用的是Spring Boot自动配置。
-##### 使用方式二：将该项目打包成jar包（或作为Maven依赖）引入到开发项目中，通过xml或java的方式配置JdbcTemplate和NamedParameterJdbcTemplate两个Bean并注入CommonBaseDao，GenericBaseDao只需保证继承的子类能被扫描到即可。
+##### 三种方式引入到项目：1、直接作为源码引入；2、使用Maven打成Jar包引入（mvn package）；3、以Maven依赖方式引入（先执行mvn install）。
+##### 使用方式一：Spring容器中配置JdbcTemplate和NamedParameterJdbcTemplate，Spring添加扫描包com.ewing.dandelion，如需配置SqlGenerator的Bean，可用@Primary注解。测试用例使用的是Spring Boot自动配置。
+##### 使用方式二：Spring容器中配置JdbcTemplate和NamedParameterJdbcTemplate，配置SqlGenerator、CommonBaseDao（可选）的Bean，把继承GenericBaseDao的子类添加到Spring扫描路径。
 
 -----
 
@@ -37,7 +38,8 @@
 ##### annotation包中定义注解，Identity可以标记属性为ID，参数generate表示是否生成ID值，默认为否，支持多个ID（联合主键）。
 ##### Temporary注解可解除实体属性与数据库列的关联，成为临时属性（常用于传输数据），但不影响Spring Jdbc使用该属性。
 
-##### 注：可配合Spring Cache使用，使用注解声明式的本地缓存或Redis共享缓存，可很好地降低数据库访问次数。
+##### 注1：可配合Spring Cache使用，使用注解声明式的本地缓存或Redis共享缓存，可很好地降低数据库访问次数。
+##### 注2：可使用Maven的MyBatisGenerator插件从数据库生成对象模型，插件<overwrite>配置设为false可避免覆盖。
 
 ------
 
