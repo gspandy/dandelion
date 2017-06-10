@@ -100,7 +100,7 @@ public interface GenericDao<E> {
     /**
      * 根据ID获取指定类型的对象的所有属性。
      *
-     * @param id 对象ID。
+     * @param id 对象ID，支持多ID（联合主键）。
      * @return 指定类型的对象。
      */
     E getObject(Object... id);
@@ -109,7 +109,7 @@ public interface GenericDao<E> {
      * 根据ID获取配置对象积极属性对应的对象属性。
      *
      * @param config 指定对象配置，必须包含ID值。
-     * @param id     对象ID。
+     * @param id     对象ID，支持多ID（联合主键）。
      * @return 指定类型的对象。
      */
     E getPositive(E config, Object... id);
@@ -118,7 +118,7 @@ public interface GenericDao<E> {
      * 根据ID获取配置对象消极属性对应的对象属性。
      *
      * @param config 指定对象配置，必须包含ID值。
-     * @param id     对象ID。
+     * @param id     对象ID，支持多ID（联合主键）。
      * @return 指定类型的对象。
      */
     E getNegative(E config, Object... id);
@@ -155,8 +155,7 @@ public interface GenericDao<E> {
     /**
      * 根据对象的ID属性删除指定类型的对象。
      *
-     * @param id 要删除的对象ID。
-     * @return 是否删除成功。
+     * @param id 对象ID，支持多ID（联合主键）。
      */
     void deleteById(Object... id);
 
