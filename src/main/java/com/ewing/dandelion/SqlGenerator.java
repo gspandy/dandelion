@@ -153,8 +153,16 @@ public class SqlGenerator {
      * 生成与Class对应的结果列。
      */
     public String getResultColumns(Class<?> clazz) {
+        return getResultColumns(clazz, null);
+    }
+
+    /**
+     * 生成与Class对应的结果列，可指定别名。
+     */
+    public String getResultColumns(Class<?> clazz, String alias) {
         StringBuilder columns = new StringBuilder();
         PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
+        boolean hasAlias = alias != null && alias.trim().length() > 0;
         boolean hasOne = false;
         for (PropertyDescriptor pd : pds) {
             // 需要可用的属性
@@ -170,6 +178,9 @@ public class SqlGenerator {
                 columns.append(", ");
             else
                 hasOne = true;
+            // 是否添加别名
+            if (hasAlias)
+                columns.append(alias).append(".");
             columns.append(convertName(name));
         }
         // 检查并拼装SQL语句
