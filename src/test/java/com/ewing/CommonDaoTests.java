@@ -84,7 +84,7 @@ public class CommonDaoTests {
         config.setName("");
         commonDao.addPositive(user, config);
         // 没有异常 简单验证
-        MyUser myUser = commonDao.getObject(MyUser.class, user.getUserId());
+        MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getDateValue());
         // 清理测试数据
@@ -96,7 +96,7 @@ public class CommonDaoTests {
         config.setBytesValue(new byte[]{});
         commonDao.addNegative(user, config);
         // 没有异常 简单验证
-        myUser = commonDao.getObject(MyUser.class, user.getUserId());
+        myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getBytesValue());
         // 清理测试数据
@@ -136,7 +136,7 @@ public class CommonDaoTests {
     @Test
     public void getUserTest() {
         MyUser user = init();
-        MyUser myUser = commonDao.getObject(MyUser.class, user.getUserId());
+        MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
         // 没有异常 简单验证
         Assert.assertTrue(user.getUserId().equals(myUser.getUserId()));
 
@@ -165,19 +165,19 @@ public class CommonDaoTests {
         MyUser user = init();
         commonDao.delete(user);
         // 没有异常 简单验证
-        MyUser myUser = commonDao.getObject(MyUser.class, user.getUserId());
+        MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
 
         user = init();
         commonDao.deleteById(MyUser.class, user.getUserId());
         // 没有异常 简单验证
-        myUser = commonDao.getObject(MyUser.class, user.getUserId());
+        myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
 
         user = init();
         commonDao.deleteAll(user.getClass());
         // 没有异常 简单验证
-        myUser = commonDao.getObject(MyUser.class, user.getUserId());
+        myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
     }
 

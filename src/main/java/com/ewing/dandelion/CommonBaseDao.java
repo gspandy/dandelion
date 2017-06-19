@@ -234,7 +234,7 @@ public class CommonBaseDao implements CommonDao {
      * 根据ID获取指定类型的对象的所有属性。
      */
     @Override
-    public <T> T getObject(Class<T> clazz, Object... id) {
+    public <T> T get(Class<T> clazz, Object... id) {
         if (clazz == null || id == null || id.length == 0)
             throw new DaoException("对象类型或对象ID为空！");
         String sql = sqlGenerator.getSelectWhereIdEquals(clazz);

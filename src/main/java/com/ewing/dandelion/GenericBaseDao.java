@@ -235,7 +235,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 根据ID获取指定类型的对象的所有属性。
      */
     @Override
-    public E getObject(Object... id) {
+    public E get(Object... id) {
         if (id == null || id.length == 0)
             throw new DaoException("对象ID为空！");
         String sql = sqlGenerator.getSelectWhereIdEquals(entityClass);

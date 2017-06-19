@@ -103,7 +103,7 @@ public interface GenericDao<E> {
      * @param id 对象ID，支持多ID（联合主键）。
      * @return 指定类型的对象。
      */
-    E getObject(Object... id);
+    E get(Object... id);
 
     /**
      * 根据ID获取配置对象积极属性对应的对象属性。

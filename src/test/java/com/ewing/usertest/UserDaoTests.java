@@ -85,7 +85,7 @@ public class UserDaoTests {
         config.setName("");
         userDao.addPositive(user, config);
         // 没有异常 简单验证
-        MyUser myUser = userDao.getObject(user.getUserId());
+        MyUser myUser = userDao.get(user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getDateValue());
         // 清理测试数据
@@ -97,7 +97,7 @@ public class UserDaoTests {
         config.setBytesValue(new byte[]{});
         userDao.addNegative(user, config);
         // 没有异常 简单验证
-        myUser = userDao.getObject(user.getUserId());
+        myUser = userDao.get(user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getBytesValue());
         // 清理测试数据
@@ -137,7 +137,7 @@ public class UserDaoTests {
     @Test
     public void getUserTest() {
         MyUser user = init();
-        MyUser myUser = userDao.getObject(user.getUserId());
+        MyUser myUser = userDao.get(user.getUserId());
         // 没有异常 简单验证
         Assert.assertTrue(user.getUserId().equals(myUser.getUserId()));
 
@@ -166,19 +166,19 @@ public class UserDaoTests {
         MyUser user = init();
         userDao.delete(user);
         // 没有异常 简单验证
-        MyUser myUser = userDao.getObject(user.getUserId());
+        MyUser myUser = userDao.get(user.getUserId());
         Assert.assertNull(myUser);
 
         user = init();
         userDao.deleteById(user.getUserId());
         // 没有异常 简单验证
-        myUser = userDao.getObject(user.getUserId());
+        myUser = userDao.get(user.getUserId());
         Assert.assertNull(myUser);
 
         user = init();
         userDao.deleteAll();
         // 没有异常 简单验证
-        myUser = userDao.getObject(user.getUserId());
+        myUser = userDao.get(user.getUserId());
         Assert.assertNull(myUser);
     }
 
