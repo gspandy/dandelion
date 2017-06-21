@@ -13,20 +13,20 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 全局ID生成器，保持趋势递增，尾数均匀，每秒获取不超过65536000个就不会重复。
- * 值位组成：毫秒去掉低8位(约1/4秒)+24位机器标识+16位进程标识+24位累加数。
- * 使用31位10进制整数或20位36进制字符串可用到6300年后，可认为无限使用。
+ * 全局ID生成器，保持趋势递增，尾数均匀，每秒获取不超过262144000个就不会重复。
+ * 值位组成：毫秒去掉低6位(约1/16秒)+24位机器标识+16位进程标识+24位累加数。
+ * 使用31位10进制整数或20位36进制字符串可再用1000多年，到时扩展字段长度即可。
  * 实测生成百万个用时不到2秒(视配置而定)，每秒50万个，相对于6千万来说是非常安全的。
  *
  * @author Ewing
  */
 public class GlobalIdWorker {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalIdWorker.class);
-    // 将时间截掉后8位（相当于除以256）约精确到1/4秒
-    private final static int timeTruncate = 8;
+    // 将时间截掉后6位（相当于除以64）约精确到1/16秒
+    private final static int timeTruncate = 6;
     // 机器标识及进程标识
     private static final String runMacProcBit;
-    // 计数器 可以溢出可循环使用 实际取后16位
+    // 计数器 可以溢出可循环使用 实际取后24位
     private static final AtomicInteger counter = new AtomicInteger(new SecureRandom().nextInt());
     // 序号掩码（24个1）也是最大值16777215
     private final static int counterMask = ~(-1 << 24);
@@ -34,7 +34,7 @@ public class GlobalIdWorker {
     private final static int counterFlag = 1 << 24;
 
     /**
-     * 生成唯一ID
+     * 生成全局唯一ID。
      */
     public static BigInteger nextBigInteger() {
         long timestamp = System.currentTimeMillis() >>> timeTruncate;
@@ -49,7 +49,7 @@ public class GlobalIdWorker {
     }
 
     /**
-     * 初始化worker
+     * 初始化机器标识及进程标识。
      */
     static {
         // 保证一定是24位机器ID + 16位进程ID
@@ -61,16 +61,14 @@ public class GlobalIdWorker {
     }
 
     /**
-     * 获取36进制20位长度的String类型的ID
+     * 获取36进制20位长度的String类型的ID。
      */
     public static String nextString() {
-        StringBuilder idStr = new StringBuilder(nextBigInteger().toString(36));
-        while (idStr.length() < 20) idStr.insert(0, '0');
-        return idStr.toString();
+        return nextBigInteger().toString(36);
     }
 
     /**
-     * 使用JDK生成UUID并转换成25位36进制字符串
+     * 使用JDK生成UUID并转换成25位36进制字符串。
      */
     public static String uuidString() {
         UUID id = UUID.randomUUID();
@@ -84,7 +82,7 @@ public class GlobalIdWorker {
     }
 
     /**
-     * 使用JDK生成UUID并转换成32位16进制字符串
+     * 使用JDK生成UUID并转换成32位16进制字符串。
      */
     public static String uuidHex() {
         UUID id = UUID.randomUUID();

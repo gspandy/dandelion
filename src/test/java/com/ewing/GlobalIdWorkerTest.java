@@ -22,12 +22,12 @@ public class GlobalIdWorkerTest {
      */
     public static void main(String[] args) throws Exception {
         // 当前时间测试
-        Long time = System.currentTimeMillis() >>> 8;
+        Long time = System.currentTimeMillis() >>> 6;
         BigInteger id = new BigInteger(Long.toBinaryString(time) + Long.toBinaryString(~0L), 2);
         System.out.println("\n当前时间的值是：" + id + "\n转换成36进制： " + id.toString(36));
         // 使用日期与长度测试
-        String date = "6300年";
-        time = new SimpleDateFormat("yyyy年").parse(date).getTime() >>> 8;
+        String date = "3060年";
+        time = new SimpleDateFormat("yyyy年").parse(date).getTime() >>> 6;
         id = new BigInteger(Long.toBinaryString(time) + Long.toBinaryString(~0L), 2);
         System.out.println("\n使用到" + date + "的值是：" + id + "\n转换成36进制： " + id.toString(36));
 
