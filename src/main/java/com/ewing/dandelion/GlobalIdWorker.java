@@ -74,14 +74,26 @@ public class GlobalIdWorker {
      */
     public static String uuidString() {
         UUID id = UUID.randomUUID();
-        // 直接toString是36位16进制带下划线的 需要转换 采用高低位转换比直接转换快一些
+        // 取高低位转换成36进制 低位部分须补足16位
+        String mb = Long.toHexString(id.getMostSignificantBits());
+        StringBuilder lb = new StringBuilder(Long.toHexString(id.getLeastSignificantBits()));
+        while (lb.length() < 16) lb.insert(0, '0');
+        StringBuilder idb = new StringBuilder(new BigInteger(mb + lb.toString(), 16).toString(36));
+        while (idb.length() < 25) idb.insert(0, '0');
+        return idb.toString();
+    }
+
+    /**
+     * 使用JDK生成UUID并转换成32位16进制字符串
+     */
+    public static String uuidHex() {
+        UUID id = UUID.randomUUID();
+        // 取高低位转换成16进制 比直接toString效率好很多
         StringBuilder mb = new StringBuilder(Long.toHexString(id.getMostSignificantBits()));
         while (mb.length() < 16) mb.insert(0, '0');
         StringBuilder lb = new StringBuilder(Long.toHexString(id.getLeastSignificantBits()));
         while (lb.length() < 16) lb.insert(0, '0');
-        StringBuilder idb = new StringBuilder(new BigInteger(mb.append(lb).toString(), 16).toString(36));
-        while (idb.length() < 25) idb.insert(0, '0');
-        return idb.toString();
+        return mb.append(lb).toString();
     }
 
     /**
