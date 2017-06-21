@@ -158,6 +158,15 @@ public interface CommonDao {
     <T> T getNegative(T config, Object... id);
 
     /**
+     * 根据ID数组批量获取指定类型的对象的所有属性。
+     *
+     * @param clazz 对象类型。
+     * @param ids   对象ID数组，只支持单个ID的对象。
+     * @return 指定类型的对象集合。
+     */
+    <T> List<T> getBatch(Class<T> clazz, Object... ids);
+
+    /**
      * 查询总数。
      *
      * @param clazz 指定对象类型。

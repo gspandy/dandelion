@@ -66,7 +66,6 @@ public class CommonDaoTests {
         user.setShortValue((short) 123);
         user.setBytesValue(new byte[]{1, 5, 12});
         commonDao.add(user);
-        // 没有异常 简单验证
         Assert.assertTrue(StringUtils.hasText(user.getUserId()));
         // 清理测试数据
         clean(user);
@@ -74,7 +73,6 @@ public class CommonDaoTests {
         // 批量添加
         MyUser[] users = {user, new MyUser(), new MyUser()};
         commonDao.addBatch(users);
-        // 没有异常 简单验证
         Assert.assertTrue(commonDao.countAll(user.getClass()) >= users.length);
         clean(users);
 
@@ -83,7 +81,6 @@ public class CommonDaoTests {
         MyUser config = new MyUser();
         config.setName("");
         commonDao.addPositive(user, config);
-        // 没有异常 简单验证
         MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getDateValue());
@@ -95,7 +92,6 @@ public class CommonDaoTests {
         config = new MyUser();
         config.setBytesValue(new byte[]{});
         commonDao.addNegative(user, config);
-        // 没有异常 简单验证
         myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getBytesValue());
@@ -108,7 +104,6 @@ public class CommonDaoTests {
         MyUser myUser = init();
         myUser.setName(RandomString.randomChinese(3));
         MyUser result = commonDao.update(myUser);
-        // 没有异常 简单验证
         Assert.assertNotNull(result);
 
         // 只更新name属性
@@ -117,7 +112,6 @@ public class CommonDaoTests {
         myUser.setName(RandomString.randomChinese(3));
         myUser.setIntValue(234567);
         result = commonDao.updatePositive(myUser, config);
-        // 没有异常 简单验证
         Assert.assertNotNull(result);
 
         // 屏蔽更新longValue属性
@@ -126,7 +120,6 @@ public class CommonDaoTests {
         myUser.setName(RandomString.randomChinese(3));
         myUser.setLongValue(456978L);
         result = commonDao.updateNegative(myUser, config);
-        // 没有异常 简单验证
         Assert.assertNotNull(result);
 
         // 清理测试数据
@@ -137,13 +130,11 @@ public class CommonDaoTests {
     public void getUserTest() {
         MyUser user = init();
         MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
-        // 没有异常 简单验证
         Assert.assertTrue(user.getUserId().equals(myUser.getUserId()));
 
         // 只取name属性
         MyUser config = new MyUser();
         config.setName("");
-        // 没有异常 简单验证
         myUser = commonDao.getPositive(config, user.getUserId());
         Assert.assertNull(myUser.getDateValue());
         Assert.assertNotNull(myUser.getName());
@@ -151,7 +142,6 @@ public class CommonDaoTests {
         // 屏蔽bytesValue属性
         config = new MyUser();
         config.setBytesValue(new byte[]{});
-        // 没有异常 简单验证
         myUser = commonDao.getNegative(config, user.getUserId());
         Assert.assertNull(myUser.getBytesValue());
         Assert.assertNotNull(myUser.getName());
@@ -164,19 +154,16 @@ public class CommonDaoTests {
     public void deleteUserTest() {
         MyUser user = init();
         commonDao.delete(user);
-        // 没有异常 简单验证
         MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
 
         user = init();
         commonDao.deleteById(MyUser.class, user.getUserId());
-        // 没有异常 简单验证
         myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
 
         user = init();
         commonDao.deleteAll(user.getClass());
-        // 没有异常 简单验证
         myUser = commonDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
     }
@@ -184,6 +171,7 @@ public class CommonDaoTests {
     @Test
     public void queryUserTest() {
         MyUser user = init();
+        MyUser user2 = init();
         // 统计测试
         long count = commonDao.countAll(MyUser.class);
         // 没有异常 简单验证
@@ -191,16 +179,18 @@ public class CommonDaoTests {
 
         // 查询所有
         List<MyUser> myUsers = commonDao.getAll(MyUser.class);
-        // 没有异常 简单验证
-        Assert.assertTrue(myUsers.size() > 0);
+        Assert.assertTrue(myUsers.size() > 1);
+
+        // 根据ID批量查询
+        myUsers = commonDao.getBatch(MyUser.class, user.getUserId(), user2.getUserId());
+        Assert.assertTrue(myUsers.size() > 1);
 
         // 分页查询所有
         PageData<MyUser> pageUsers = commonDao.getByPage(MyUser.class, new PageParam(0, 10));
-        // 没有异常 简单验证
         Assert.assertTrue(pageUsers.getContent().size() > 0);
 
         // 清理测试数据
-        clean(user);
+        clean(user, user2);
     }
 
 }

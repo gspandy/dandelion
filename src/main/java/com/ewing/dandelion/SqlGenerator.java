@@ -500,6 +500,52 @@ public class SqlGenerator {
     }
 
     /**
+     * 生成与Class对应的Select语句带批量ID条件。
+     */
+    public String getSelectWhereBatchIds(Class<?> clazz, int length) {
+        StringBuilder sqlSelect = new StringBuilder("SELECT ");
+        PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
+        StringBuilder idBuilder = new StringBuilder();
+        boolean hasOne = false;
+        boolean hasIdentity = false;
+        for (PropertyDescriptor pd : pds) {
+            // 需要可用的属性
+            if (!isPropertyAvailable(pd)) continue;
+            String name = pd.getName();
+            Field field = getPropertyField(clazz, name);
+            // 排除临时的属性
+            if (isPropertyTemporary(field)) continue;
+            // 添加ID属性到查询条件
+            if (!hasIdentity && isPropertyIdentity(field)) {
+                idBuilder.append(convertName(name)).append(" in (");
+                for (; ; length--) {
+                    if (length == 1) {
+                        idBuilder.append("?");
+                        break;
+                    } else {
+                        idBuilder.append("?,");
+                    }
+                }
+                idBuilder.append(")");
+                hasIdentity = true;
+            }
+            // 添加属性到查询结果
+            if (hasOne)
+                sqlSelect.append(", ");
+            else
+                hasOne = true;
+            sqlSelect.append(convertName(name));
+        }
+        // 检查并拼装SQL语句
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现可用的属性！");
+        sqlSelect.append(" FROM ").append(convertName(clazz.getSimpleName()));
+        if (!hasIdentity)
+            throw new DaoException("未找到类" + clazz.getName() + "的ID属性！");
+        return sqlSelect.append(" WHERE ").append(idBuilder).toString();
+    }
+
+    /**
      * 生成与配置类的积极属性对应的Select语句带ID条件。
      */
     public String getSelectPositiveWhereIdEquals(Object config) {

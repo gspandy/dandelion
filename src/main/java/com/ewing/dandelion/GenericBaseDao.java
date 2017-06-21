@@ -280,6 +280,18 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     }
 
     /**
+     * 根据ID数组批量获取指定类型的对象的所有属性。
+     */
+    @Override
+    public List<E> getBatch(Object... ids) {
+        if (ids == null || ids.length == 0)
+            throw new DaoException("对象ID数组为空！");
+        String sql = sqlGenerator.getSelectWhereBatchIds(entityClass, ids.length);
+        LOGGER.info(sql);
+        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), ids);
+    }
+
+    /**
      * 查询总数。
      */
     @Override

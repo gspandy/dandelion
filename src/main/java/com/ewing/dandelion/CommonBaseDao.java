@@ -279,6 +279,18 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
+     * 根据ID数组批量获取指定类型的对象的所有属性。
+     */
+    @Override
+    public <T> List<T> getBatch(Class<T> clazz, Object... ids) {
+        if (ids == null || ids.length == 0)
+            throw new DaoException("对象ID数组为空！");
+        String sql = sqlGenerator.getSelectWhereBatchIds(clazz, ids.length);
+        LOGGER.info(sql);
+        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), ids);
+    }
+
+    /**
      * 查询总数。
      */
     @Override

@@ -67,7 +67,6 @@ public class UserDaoTests {
         user.setShortValue((short) 123);
         user.setBytesValue(new byte[]{1, 5, 12});
         userDao.add(user);
-        // 没有异常 简单验证
         Assert.assertTrue(StringUtils.hasText(user.getUserId()));
         // 清理测试数据
         clean(user);
@@ -75,7 +74,6 @@ public class UserDaoTests {
         // 批量添加
         MyUser[] users = {user, new MyUser(), new MyUser()};
         userDao.addBatch(users);
-        // 没有异常 简单验证
         Assert.assertTrue(userDao.countAll() >= users.length);
         clean(users);
 
@@ -84,7 +82,6 @@ public class UserDaoTests {
         MyUser config = new MyUser();
         config.setName("");
         userDao.addPositive(user, config);
-        // 没有异常 简单验证
         MyUser myUser = userDao.get(user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getDateValue());
@@ -96,7 +93,6 @@ public class UserDaoTests {
         config = new MyUser();
         config.setBytesValue(new byte[]{});
         userDao.addNegative(user, config);
-        // 没有异常 简单验证
         myUser = userDao.get(user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getBytesValue());
@@ -109,7 +105,6 @@ public class UserDaoTests {
         MyUser myUser = init();
         myUser.setName(RandomString.randomChinese(3));
         MyUser result = userDao.update(myUser);
-        // 没有异常 简单验证
         Assert.assertNotNull(result);
 
         // 只更新name属性
@@ -118,7 +113,6 @@ public class UserDaoTests {
         myUser.setName(RandomString.randomChinese(3));
         myUser.setIntValue(234567);
         result = userDao.updatePositive(myUser, config);
-        // 没有异常 简单验证
         Assert.assertNotNull(result);
 
         // 屏蔽更新longValue属性
@@ -127,7 +121,6 @@ public class UserDaoTests {
         myUser.setName(RandomString.randomChinese(3));
         myUser.setLongValue(456978L);
         result = userDao.updateNegative(myUser, config);
-        // 没有异常 简单验证
         Assert.assertNotNull(result);
 
         // 清理测试数据
@@ -144,7 +137,6 @@ public class UserDaoTests {
         // 只取name属性
         MyUser config = new MyUser();
         config.setName("");
-        // 没有异常 简单验证
         myUser = userDao.getPositive(config, user.getUserId());
         Assert.assertNull(myUser.getDateValue());
         Assert.assertNotNull(myUser.getName());
@@ -152,7 +144,6 @@ public class UserDaoTests {
         // 屏蔽bytesValue属性
         config = new MyUser();
         config.setBytesValue(new byte[]{});
-        // 没有异常 简单验证
         myUser = userDao.getNegative(config, user.getUserId());
         Assert.assertNull(myUser.getBytesValue());
         Assert.assertNotNull(myUser.getName());
@@ -185,6 +176,7 @@ public class UserDaoTests {
     @Test
     public void queryUserTest() {
         MyUser user = init();
+        MyUser user2 = init();
         MyUser myUser = userDao.findByName(user.getName());
         // 没有异常 简单验证
         Assert.assertNotNull(myUser);
@@ -201,7 +193,12 @@ public class UserDaoTests {
         // 查询所有
         List<MyUser> myUsers = userDao.getAll();
         // 没有异常 简单验证
-        Assert.assertTrue(myUsers.size() > 0);
+        Assert.assertTrue(myUsers.size() > 1);
+
+        // 根据ID批量查询
+        myUsers = userDao.getBatch(user.getUserId(), user2.getUserId());
+        // 没有异常 简单验证
+        Assert.assertTrue(myUsers.size() > 1);
 
         // 分页查询所有
         PageData<MyUser> pageUsers = userDao.getByPage(new PageParam(0, 10));
@@ -215,7 +212,7 @@ public class UserDaoTests {
         Assert.assertTrue(users.getTotal() > 0);
 
         // 清理测试数据
-        clean(user);
+        clean(user, user2);
     }
 
 }

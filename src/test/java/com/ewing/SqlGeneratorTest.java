@@ -33,6 +33,7 @@ public class SqlGeneratorTest {
         System.out.println(sqlGenerator.getCountWhereTrue(MyUser.class));
         System.out.println(sqlGenerator.getSelectBodyByConfig(config, true));
         System.out.println(sqlGenerator.getSelectWhereIdEquals(MyUser.class));
+        System.out.println(sqlGenerator.getSelectWhereBatchIds(MyUser.class, 5));
         System.out.println(sqlGenerator.getSelectWhereTrue(MyUser.class));
         System.out.println(sqlGenerator.getSelectPositiveWhereTrue(config));
         System.out.println(sqlGenerator.getSelectPositiveWhereIdEquals(config));

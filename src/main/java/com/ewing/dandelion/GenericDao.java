@@ -124,6 +124,14 @@ public interface GenericDao<E> {
     E getNegative(E config, Object... id);
 
     /**
+     * 根据ID数组批量获取指定类型的对象的所有属性。
+     *
+     * @param ids 对象ID数组，只支持单个ID的对象。
+     * @return 指定类型的对象集合。
+     */
+    List<E> getBatch(Object... ids);
+
+    /**
      * 查询总数。
      *
      * @return 总记录数。
