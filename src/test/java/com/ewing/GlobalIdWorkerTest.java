@@ -33,7 +33,7 @@ public class GlobalIdWorkerTest {
 
         // 高并发性能测试
         int threads = 1000;
-        int perThread = 1000;
+        int perThread = 10000;
         CountDownLatch latch = new CountDownLatch(threads);
         Object[] results = new Object[threads * perThread];
         final AtomicInteger index = new AtomicInteger();
