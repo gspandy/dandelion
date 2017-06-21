@@ -47,8 +47,7 @@ public class CommonDaoTests {
      * 清理测试数据。
      */
     private void clean(MyUser... myUsers) {
-        for (MyUser myUser : myUsers)
-            commonDao.delete(myUser);
+        commonDao.deleteBatch(myUsers);
     }
 
     @Test

@@ -336,6 +336,30 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
+     * 批量把对象实例从数据库删除。
+     */
+    @Override
+    public <T> boolean[] deleteBatch(T... objects) {
+        if (objects == null || objects.length == 0)
+            throw new DaoException("实例对象列表为空！");
+        SqlParameterSource[] sources = new SqlParameterSource[objects.length];
+        for (int i = 0; i < objects.length; i++) {
+            Object object = objects[i];
+            if (object == null)
+                throw new DaoException("包含为空的实例对象！");
+            sqlGenerator.generateId(object);
+            sources[i] = new BeanPropertySqlParameterSource(object);
+        }
+        String sql = sqlGenerator.getDeleteWhereIdEquals(objects[0].getClass(), true);
+        LOGGER.info(sql);
+        int[] results = namedParamOperations.batchUpdate(sql, sources);
+        boolean[] bools = new boolean[results.length];
+        for (int i = 0; i < results.length; i++)
+            bools[i] = results[i] > 0;
+        return bools;
+    }
+
+    /**
      * 根据对象的ID属性删除指定类型的对象。
      */
     @Override

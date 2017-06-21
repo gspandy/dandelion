@@ -48,8 +48,7 @@ public class UserDaoTests {
      * 清理测试数据。
      */
     private void clean(MyUser... myUsers) {
-        for (MyUser myUser : myUsers)
-            userDao.delete(myUser);
+        userDao.deleteBatch(myUsers);
     }
 
     @Test

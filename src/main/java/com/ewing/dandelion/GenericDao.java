@@ -161,6 +161,14 @@ public interface GenericDao<E> {
     void delete(E object);
 
     /**
+     * 批量把对象实例从数据库删除。
+     *
+     * @param objects 对象数组。
+     * @return 结果是否成功。
+     */
+    boolean[] deleteBatch(E... objects);
+
+    /**
      * 根据对象的ID属性删除指定类型的对象。
      *
      * @param id 对象ID，支持多ID（联合主键）。
