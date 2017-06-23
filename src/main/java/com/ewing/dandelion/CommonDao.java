@@ -210,7 +210,6 @@ public interface CommonDao {
      * 批量把对象实例从数据库删除。
      *
      * @param objects 对象数组。
-     * @return 结果是否成功。
      */
     <T> void deleteBatch(T... objects);
 
