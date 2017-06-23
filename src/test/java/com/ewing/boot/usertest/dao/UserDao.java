@@ -1,7 +1,7 @@
-package com.ewing.usertest.dao;
+package com.ewing.boot.usertest.dao;
 
+import com.ewing.boot.usertest.entity.MyUser;
 import com.ewing.dandelion.GenericDao;
-import com.ewing.usertest.entity.MyUser;
 
 /**
  * @author Ewing
@@ -17,5 +17,5 @@ public interface UserDao extends GenericDao<MyUser> {
     /**
      * 当名称存在时根据名称查询。
      */
-    MyUser findNameAndLong(String name, Long along);
+    MyUser findMyUser(String name, String description, Integer level);
 }

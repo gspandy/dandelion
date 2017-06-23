@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS MyUser (
   userId      VARCHAR(22) NOT NULL,
   name        VARCHAR(64)    DEFAULT NULL,
+  level    INT(11)        DEFAULT NULL,
+  description        VARCHAR(64)    DEFAULT NULL,
   boolValue   BOOLEAN        DEFAULT NULL,
   dateValue   DATETIME       DEFAULT NULL,
   bigDecimal  DECIMAL(32, 0) DEFAULT NULL,

@@ -1,8 +1,9 @@
-package com.ewing.usertest.dao;
+package com.ewing.boot.usertest.dao;
 
+import com.ewing.boot.usertest.entity.MyUser;
 import com.ewing.dandelion.GenericBaseDao;
-import com.ewing.usertest.entity.MyUser;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +28,20 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
      * 根据自定义参数条件查询。
      */
     @Override
-    public MyUser findNameAndLong(String name, Long longValue) {
+    public MyUser findMyUser(String name, String description, Integer level) {
         StringBuilder sql = new StringBuilder(getSqlGenerator().getSelectWhereTrue(getEntityClass()));
         List<Object> params = new ArrayList<>();
-        appendSqlParam(sql, " AND name = ?", params, name);
-        appendHasParam(sql, " AND longValue = ?", params, longValue);
+
+        // 当名称有值时根据名称精确查询
+        appendHasParam(sql, " AND name = ?", params, name);
+
+        // 当描述有值时根据描述模糊查询
+        if (StringUtils.hasText(description))
+            appendSqlParam(sql, " AND description like ?", params, "%" + description + "%");
+
+        // 直接添加等级查询条件
+        appendSqlParam(sql, " AND level = ?", params, level);
+
         return queryObject(getEntityClass(), sql.toString(), params.toArray());
     }
 }

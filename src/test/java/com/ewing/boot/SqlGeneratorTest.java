@@ -1,7 +1,7 @@
-package com.ewing;
+package com.ewing.boot;
 
+import com.ewing.boot.usertest.entity.MyUser;
 import com.ewing.dandelion.SqlGenerator;
-import com.ewing.usertest.entity.MyUser;
 
 import java.math.BigDecimal;
 
@@ -27,6 +27,7 @@ public class SqlGeneratorTest {
         System.out.println(sqlGenerator.getResultColumnsPositive(config));
         System.out.println(sqlGenerator.getResultColumnsNegative(config));
         System.out.println(sqlGenerator.getInsertValues(myUser));
+        System.out.println(sqlGenerator.getInsertValuesByClass(MyUser.class));
         System.out.println(sqlGenerator.getInsertValuesByConfig(myUser, config, true));
         System.out.println(sqlGenerator.getInsertPositiveValues(myUser, config));
         System.out.println(sqlGenerator.getInsertNegativeValues(myUser, config));

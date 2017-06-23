@@ -1,4 +1,4 @@
-package com.ewing;
+package com.ewing.boot;
 
 import com.ewing.dandelion.GlobalIdWorker;
 
