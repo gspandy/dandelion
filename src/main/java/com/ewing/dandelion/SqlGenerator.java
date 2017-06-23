@@ -9,6 +9,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.util.Locale;
 
 /**
@@ -134,17 +135,21 @@ public class SqlGenerator {
      * 根据注解判断是否生成ID值。
      */
     protected boolean identityResolver(Field field, PropertyDescriptor pd, Object object) {
-        if (String.class.equals(field.getType())) {
-            Identity identity = field.getAnnotation(Identity.class);
-            if (identity != null) {
-                if (identity.generate())
-                    try {
+        Identity identity = field.getAnnotation(Identity.class);
+        if (identity != null) {
+            if (identity.generate()) {
+                Class type = field.getType();
+                try {
+                    if (String.class.equals(type)) {
                         pd.getWriteMethod().invoke(object, GlobalIdWorker.nextString());
-                    } catch (ReflectiveOperationException e) {
-                        throw new DaoException("对象ID属性赋值失败！", e);
+                    } else if (BigInteger.class.equals(type)) {
+                        pd.getWriteMethod().invoke(object, GlobalIdWorker.nextBigInteger());
                     }
-                return true;
+                } catch (ReflectiveOperationException e) {
+                    throw new DaoException("对象ID属性赋值失败！", e);
+                }
             }
+            return true;
         }
         return false;
     }
