@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 public class NormalDaoConfig {
 
     @Autowired
-    public DataSource dataSource;
+    private DataSource dataSource;
 
     @Bean
     public JdbcOperations jdbcOperations() {
