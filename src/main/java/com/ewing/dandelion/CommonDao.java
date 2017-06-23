@@ -100,9 +100,9 @@ public interface CommonDao {
      * 批量把对象实例的所有属性插入到数据库。
      *
      * @param objects 对象数组。
-     * @return 结果是否成功。
+     * @return 添加成功的对象。
      */
-    boolean[] addBatch(Object... objects);
+    <T> List<T> addBatch(T... objects);
 
     /**
      * 把对象实例的所有属性更新到数据库。
@@ -129,6 +129,14 @@ public interface CommonDao {
      * @return 更新成功的对象。
      */
     <T> T updateNegative(T object, T config);
+
+    /**
+     * 批量更新对象实例的所有属性。
+     *
+     * @param objects 要更新到数据库的对象。
+     * @return 更新成功的对象。
+     */
+    <T> List<T> updateBatch(T... objects);
 
     /**
      * 根据ID获取指定类型的对象的所有属性。
@@ -204,7 +212,7 @@ public interface CommonDao {
      * @param objects 对象数组。
      * @return 结果是否成功。
      */
-    <T> boolean[] deleteBatch(T... objects);
+    <T> void deleteBatch(T... objects);
 
     /**
      * 根据对象的ID属性删除指定类型的对象。

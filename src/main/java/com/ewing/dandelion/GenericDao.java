@@ -67,9 +67,9 @@ public interface GenericDao<E> {
      * 批量把对象实例的所有属性插入到数据库。
      *
      * @param objects 对象数组。
-     * @return 结果是否成功。
+     * @return 添加成功的对象。
      */
-    boolean[] addBatch(E... objects);
+    List<E> addBatch(E... objects);
 
     /**
      * 把对象实例的所有属性更新到数据库。
@@ -96,6 +96,14 @@ public interface GenericDao<E> {
      * @return 更新成功的对象。
      */
     E updateNegative(E object, E config);
+
+    /**
+     * 批量更新对象实例的所有属性。
+     *
+     * @param objects 要更新到数据库的对象。
+     * @return 更新成功的对象。
+     */
+    List<E> updateBatch(E... objects);
 
     /**
      * 根据ID获取指定类型的对象的所有属性。
@@ -164,9 +172,8 @@ public interface GenericDao<E> {
      * 批量把对象实例从数据库删除。
      *
      * @param objects 对象数组。
-     * @return 结果是否成功。
      */
-    boolean[] deleteBatch(E... objects);
+    void deleteBatch(E... objects);
 
     /**
      * 根据对象的ID属性删除指定类型的对象。

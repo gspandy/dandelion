@@ -169,24 +169,23 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 批量把对象实例的所有属性插入到数据库。
      */
     @Override
-    public boolean[] addBatch(E... objects) {
+    public List<E> addBatch(E... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
+        List<E> entities = new ArrayList<>(objects.length);
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            Object object = objects[i];
+            E object = objects[i];
             if (object == null)
                 throw new DaoException("包含为空的实例对象！");
             sqlGenerator.generateId(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
+            entities.add(object);
         }
-        String sql = sqlGenerator.getInsertValues(objects[0]);
+        String sql = sqlGenerator.getInsertValuesByClass(entityClass);
         LOGGER.info(sql);
-        int[] results = namedParamOperations.batchUpdate(sql, sources);
-        boolean[] bools = new boolean[results.length];
-        for (int i = 0; i < results.length; i++)
-            bools[i] = results[i] > 0;
-        return bools;
+        namedParamOperations.batchUpdate(sql, sources);
+        return entities;
     }
 
     /**
@@ -229,6 +228,28 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
+    }
+
+    /**
+     * 批量更新对象实例的所有属性。
+     */
+    @Override
+    public List<E> updateBatch(E... objects) {
+        if (objects == null || objects.length == 0)
+            throw new DaoException("实例对象列表为空！");
+        List<E> entities = new ArrayList<>(objects.length);
+        SqlParameterSource[] sources = new SqlParameterSource[objects.length];
+        for (int i = 0; i < objects.length; i++) {
+            E object = objects[i];
+            if (object == null)
+                throw new DaoException("包含为空的实例对象！");
+            sources[i] = new BeanPropertySqlParameterSource(object);
+            entities.add(object);
+        }
+        String sql = sqlGenerator.getUpdateWhereIdEquals(entityClass);
+        LOGGER.info(sql);
+        namedParamOperations.batchUpdate(sql, sources);
+        return entities;
     }
 
     /**
@@ -336,7 +357,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 批量把对象实例从数据库删除。
      */
     @Override
-    public boolean[] deleteBatch(E... objects) {
+    public void deleteBatch(E... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
@@ -347,13 +368,9 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             sqlGenerator.generateId(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
         }
-        String sql = sqlGenerator.getDeleteWhereIdEquals(objects[0].getClass(), true);
+        String sql = sqlGenerator.getDeleteWhereIdEquals(entityClass, true);
         LOGGER.info(sql);
-        int[] results = namedParamOperations.batchUpdate(sql, sources);
-        boolean[] bools = new boolean[results.length];
-        for (int i = 0; i < results.length; i++)
-            bools[i] = results[i] > 0;
-        return bools;
+        namedParamOperations.batchUpdate(sql, sources);
     }
 
     /**

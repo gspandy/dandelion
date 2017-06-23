@@ -253,7 +253,7 @@ public class SqlGenerator {
     }
 
     /**
-     * 生成与实体类对应的Insert语句。
+     * 生成与实例对应的Insert语句并生成ID。
      */
     public String getInsertValues(Object object) {
         Class clazz = object.getClass();
@@ -271,6 +271,38 @@ public class SqlGenerator {
             if (isPropertyTemporary(field)) continue;
             // 处理ID
             identityResolver(field, pd, object);
+            // 添加属性到插入列表
+            if (hasOne) {
+                insert.append(", ");
+                values.append(", ");
+            } else {
+                hasOne = true;
+            }
+            insert.append(convertName(pd.getName()));
+            values.append(":").append(pd.getName());
+        }
+        // 检查并拼装SQL语句
+        if (!hasOne)
+            throw new DaoException("类" + clazz.getName() + "中没有发现可用的属性！");
+        return insert.append(values).append(")").toString();
+    }
+
+    /**
+     * 生成与实体类对应的Insert语句。
+     */
+    public String getInsertValuesByClass(Class clazz) {
+        StringBuilder insert = new StringBuilder("INSERT INTO ")
+                .append(convertName(clazz.getSimpleName())).append(" (");
+        StringBuilder values = new StringBuilder(") VALUES (");
+        PropertyDescriptor[] pds = getBeanInfo(clazz).getPropertyDescriptors();
+        boolean hasOne = false;
+        for (PropertyDescriptor pd : pds) {
+            // 需要可用的属性
+            if (!isPropertyAvailable(pd)) continue;
+            String name = pd.getName();
+            Field field = getPropertyField(clazz, name);
+            // 排除临时的属性
+            if (isPropertyTemporary(field)) continue;
             // 添加属性到插入列表
             if (hasOne) {
                 insert.append(", ");

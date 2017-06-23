@@ -163,29 +163,23 @@ public class CommonBaseDao implements CommonDao {
      * 批量把对象实例的所有属性插入到数据库。
      */
     @Override
-    public boolean[] addBatch(Object... objects) {
+    public <T> List<T> addBatch(T... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
-        Class clazz = null;
+        List<T> entities = new ArrayList<>(objects.length);
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            Object object = objects[i];
+            T object = objects[i];
             if (object == null)
                 throw new DaoException("包含为空的实例对象！");
-            if (clazz == null)
-                clazz = object.getClass();
-            else if (!clazz.equals(object.getClass()))
-                throw new DaoException("对象类型必须相同！");
             sqlGenerator.generateId(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
+            entities.add(object);
         }
-        String sql = sqlGenerator.getInsertValues(objects[0]);
+        String sql = sqlGenerator.getInsertValuesByClass(objects[0].getClass());
         LOGGER.info(sql);
-        int[] results = namedParamOperations.batchUpdate(sql, sources);
-        boolean[] bools = new boolean[results.length];
-        for (int i = 0; i < results.length; i++)
-            bools[i] = results[i] > 0;
-        return bools;
+        namedParamOperations.batchUpdate(sql, sources);
+        return entities;
     }
 
     /**
@@ -228,6 +222,28 @@ public class CommonBaseDao implements CommonDao {
         if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
+    }
+
+    /**
+     * 批量更新对象实例的所有属性。
+     */
+    @Override
+    public <T> List<T> updateBatch(T... objects) {
+        if (objects == null || objects.length == 0)
+            throw new DaoException("实例对象列表为空！");
+        List<T> entities = new ArrayList<>(objects.length);
+        SqlParameterSource[] sources = new SqlParameterSource[objects.length];
+        for (int i = 0; i < objects.length; i++) {
+            T object = objects[i];
+            if (object == null)
+                throw new DaoException("包含为空的实例对象！");
+            sources[i] = new BeanPropertySqlParameterSource(object);
+            entities.add(object);
+        }
+        String sql = sqlGenerator.getUpdateWhereIdEquals(objects[0].getClass());
+        LOGGER.info(sql);
+        namedParamOperations.batchUpdate(sql, sources);
+        return entities;
     }
 
     /**
@@ -339,7 +355,7 @@ public class CommonBaseDao implements CommonDao {
      * 批量把对象实例从数据库删除。
      */
     @Override
-    public <T> boolean[] deleteBatch(T... objects) {
+    public <T> void deleteBatch(T... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
@@ -352,11 +368,7 @@ public class CommonBaseDao implements CommonDao {
         }
         String sql = sqlGenerator.getDeleteWhereIdEquals(objects[0].getClass(), true);
         LOGGER.info(sql);
-        int[] results = namedParamOperations.batchUpdate(sql, sources);
-        boolean[] bools = new boolean[results.length];
-        for (int i = 0; i < results.length; i++)
-            bools[i] = results[i] > 0;
-        return bools;
+        namedParamOperations.batchUpdate(sql, sources);
     }
 
     /**
