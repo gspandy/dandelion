@@ -2,7 +2,7 @@ package com.ewing.normal;
 
 import com.ewing.dandelion.CommonBaseDao;
 import com.ewing.dandelion.CommonDao;
-import com.ewing.dandelion.SqlGenerator;
+import com.ewing.dandelion.generation.SqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

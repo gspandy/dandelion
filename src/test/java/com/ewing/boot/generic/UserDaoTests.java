@@ -1,9 +1,9 @@
-package com.ewing.boot.usertest;
+package com.ewing.boot.generic;
 
 import com.ewing.boot.common.RandomString;
-import com.ewing.boot.usertest.dao.UserDao;
-import com.ewing.boot.usertest.entity.MyUser;
-import com.ewing.dandelion.SqlGenerator;
+import com.ewing.boot.generic.dao.UserDao;
+import com.ewing.boot.generic.entity.MyUser;
+import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
 import org.junit.Assert;
@@ -24,6 +24,9 @@ public class UserDaoTests {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private SqlGenerator sqlGenerator;
 
     /**
      * 创建属性齐全的User对象。
@@ -175,8 +178,21 @@ public class UserDaoTests {
         Assert.assertNull(myUser.getName());
         Assert.assertNotNull(myUser.getDescription());
 
+        // 统计总数
+        long count = userDao.countAll();
+        Assert.assertTrue(count > 0);
+
+        // 获取所有
+        List<MyUser> myUsers = userDao.getAll();
+        Assert.assertTrue(myUsers.size() > 0);
+
+        // 根据ID批量获取
+        MyUser user2 = addUser();
+        myUsers = userDao.getBatch(user.getUserId(), user2.getUserId());
+        Assert.assertTrue(myUsers.size() > 1);
+
         // 清理测试数据
-        clean(user);
+        clean(user, user2);
     }
 
     @Test
@@ -218,30 +234,17 @@ public class UserDaoTests {
         myUser = userDao.findMyUser(user.getName(), user.getName(), user.getLevel());
         Assert.assertNotNull(myUser);
 
-        // 统计总数
-        long count = userDao.countAll();
-        Assert.assertTrue(count > 0);
-
-        // 查询所有
-        List<MyUser> myUsers = userDao.getAll();
-        Assert.assertTrue(myUsers.size() > 0);
-
-        // 根据ID批量查询
-        MyUser user2 = addUser();
-        myUsers = userDao.getBatch(user.getUserId(), user2.getUserId());
-        Assert.assertTrue(myUsers.size() > 1);
-
         // 分页查询所有
         PageData<MyUser> pageUsers = userDao.getByPage(new PageParam(0, 10));
         Assert.assertTrue(pageUsers.getContent().size() > 0);
 
         // 分页查询
-        String sql = new SqlGenerator().getSelectWhereTrue(MyUser.class);
+        String sql = sqlGenerator.getSelectWhereTrue(MyUser.class);
         PageData<MyUser> users = userDao.queryPageData(new PageParam(), MyUser.class, sql);
         Assert.assertTrue(users.getTotal() > 0);
 
         // 清理测试数据
-        clean(user, user2);
+        clean(user);
     }
 
 }

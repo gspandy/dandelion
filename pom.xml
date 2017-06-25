@@ -8,7 +8,7 @@
     <version>2.0.0</version>
     <packaging>jar</packaging>
     <name>Dandelion</name>
-    <description>Dandelion</description>
+    <description>Dandelion</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

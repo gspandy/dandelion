@@ -1,5 +1,7 @@
 package com.ewing.dandelion;
 
+import com.ewing.dandelion.generation.PropertyUtils;
+import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -118,123 +121,126 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
-     * 把对象实例的所有属性插入到数据库。
+     * 私有方法，根据Sql添加对象。
      */
-    @Override
-    public <T> T add(T object) {
-        if (object == null)
-            throw new DaoException("实例对象为空！");
-        String sql = sqlGenerator.getInsertValues(object);
+    private <E> E addObject(E object, String sql) {
         LOGGER.info(sql);
+        sqlGenerator.generateIdentity(object);
         if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("保存对象失败！");
         return object;
+    }
+
+    /**
+     * 把对象实例的所有属性插入到数据库。
+     */
+    @Override
+    public <E> E add(E object) {
+        if (object == null)
+            throw new DaoException("实例对象为空！");
+        String sql = sqlGenerator.getInsertValues(object.getClass());
+        return addObject(object, sql);
     }
 
     /**
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public <T> T addPositive(T object, T config) {
+    public <E> E addPositive(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = sqlGenerator.getInsertPositiveValues(object, config);
-        LOGGER.info(sql);
-        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
-            throw new DaoException("保存对象失败！");
-        return object;
+        String sql = sqlGenerator.getInsertPositive(config);
+        return addObject(object, sql);
     }
 
     /**
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public <T> T addNegative(T object, T config) {
+    public <E> E addNegative(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
-        String sql = sqlGenerator.getInsertNegativeValues(object, config);
-        LOGGER.info(sql);
-        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
-            throw new DaoException("保存对象失败！");
-        return object;
+        String sql = sqlGenerator.getInsertNegative(config);
+        return addObject(object, sql);
     }
 
     /**
      * 批量把对象实例的所有属性插入到数据库。
      */
     @Override
-    public <T> List<T> addBatch(T... objects) {
+    public <E> List<E> addBatch(E... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
-        List<T> entities = new ArrayList<>(objects.length);
+        List<E> entities = new ArrayList<>(objects.length);
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            T object = objects[i];
+            E object = objects[i];
             if (object == null)
                 throw new DaoException("包含为空的实例对象！");
-            sqlGenerator.generateId(object);
+            sqlGenerator.generateIdentity(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
             entities.add(object);
         }
-        String sql = sqlGenerator.getInsertValuesByClass(objects[0].getClass());
+        String sql = sqlGenerator.getInsertValues(objects[0].getClass());
         LOGGER.info(sql);
         namedParamOperations.batchUpdate(sql, sources);
         return entities;
     }
 
     /**
-     * 把对象实例的所有属性更新到数据库。
+     * 私有方法，根据Sql更新对象。
      */
-    @Override
-    public <T> T update(T object) {
-        if (object == null)
-            throw new DaoException("实例对象为空！");
-        String sql = sqlGenerator.getUpdateWhereIdEquals(object.getClass());
+    private <E> E updateObject(E object, String sql) {
         LOGGER.info(sql);
         if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
+    }
+
+    /**
+     * 把对象实例的所有属性更新到数据库。
+     */
+    @Override
+    public <E> E update(E object) {
+        if (object == null)
+            throw new DaoException("实例对象为空！");
+        String sql = sqlGenerator.getUpdateWhereIdEquals(object.getClass());
+        return updateObject(object, sql);
     }
 
     /**
      * 把配置对象积极属性对应的对象实例属性更新到数据库。
      */
     @Override
-    public <T> T updatePositive(T object, T config) {
+    public <E> E updatePositive(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
         String sql = sqlGenerator.getUpdatePositiveWhereIdEquals(config);
-        LOGGER.info(sql);
-        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
-            throw new DaoException("更新对象失败！");
-        return object;
+        return updateObject(object, sql);
     }
 
     /**
      * 把配置对象消极属性对应的对象实例属性更新到数据库。
      */
     @Override
-    public <T> T updateNegative(T object, T config) {
+    public <E> E updateNegative(E object, E config) {
         if (object == null || config == null)
             throw new DaoException("实例对象或配置对象为空！");
         String sql = sqlGenerator.getUpdateNegativeWhereIdEquals(config);
-        LOGGER.info(sql);
-        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
-            throw new DaoException("更新对象失败！");
-        return object;
+        return updateObject(object, sql);
     }
 
     /**
      * 批量更新对象实例的所有属性。
      */
     @Override
-    public <T> List<T> updateBatch(T... objects) {
+    public <E> List<E> updateBatch(E... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
-        List<T> entities = new ArrayList<>(objects.length);
+        List<E> entities = new ArrayList<>(objects.length);
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            T object = objects[i];
+            E object = objects[i];
             if (object == null)
                 throw new DaoException("包含为空的实例对象！");
             sources[i] = new BeanPropertySqlParameterSource(object);
@@ -247,84 +253,99 @@ public class CommonBaseDao implements CommonDao {
     }
 
     /**
-     * 根据ID获取指定类型的对象的所有属性。
+     * 私有方法，根据ID和Sql获取对象。
      */
-    @Override
-    public <T> T get(Class<T> clazz, Object... id) {
-        if (clazz == null || id == null || id.length == 0)
-            throw new DaoException("对象类型或对象ID为空！");
-        String sql = sqlGenerator.getSelectWhereIdEquals(clazz);
-        LOGGER.info(sql);
+    private <E> E getObject(Class<E> clazz, Object id, String sql) {
+        List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(clazz).getIdentityProperties();
         try {
-            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(clazz), id);
+            if (properties.size() == 1) {
+                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(clazz), id);
+            } else {
+                List<Object> params = PropertyUtils.getValues(properties, id);
+                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(clazz), params.toArray());
+            }
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    /**
+     * 根据ID获取指定类型的对象的所有属性。
+     */
+    @Override
+    public <E> E get(Class<E> clazz, Object id) {
+        if (clazz == null || id == null)
+            throw new DaoException("对象类型或ID为空！");
+        String sql = sqlGenerator.getSelectWhereIdEquals(clazz);
+        LOGGER.info(sql);
+        return getObject(clazz, id, sql);
     }
 
     /**
      * 根据ID获取配置对象积极属性对应的对象属性。
      */
     @Override
-    public <T> T getPositive(T config, Object... id) {
-        if (config == null || id == null || id.length == 0)
+    public <E> E getPositive(E config, Object id) {
+        if (config == null || id == null)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = sqlGenerator.getSelectPositiveWhereIdEquals(config);
         LOGGER.info(sql);
-        try {
-            return (T) jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper(config.getClass()), id);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+        return getObject((Class<E>) config.getClass(), id, sql);
     }
 
     /**
      * 根据ID获取配置对象消极属性对应的对象属性。
      */
     @Override
-    public <T> T getNegative(T config, Object... id) {
-        if (config == null || id == null || id.length == 0)
+    public <E> E getNegative(E config, Object id) {
+        if (config == null || id == null)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = sqlGenerator.getSelectNegativeWhereIdEquals(config);
         LOGGER.info(sql);
-        try {
-            return (T) jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper(config.getClass()), id);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+        return getObject((Class<E>) config.getClass(), id, sql);
     }
 
     /**
      * 根据ID数组批量获取指定类型的对象的所有属性。
      */
     @Override
-    public <T> List<T> getBatch(Class<T> clazz, Object... ids) {
-        if (ids == null || ids.length == 0)
-            throw new DaoException("对象ID数组为空！");
-        String sql = sqlGenerator.getSelectWhereBatchIds(clazz, ids.length);
-        LOGGER.info(sql);
-        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), ids);
+    public <E> List<E> getBatch(Class<E> clazz, Object... ids) {
+        if (clazz == null || ids == null || ids.length == 0)
+            throw new DaoException("对象类型或ID数组为空！");
+        // 如果是复合ID 每个参数对象的属性必须包含复合ID属性
+        List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(clazz).getIdentityProperties();
+        if (properties.size() > 1) {
+            String sql = sqlGenerator.getSelectWhereIdEquals(clazz);
+            List<E> entities = new ArrayList<>();
+            for (Object id : ids) {
+                entities.addAll(jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz),
+                        PropertyUtils.getValues(properties, id).toArray()));
+            }
+            return entities;
+        } else {
+            String sql = sqlGenerator.getSelectWhereBatchIds(clazz, ids.length);
+            LOGGER.info(sql);
+            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), ids);
+        }
     }
 
     /**
-     * 查询总数。
+     * 查询指定类型的对象总数。
      */
     @Override
-    public long countAll(Class<?> clazz) {
-        if (clazz == null)
-            throw new DaoException("对象类型为空！");
+    public long countAll(Class clazz) {
         String sql = sqlGenerator.getCountWhereTrue(clazz);
         LOGGER.info(sql);
         return jdbcOperations.queryForObject(sql, Long.class);
     }
 
     /**
-     * 获取所有记录。
+     * 查询指定类型的所有记录。
      */
     @Override
-    public <T> List<T> getAll(Class<T> clazz) {
+    public <E> List<E> getAll(Class<E> clazz) {
         if (clazz == null)
-            throw new DaoException("查询语句为空！");
+            throw new DaoException("对象类型为空！");
         String querySql = sqlGenerator.getSelectWhereTrue(clazz);
         LOGGER.info(querySql);
         return jdbcOperations.query(querySql, BeanPropertyRowMapper.newInstance(clazz));
@@ -333,7 +354,10 @@ public class CommonBaseDao implements CommonDao {
     /**
      * 分页查询所有记录。
      */
-    public <T> PageData<T> getByPage(Class<T> clazz, PageParam pageParam) {
+    @Override
+    public <E> PageData<E> getByPage(Class<E> clazz, PageParam pageParam) {
+        if (clazz == null)
+            throw new DaoException("对象类型为空！");
         String querySql = sqlGenerator.getSelectWhereTrue(clazz);
         return queryPageData(pageParam, clazz, querySql);
     }
@@ -345,9 +369,9 @@ public class CommonBaseDao implements CommonDao {
     public void delete(Object object) {
         if (object == null)
             throw new DaoException("实例对象为空！");
-        String sql = sqlGenerator.getDeleteWhereIdEquals(object.getClass(), true);
+        String sql = sqlGenerator.getDeleteNamedIdEquals(object.getClass());
         LOGGER.info(sql);
-        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 0)
             throw new DaoException("删除对象失败！");
     }
 
@@ -355,7 +379,7 @@ public class CommonBaseDao implements CommonDao {
      * 批量把对象实例从数据库删除。
      */
     @Override
-    public <T> void deleteBatch(T... objects) {
+    public void deleteBatch(Object... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("实例对象列表为空！");
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
@@ -363,10 +387,10 @@ public class CommonBaseDao implements CommonDao {
             Object object = objects[i];
             if (object == null)
                 throw new DaoException("包含为空的实例对象！");
-            sqlGenerator.generateId(object);
+            sqlGenerator.generateIdentity(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
         }
-        String sql = sqlGenerator.getDeleteWhereIdEquals(objects[0].getClass(), true);
+        String sql = sqlGenerator.getDeleteNamedIdEquals(objects[0].getClass());
         LOGGER.info(sql);
         namedParamOperations.batchUpdate(sql, sources);
     }
@@ -375,22 +399,27 @@ public class CommonBaseDao implements CommonDao {
      * 根据对象的ID属性删除指定类型的对象。
      */
     @Override
-    public void deleteById(Class<?> clazz, Object... id) {
-        if (clazz == null || id == null || id.length == 0)
-            throw new DaoException("对象类型或ID对象为空！");
-        String sql = sqlGenerator.getDeleteWhereIdEquals(clazz, false);
+    public void deleteById(Class clazz, Object id) {
+        if (clazz == null || id == null)
+            throw new DaoException("对象类型或ID为空！");
+        String sql = sqlGenerator.getDeleteIdEquals(clazz);
         LOGGER.info(sql);
-        if (jdbcOperations.update(sql, id) < 1)
-            throw new DaoException("删除对象失败！");
+        List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(clazz).getIdentityProperties();
+        if (properties.size() == 1) {
+            if (jdbcOperations.update(sql, id) < 0)
+                throw new DaoException("删除对象失败！");
+        } else {
+            List<Object> params = PropertyUtils.getValues(properties, id);
+            if (jdbcOperations.update(sql, params.toArray()) < 0)
+                throw new DaoException("删除对象失败！");
+        }
     }
 
     /**
      * 删除全部对象。
      */
     @Override
-    public void deleteAll(Class<?> clazz) {
-        if (clazz == null)
-            throw new DaoException("对象类型为空！");
+    public void deleteAll(Class clazz) {
         String sql = sqlGenerator.getDeleteWhereTrue(clazz);
         LOGGER.info(sql);
         jdbcOperations.update(sql);

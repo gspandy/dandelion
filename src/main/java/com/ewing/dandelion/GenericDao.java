@@ -1,5 +1,6 @@
 package com.ewing.dandelion;
 
+import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -106,41 +107,45 @@ public interface GenericDao<E> {
     List<E> updateBatch(E... objects);
 
     /**
-     * 根据ID获取指定类型的对象的所有属性。
+     * 根据ID获取对象的所有属性。
+     * 如果是实体有多个ID，则需要传入包含完整ID的对象。
      *
-     * @param id 对象ID，支持多ID（联合主键）。
-     * @return 指定类型的对象。
+     * @param id ID或包含完整ID的对象。
+     * @return 对象实例。
      */
-    E get(Object... id);
+    E get(Object id);
 
     /**
      * 根据ID获取配置对象积极属性对应的对象属性。
+     * 如果是实体有多个ID，则需要传入包含完整ID的对象。
      *
-     * @param config 指定对象配置，必须包含ID值。
-     * @param id     对象ID，支持多ID（联合主键）。
-     * @return 指定类型的对象。
+     * @param config 指定对象配置。
+     * @param id     ID或包含完整ID的对象。
+     * @return 对象实例。
      */
-    E getPositive(E config, Object... id);
+    E getPositive(E config, Object id);
 
     /**
      * 根据ID获取配置对象消极属性对应的对象属性。
+     * 如果是实体有多个ID，则需要传入包含完整ID的对象。
      *
-     * @param config 指定对象配置，必须包含ID值。
-     * @param id     对象ID，支持多ID（联合主键）。
-     * @return 指定类型的对象。
+     * @param config 指定对象配置。
+     * @param id     ID或包含完整ID的对象。
+     * @return 对象实例。
      */
-    E getNegative(E config, Object... id);
+    E getNegative(E config, Object id);
 
     /**
-     * 根据ID数组批量获取指定类型的对象的所有属性。
+     * 根据ID数组批量获取对象的所有属性。
+     * 如果是实体有多个ID，则需要传入包含完整ID的对象数组。
      *
-     * @param ids 对象ID数组，只支持单个ID的对象。
-     * @return 指定类型的对象集合。
+     * @param ids ID或包含完整ID的对象数组。
+     * @return 对象实例。
      */
     List<E> getBatch(Object... ids);
 
     /**
-     * 查询总数。
+     * 查询总记录数。
      *
      * @return 总记录数。
      */
@@ -176,11 +181,12 @@ public interface GenericDao<E> {
     void deleteBatch(E... objects);
 
     /**
-     * 根据对象的ID属性删除指定类型的对象。
+     * 根据对象的ID属性删除对象。
+     * 如果是实体有多个ID，则需要传入包含完整ID的对象。
      *
-     * @param id 对象ID，支持多ID（联合主键）。
+     * @param id ID或包含完整ID的对象。
      */
-    void deleteById(Object... id);
+    void deleteById(Object id);
 
     /**
      * 删除所有对象。

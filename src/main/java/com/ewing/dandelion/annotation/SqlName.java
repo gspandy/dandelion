@@ -3,14 +3,16 @@ package com.ewing.dandelion.annotation;
 import java.lang.annotation.*;
 
 /**
- * 该注解标记的属性在生成Sql语句时被忽略。
+ * 配置对象类型在Sql中的名称。
  *
  * @author Ewing
  * @since 2017-05-22
  **/
 @Inherited
 @Documented
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Temporary {
+public @interface SqlName {
+    // 对象类型在Sql中的名称
+    String value();
 }

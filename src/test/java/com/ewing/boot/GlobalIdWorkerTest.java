@@ -1,6 +1,6 @@
 package com.ewing.boot;
 
-import com.ewing.dandelion.GlobalIdWorker;
+import com.ewing.dandelion.generation.GlobalIdWorker;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;

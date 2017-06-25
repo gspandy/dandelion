@@ -1,6 +1,7 @@
-package com.ewing.boot.usertest.entity;
+package com.ewing.boot.generic.entity;
 
 import com.ewing.dandelion.annotation.Identity;
+import com.ewing.dandelion.annotation.SqlName;
 import com.ewing.dandelion.annotation.Temporary;
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.util.Date;
  * @author Ewing
  * @since 2017-04-21
  **/
+@SqlName("MYUSER")
 public class MyUser {
 
     @Identity(generate = true)
@@ -21,9 +23,11 @@ public class MyUser {
 
     private String description;
 
+    @Temporary
+    private String temporary;
+
     private Boolean boolValue;
 
-    @Temporary
     private Date dateValue;
 
     private BigDecimal bigDecimal;
@@ -70,6 +74,14 @@ public class MyUser {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTemporary() {
+        return temporary;
+    }
+
+    public void setTemporary(String temporary) {
+        this.temporary = temporary;
     }
 
     public Boolean getBoolValue() {

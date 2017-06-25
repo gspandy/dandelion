@@ -1,4 +1,4 @@
-package com.ewing.dandelion;
+package com.ewing.dandelion.generation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,18 +34,9 @@ public class GlobalIdWorker {
     private final static int counterFlag = 1 << 24;
 
     /**
-     * 生成全局唯一ID。
+     * 私有化构造方法。
      */
-    public static BigInteger nextBigInteger() {
-        long timestamp = System.currentTimeMillis() >>> timeTruncate;
-
-        int count = counter.getAndIncrement() & counterMask;
-
-        // ID偏移组合生成最终的ID，并返回ID
-        String idBit = Long.toBinaryString(timestamp) + runMacProcBit +
-                Integer.toBinaryString(count | counterFlag).substring(1);
-
-        return new BigInteger(idBit, 2);
+    private GlobalIdWorker() {
     }
 
     /**
@@ -58,6 +49,21 @@ public class GlobalIdWorker {
         String machineIdBit = Integer.toBinaryString(machineId).substring(1);
         String processIdBit = Integer.toBinaryString(processId).substring(1);
         runMacProcBit = machineIdBit + processIdBit;
+    }
+
+    /**
+     * 生成全局唯一ID。
+     */
+    public static BigInteger nextBigInteger() {
+        long timestamp = System.currentTimeMillis() >>> timeTruncate;
+
+        int count = counter.getAndIncrement() & counterMask;
+
+        // ID偏移组合生成最终的ID，并返回ID
+        String idBit = Long.toBinaryString(timestamp) + runMacProcBit +
+                Integer.toBinaryString(count | counterFlag).substring(1);
+
+        return new BigInteger(idBit, 2);
     }
 
     /**

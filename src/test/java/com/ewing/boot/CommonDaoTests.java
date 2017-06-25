@@ -1,9 +1,9 @@
 package com.ewing.boot;
 
 import com.ewing.boot.common.RandomString;
-import com.ewing.boot.usertest.entity.MyUser;
+import com.ewing.boot.generic.entity.MyUser;
 import com.ewing.dandelion.CommonDao;
-import com.ewing.dandelion.SqlGenerator;
+import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
 import org.junit.Assert;
@@ -175,8 +175,21 @@ public class CommonDaoTests {
         Assert.assertNull(myUser.getName());
         Assert.assertNotNull(myUser.getDescription());
 
+        // 统计总数
+        long count = commonDao.countAll(MyUser.class);
+        Assert.assertTrue(count > 0);
+
+        // 查询所有
+        List<MyUser> myUsers = commonDao.getAll(MyUser.class);
+        Assert.assertTrue(myUsers.size() > 0);
+
+        // 根据ID批量查询
+        MyUser user2 = addUser();
+        myUsers = commonDao.getBatch(MyUser.class, user.getUserId(), user2.getUserId());
+        Assert.assertTrue(myUsers.size() > 1);
+
         // 清理测试数据
-        clean(user);
+        clean(user, user2);
     }
 
     @Test
@@ -210,18 +223,6 @@ public class CommonDaoTests {
     @Test
     public void queryUserTest() {
         MyUser user = addUser();
-        // 统计总数
-        long count = commonDao.countAll(MyUser.class);
-        Assert.assertTrue(count > 0);
-
-        // 查询所有
-        List<MyUser> myUsers = commonDao.getAll(MyUser.class);
-        Assert.assertTrue(myUsers.size() > 0);
-
-        // 根据ID批量查询
-        MyUser user2 = addUser();
-        myUsers = commonDao.getBatch(MyUser.class, user.getUserId(), user2.getUserId());
-        Assert.assertTrue(myUsers.size() > 1);
 
         // 分页查询所有
         PageData<MyUser> pageUsers = commonDao.getByPage(MyUser.class, new PageParam(0, 10));
@@ -233,7 +234,7 @@ public class CommonDaoTests {
         Assert.assertTrue(users.getTotal() > 0);
 
         // 清理测试数据
-        clean(user, user2);
+        clean(user);
     }
 
 }
