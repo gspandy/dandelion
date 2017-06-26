@@ -19,7 +19,7 @@ public class SqlGenerator {
     /**
      * 实体对象信息缓存。
      */
-    private ConcurrentHashMap<Class, EntityInfo> entityInfoCache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Class, EntityInfo> entityInfoCache = new ConcurrentHashMap<>();
 
     /**
      * Sql中的名称处理器。
@@ -81,7 +81,7 @@ public class SqlGenerator {
                 builder.append(",");
             if (tableAlias != null)
                 builder.append(tableAlias).append(".");
-            builder.append(nameHandler.convertName(field.getName()));
+            builder.append(nameHandler.getSqlName(field));
         }
         return builder.toString();
     }
@@ -106,7 +106,7 @@ public class SqlGenerator {
             if (PropertyUtils.isPositive(properties.get(i), config) == positive) {
                 if (builder.length() > 0)
                     builder.append(",");
-                builder.append(nameHandler.convertName(field.getName()));
+                builder.append(nameHandler.getSqlName(field));
             }
         }
         return builder.toString();
@@ -369,14 +369,14 @@ public class SqlGenerator {
             if (PropertyUtils.isPositive(properties.get(i), config) == positive) {
                 if (updates.length() > 0)
                     updates.append(",");
-                updates.append(nameHandler.convertName(field.getName())).append("=:").append(field.getName());
+                updates.append(nameHandler.getSqlName(field)).append("=:").append(field.getName());
             }
         }
         List<Field> identityFields = entityInfo.getIdentityFields();
         for (Field field : identityFields) {
             if (identities.length() > 0)
                 identities.append(" AND ");
-            identities.append(nameHandler.convertName(field.getName())).append("=:").append(field.getName());
+            identities.append(nameHandler.getSqlName(field)).append("=:").append(field.getName());
         }
         return "UPDATE " + nameHandler.getSqlName(clazz) + " SET " + updates + " WHERE " + identities;
     }
@@ -392,13 +392,13 @@ public class SqlGenerator {
         for (Field field : fields) {
             if (updates.length() > 0)
                 updates.append(",");
-            updates.append(nameHandler.convertName(field.getName())).append("=:").append(field.getName());
+            updates.append(nameHandler.getSqlName(field)).append("=:").append(field.getName());
         }
         List<Field> identityFields = entityInfo.getIdentityFields();
         for (Field field : identityFields) {
             if (identities.length() > 0)
                 identities.append(" AND ");
-            identities.append(nameHandler.convertName(field.getName())).append("=:").append(field.getName());
+            identities.append(nameHandler.getSqlName(field)).append("=:").append(field.getName());
         }
         return "UPDATE " + nameHandler.getSqlName(clazz) + " SET " + updates + " WHERE " + identities;
     }

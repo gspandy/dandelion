@@ -1,6 +1,6 @@
-package com.ewing.boot.generic.dao;
+package com.ewing.boot.genericdao.dao;
 
-import com.ewing.boot.generic.entity.MyUser;
+import com.ewing.boot.genericdao.entity.MyUser;
 import com.ewing.dandelion.GenericBaseDao;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 用户实体泛型DAO接口。
+ *
  * @author Ewing
  * @since 2017-04-21
  **/

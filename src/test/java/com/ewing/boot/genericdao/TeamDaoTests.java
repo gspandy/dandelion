@@ -1,8 +1,8 @@
-package com.ewing.boot.generic;
+package com.ewing.boot.genericdao;
 
 import com.ewing.boot.common.RandomString;
-import com.ewing.boot.generic.dao.TeamDao;
-import com.ewing.boot.generic.entity.Team;
+import com.ewing.boot.genericdao.dao.TeamDao;
+import com.ewing.boot.genericdao.entity.Team;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
@@ -17,8 +17,11 @@ import org.springframework.util.StringUtils;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(SpringRunner.class)
+/**
+ * 团队实体泛型DAO测试。
+ */
 @SpringBootTest
+@RunWith(SpringRunner.class)
 public class TeamDaoTests {
 
     @Autowired

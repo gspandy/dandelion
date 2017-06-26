@@ -9,29 +9,29 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 实体类型及属性信息，对读操作线程安全，所有属性只允许读取，不允许修改。
+ * 实体类型及属性信息，该类是只读的。
  */
 public class EntityInfo {
 
-    private Class entityClass;
+    private final Class entityClass;
 
-    private BeanInfo beanInfo;
+    private final BeanInfo beanInfo;
 
-    private List<Field> fields = new ArrayList<>();
+    private final List<Field> fields = new CopyOnWriteArrayList<>();
 
-    private List<Field> identityFields = new ArrayList<>();
+    private final List<Field> identityFields = new CopyOnWriteArrayList<>();
 
-    private List<Field> normalFields = new ArrayList<>();
+    private final List<Field> normalFields = new CopyOnWriteArrayList<>();
 
-    private List<PropertyDescriptor> properties = new ArrayList<>();
+    private final List<PropertyDescriptor> properties = new CopyOnWriteArrayList<>();
 
-    private List<PropertyDescriptor> identityProperties = new ArrayList<>();
+    private final List<PropertyDescriptor> identityProperties = new CopyOnWriteArrayList<>();
 
-    private List<PropertyDescriptor> normalProperties = new ArrayList<>();
+    private final List<PropertyDescriptor> normalProperties = new CopyOnWriteArrayList<>();
 
     public EntityInfo(Class entityClass) {
         this.entityClass = entityClass;

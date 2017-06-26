@@ -1,4 +1,4 @@
-package com.ewing.boot.generic.entity;
+package com.ewing.boot.genericdao.entity;
 
 import com.ewing.dandelion.annotation.Identity;
 import com.ewing.dandelion.annotation.Temporary;
@@ -6,8 +6,7 @@ import com.ewing.dandelion.annotation.Temporary;
 import java.util.Date;
 
 /**
- * @author Ewing
- * @since 2017-04-21
+ * 团队实体，多ID。
  **/
 public class Team {
 

@@ -1,8 +1,8 @@
-package com.ewing.boot.generic;
+package com.ewing.boot.genericdao;
 
 import com.ewing.boot.common.RandomString;
-import com.ewing.boot.generic.dao.UserDao;
-import com.ewing.boot.generic.entity.MyUser;
+import com.ewing.boot.genericdao.dao.UserDao;
+import com.ewing.boot.genericdao.entity.MyUser;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
@@ -18,8 +18,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(SpringRunner.class)
+/**
+ * 用户实体泛型DAO测试。
+ */
 @SpringBootTest
+@RunWith(SpringRunner.class)
 public class UserDaoTests {
 
     @Autowired

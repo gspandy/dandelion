@@ -1,7 +1,7 @@
 package com.ewing.boot;
 
 import com.ewing.boot.common.RandomString;
-import com.ewing.boot.generic.entity.MyUser;
+import com.ewing.boot.genericdao.entity.MyUser;
 import com.ewing.dandelion.CommonDao;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;

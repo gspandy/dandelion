@@ -1,9 +1,11 @@
-package com.ewing.boot.generic.dao;
+package com.ewing.boot.genericdao.dao;
 
-import com.ewing.boot.generic.entity.MyUser;
+import com.ewing.boot.genericdao.entity.MyUser;
 import com.ewing.dandelion.GenericDao;
 
 /**
+ * 用户实体泛型DAO。
+ *
  * @author Ewing
  * @since 2017-04-21
  **/

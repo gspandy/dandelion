@@ -2,6 +2,7 @@ package com.ewing.normal;
 
 import com.ewing.dandelion.CommonBaseDao;
 import com.ewing.dandelion.CommonDao;
+import com.ewing.dandelion.generation.NameHandler;
 import com.ewing.dandelion.generation.SqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,8 @@ public class NormalDaoConfig {
 
     @Bean
     public SqlGenerator sqlGenerator() {
-        return new SqlGenerator();
+        NameHandler nameHandler = new NameHandler(true);
+        return new SqlGenerator(nameHandler);
     }
 
     @Bean
