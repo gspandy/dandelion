@@ -310,20 +310,16 @@ public class CommonBaseDao implements CommonDao {
     public <E> List<E> getBatch(Class<E> clazz, Object... ids) {
         if (clazz == null || ids == null || ids.length == 0)
             throw new DaoException("对象类型或ID数组为空！");
+        String sql = sqlGenerator.getSelectWhereBatchIds(clazz, ids.length);
+        LOGGER.debug(sql);
         // 如果则参数为该实体的实例 使用反射取ID值
         if (clazz.equals(ids[0].getClass())) {
             List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(clazz).getIdentityProperties();
-            String sql = sqlGenerator.getSelectWhereIdEquals(clazz);
-            LOGGER.debug(sql);
-            List<E> entities = new ArrayList<>(ids.length);
-            for (Object id : ids) {
-                List<Object> params = PropertyUtils.getValues(properties, id);
-                entities.addAll(jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), params.toArray()));
-            }
-            return entities;
+            List<Object> params = new ArrayList<>();
+            for (Object id : ids)
+                params.addAll(PropertyUtils.getValues(properties, id));
+            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), params.toArray());
         } else {
-            String sql = sqlGenerator.getSelectWhereBatchIds(clazz, ids.length);
-            LOGGER.debug(sql);
             return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), ids);
         }
     }
