@@ -356,7 +356,6 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     @Override
     public PageData<E> getByPage(PageParam pageParam) {
         String querySql = sqlGenerator.getSelectWhereTrue(entityClass);
-        LOGGER.debug(querySql);
         return queryPageData(pageParam, entityClass, querySql);
     }
 

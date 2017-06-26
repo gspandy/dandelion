@@ -354,7 +354,6 @@ public class CommonBaseDao implements CommonDao {
         if (clazz == null)
             throw new DaoException("对象类型为空！");
         String querySql = sqlGenerator.getSelectWhereTrue(clazz);
-        LOGGER.debug(querySql);
         return queryPageData(pageParam, clazz, querySql);
     }
 
