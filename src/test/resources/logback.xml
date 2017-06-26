@@ -2,11 +2,13 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %boldYellow(%thread) %highlight(%-5level) %boldGreen(%caller{1}) : %msg%n</Pattern>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %boldYellow(%thread) %highlight(%-5level) %boldGreen(%caller{1}) %msg%n
+            </Pattern>
         </encoder>
     </appender>
     <root>
         <level value="INFO"/>
         <appender-ref ref="STDOUT"/>
     </root>
+    <logger name="com.ewing.dandelion" level="DEBUG"/>
 </configuration>
