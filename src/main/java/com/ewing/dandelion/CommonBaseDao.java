@@ -316,7 +316,7 @@ public class CommonBaseDao implements CommonDao {
         List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(clazz).getIdentityProperties();
         if (properties.size() > 1) {
             String sql = sqlGenerator.getSelectWhereIdEquals(clazz);
-            List<E> entities = new ArrayList<>();
+            List<E> entities = new ArrayList<>(ids.length);
             for (Object id : ids) {
                 entities.addAll(jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz),
                         PropertyUtils.getValues(properties, id).toArray()));

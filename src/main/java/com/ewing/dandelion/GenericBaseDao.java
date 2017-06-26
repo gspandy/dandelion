@@ -322,7 +322,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(entityClass).getIdentityProperties();
         if (properties.size() > 1) {
             String sql = sqlGenerator.getSelectWhereIdEquals(entityClass);
-            List<E> entities = new ArrayList<>();
+            List<E> entities = new ArrayList<>(ids.length);
             for (Object id : ids) {
                 entities.addAll(jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass),
                         PropertyUtils.getValues(properties, id).toArray()));
