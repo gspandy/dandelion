@@ -130,7 +130,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 私有方法，根据Sql添加对象。
      */
     private E addObject(E object, String sql) {
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         sqlGenerator.generateIdentity(object);
         if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("保存对象失败！");
@@ -188,7 +188,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             entities.add(object);
         }
         String sql = sqlGenerator.getInsertValues(entityClass);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         namedParamOperations.batchUpdate(sql, sources);
         return entities;
     }
@@ -197,7 +197,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 私有方法，根据Sql更新对象。
      */
     private E updateObject(E object, String sql) {
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
             throw new DaoException("更新对象失败！");
         return object;
@@ -253,7 +253,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             entities.add(object);
         }
         String sql = sqlGenerator.getUpdateWhereIdEquals(entityClass);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         namedParamOperations.batchUpdate(sql, sources);
         return entities;
     }
@@ -262,13 +262,13 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 私有方法，根据ID和Sql获取对象。
      */
     private E getObject(Object id, String sql) {
-        List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(entityClass).getIdentityProperties();
         try {
-            if (properties.size() == 1) {
-                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), id);
-            } else {
+            if (entityClass.equals(id.getClass())) {
+                List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(entityClass).getIdentityProperties();
                 List<Object> params = PropertyUtils.getValues(properties, id);
                 return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), params.toArray());
+            } else {
+                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), id);
             }
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -283,7 +283,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (id == null)
             throw new DaoException("对象ID为空！");
         String sql = sqlGenerator.getSelectWhereIdEquals(entityClass);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         return getObject(id, sql);
     }
 
@@ -295,7 +295,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (config == null || id == null)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = sqlGenerator.getSelectPositiveWhereIdEquals(config);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         return getObject(id, sql);
     }
 
@@ -307,7 +307,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (config == null || id == null)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = sqlGenerator.getSelectNegativeWhereIdEquals(config);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         return getObject(id, sql);
     }
 
@@ -318,19 +318,20 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public List<E> getBatch(Object... ids) {
         if (ids == null || ids.length == 0)
             throw new DaoException("对象ID数组为空！");
-        // 如果是复合ID 每个参数对象的属性必须包含复合ID属性
-        List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(entityClass).getIdentityProperties();
-        if (properties.size() > 1) {
+        // 如果则参数为该实体的实例 使用反射取ID值
+        if (entityClass.equals(ids[0].getClass())) {
+            List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(entityClass).getIdentityProperties();
             String sql = sqlGenerator.getSelectWhereIdEquals(entityClass);
+            LOGGER.debug(sql);
             List<E> entities = new ArrayList<>(ids.length);
             for (Object id : ids) {
-                entities.addAll(jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass),
-                        PropertyUtils.getValues(properties, id).toArray()));
+                List<Object> params = PropertyUtils.getValues(properties, id);
+                entities.addAll(jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params.toArray()));
             }
             return entities;
         } else {
             String sql = sqlGenerator.getSelectWhereBatchIds(entityClass, ids.length);
-            LOGGER.info(sql);
+            LOGGER.debug(sql);
             return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), ids);
         }
     }
@@ -341,7 +342,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     @Override
     public long countAll() {
         String sql = sqlGenerator.getCountWhereTrue(entityClass);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         return jdbcOperations.queryForObject(sql, Long.class);
     }
 
@@ -351,7 +352,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     @Override
     public List<E> getAll() {
         String querySql = sqlGenerator.getSelectWhereTrue(entityClass);
-        LOGGER.info(querySql);
+        LOGGER.debug(querySql);
         return jdbcOperations.query(querySql, BeanPropertyRowMapper.newInstance(entityClass));
     }
 
@@ -372,7 +373,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (object == null)
             throw new DaoException("实例对象为空！");
         String sql = sqlGenerator.getDeleteNamedIdEquals(entityClass);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 0)
             throw new DaoException("删除对象失败！");
     }
@@ -393,7 +394,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             sources[i] = new BeanPropertySqlParameterSource(object);
         }
         String sql = sqlGenerator.getDeleteNamedIdEquals(entityClass);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         namedParamOperations.batchUpdate(sql, sources);
     }
 
@@ -405,14 +406,14 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (id == null)
             throw new DaoException("对象ID为空！");
         String sql = sqlGenerator.getDeleteIdEquals(entityClass);
-        LOGGER.info(sql);
-        List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(entityClass).getIdentityProperties();
-        if (properties.size() == 1) {
-            if (jdbcOperations.update(sql, id) < 0)
-                throw new DaoException("删除对象失败！");
-        } else {
+        LOGGER.debug(sql);
+        if (entityClass.equals(id.getClass())) {
+            List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(entityClass).getIdentityProperties();
             List<Object> params = PropertyUtils.getValues(properties, id);
             if (jdbcOperations.update(sql, params.toArray()) < 0)
+                throw new DaoException("删除对象失败！");
+        } else {
+            if (jdbcOperations.update(sql, id) < 0)
                 throw new DaoException("删除对象失败！");
         }
     }
@@ -423,7 +424,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     @Override
     public void deleteAll() {
         String sql = sqlGenerator.getDeleteWhereTrue(entityClass);
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         jdbcOperations.update(sql);
     }
 
@@ -434,7 +435,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public long queryLong(String sql, Object... params) {
         if (sql == null)
             throw new DaoException("查询语句为空！");
-        LOGGER.info(sql);
+        LOGGER.debug(sql);
         return jdbcOperations.queryForObject(sql, Long.class, params);
     }
 
@@ -445,7 +446,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public <T> T queryObject(Class<T> clazz, String querySql, Object... params) {
         if (clazz == null || querySql == null)
             throw new DaoException("对象类型或查询语句为空！");
-        LOGGER.info(querySql);
+        LOGGER.debug(querySql);
         try {
             return jdbcOperations.queryForObject(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
         } catch (EmptyResultDataAccessException e) {
@@ -460,7 +461,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public <T> List<T> queryObjectList(Class<T> clazz, String querySql, Object... params) {
         if (clazz == null || querySql == null)
             throw new DaoException("对象类型或查询语句为空！");
-        LOGGER.info(querySql);
+        LOGGER.debug(querySql);
         return jdbcOperations.query(querySql, BeanPropertyRowMapper.newInstance(clazz), params);
     }
 
@@ -471,7 +472,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public Map queryMap(String querySql, Object... params) {
         if (querySql == null)
             throw new DaoException("查询语句为空！");
-        LOGGER.info(querySql);
+        LOGGER.debug(querySql);
         try {
             return jdbcOperations.queryForMap(querySql, params);
         } catch (EmptyResultDataAccessException e) {
@@ -486,7 +487,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     public List<Map<String, Object>> queryMapList(String querySql, Object... params) {
         if (querySql == null)
             throw new DaoException("查询语句为空！");
-        LOGGER.info(querySql);
+        LOGGER.debug(querySql);
         return jdbcOperations.queryForList(querySql, params);
     }
 
@@ -507,7 +508,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             }
         }
         String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
-        LOGGER.info(pageSql);
+        LOGGER.debug(pageSql);
         pageData.setContent(jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params));
         return pageData;
     }
@@ -529,7 +530,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
             }
         }
         String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
-        LOGGER.info(pageSql);
+        LOGGER.debug(pageSql);
         pageData.setContent(jdbcOperations.queryForList(pageSql, params));
         return pageData;
     }
