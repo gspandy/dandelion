@@ -1,4 +1,4 @@
-# \u6570\u636E\u5E93\u914D\u7F6E
+#  Spring Boot 配置
 spring:
   datasource:
     schema: classpath:firstdata.sql
