@@ -262,6 +262,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
      * 私有方法，根据ID和Sql获取对象。
      */
     private E getObject(Object id, String sql) {
+        LOGGER.debug(sql);
         try {
             if (entityClass.equals(id.getClass())) {
                 List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(entityClass).getIdentityProperties();
@@ -283,7 +284,6 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (id == null)
             throw new DaoException("对象ID为空！");
         String sql = sqlGenerator.getSelectWhereIdEquals(entityClass);
-        LOGGER.debug(sql);
         return getObject(id, sql);
     }
 
@@ -295,7 +295,6 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (config == null || id == null)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = sqlGenerator.getSelectPositiveWhereIdEquals(config);
-        LOGGER.debug(sql);
         return getObject(id, sql);
     }
 
@@ -307,7 +306,6 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         if (config == null || id == null)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = sqlGenerator.getSelectNegativeWhereIdEquals(config);
-        LOGGER.debug(sql);
         return getObject(id, sql);
     }
 
@@ -362,6 +360,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     @Override
     public PageData<E> getByPage(PageParam pageParam) {
         String querySql = sqlGenerator.getSelectWhereTrue(entityClass);
+        LOGGER.debug(querySql);
         return queryPageData(pageParam, entityClass, querySql);
     }
 

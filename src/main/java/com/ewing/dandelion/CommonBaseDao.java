@@ -256,6 +256,7 @@ public class CommonBaseDao implements CommonDao {
      * 私有方法，根据ID和Sql获取对象。
      */
     private <E> E getObject(Class<E> clazz, Object id, String sql) {
+        LOGGER.debug(sql);
         try {
             if (clazz.equals(id.getClass())) {
                 List<PropertyDescriptor> properties = getSqlGenerator().getEntityInfo(clazz).getIdentityProperties();
@@ -277,7 +278,6 @@ public class CommonBaseDao implements CommonDao {
         if (clazz == null || id == null)
             throw new DaoException("对象类型或ID为空！");
         String sql = sqlGenerator.getSelectWhereIdEquals(clazz);
-        LOGGER.debug(sql);
         return getObject(clazz, id, sql);
     }
 
@@ -289,7 +289,6 @@ public class CommonBaseDao implements CommonDao {
         if (config == null || id == null)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = sqlGenerator.getSelectPositiveWhereIdEquals(config);
-        LOGGER.debug(sql);
         return getObject((Class<E>) config.getClass(), id, sql);
     }
 
@@ -301,7 +300,6 @@ public class CommonBaseDao implements CommonDao {
         if (config == null || id == null)
             throw new DaoException("配置对象或对象ID为空！");
         String sql = sqlGenerator.getSelectNegativeWhereIdEquals(config);
-        LOGGER.debug(sql);
         return getObject((Class<E>) config.getClass(), id, sql);
     }
 
@@ -360,6 +358,7 @@ public class CommonBaseDao implements CommonDao {
         if (clazz == null)
             throw new DaoException("对象类型为空！");
         String querySql = sqlGenerator.getSelectWhereTrue(clazz);
+        LOGGER.debug(querySql);
         return queryPageData(pageParam, clazz, querySql);
     }
 
