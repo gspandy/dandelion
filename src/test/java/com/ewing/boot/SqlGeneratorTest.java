@@ -32,8 +32,8 @@ public class SqlGeneratorTest {
         SqlGenerator sqlGenerator = new SqlGenerator();
 
         // 高并发及性能测试
-        int threads = 10000;
-        int perThread = 100;
+        int threads = 1000;
+        int perThread = 1000;
         CountDownLatch latch = new CountDownLatch(threads);
         long time = System.currentTimeMillis();
         for (int i = 0; i < threads; i++) {

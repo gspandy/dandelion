@@ -32,8 +32,8 @@ public class GlobalIdWorkerTest {
         System.out.println("\n使用到" + date + "的值是：" + id + "\n转换成36进制： " + id.toString(36));
 
         // 高并发性能测试
-        int threads = 1000;
-        int perThread = 10000;
+        int threads = 10000;
+        int perThread = 1000;
         CountDownLatch latch = new CountDownLatch(threads);
         Object[] results = new Object[threads * perThread];
         final AtomicInteger index = new AtomicInteger();
