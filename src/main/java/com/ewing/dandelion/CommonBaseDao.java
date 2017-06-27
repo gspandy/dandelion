@@ -106,18 +106,16 @@ public class CommonBaseDao implements CommonDao {
      */
     @Override
     public boolean appendHasParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
-        boolean hasOne = false;
-        for (Object param : newParams)
+        for (Object param : newParams) {
             if (param != null && (!(param instanceof String) || ((String) param).trim().length() > 0)) {
-                hasOne = true;
-                break;
+                sqlBuilder.append(sqlPart);
+                for (Object newParam : newParams) {
+                    allParams.add(newParam);
+                }
+                return true;
             }
-        if (hasOne) { // 存在非null的参数
-            sqlBuilder.append(sqlPart);
-            for (Object param : newParams)
-                allParams.add(param);
         }
-        return hasOne;
+        return false;
     }
 
     /**
@@ -382,7 +380,6 @@ public class CommonBaseDao implements CommonDao {
             Object object = objects[i];
             if (object == null)
                 throw new DaoException("包含为空的实例对象！");
-            sqlGenerator.generateIdentity(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
         }
         String sql = sqlGenerator.getDeleteNamedIdEquals(objects[0].getClass());
@@ -499,7 +496,7 @@ public class CommonBaseDao implements CommonDao {
                 return pageData;
             }
         }
-        String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
+        String pageSql = querySql + " LIMIT " + pageParam.getLimit() + " OFFSET " + pageParam.getOffset();
         LOGGER.debug(pageSql);
         pageData.setContent(jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params));
         return pageData;
@@ -521,7 +518,7 @@ public class CommonBaseDao implements CommonDao {
                 return pageData;
             }
         }
-        String pageSql = querySql + " LIMIT " + pageParam.getOffset() + "," + pageParam.getLimit();
+        String pageSql = querySql + " LIMIT " + pageParam.getLimit() + " OFFSET " + pageParam.getOffset();
         LOGGER.debug(pageSql);
         pageData.setContent(jdbcOperations.queryForList(pageSql, params));
         return pageData;
