@@ -1,5 +1,6 @@
 package com.ewing.dandelion.generation;
 
+import com.ewing.dandelion.DaoException;
 import org.springframework.stereotype.Component;
 
 import java.beans.PropertyDescriptor;
@@ -109,6 +110,8 @@ public class SqlGenerator {
                 builder.append(nameHandler.getSqlName(field));
             }
         }
+        if (builder.length() == 0)
+            throw new DaoException("没有可用的属性值！");
         return builder.toString();
     }
 
@@ -325,13 +328,14 @@ public class SqlGenerator {
         List<PropertyDescriptor> properties = entityInfo.getProperties();
         for (int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
-            if (PropertyUtils.isIdentity(field)) {
+            boolean isIdentity = PropertyUtils.isIdentity(field);
+            if (isIdentity) {
                 if (identities.length() > 0)
                     identities.append(" AND ");
                 identities.append(nameHandler.getSqlName(field)).append("=?");
             }
             // 添加属性到查询结果
-            if (PropertyUtils.isPositive(properties.get(i), config) == positive) {
+            if (isIdentity || PropertyUtils.isPositive(properties.get(i), config) == positive) {
                 if (columns.length() > 0)
                     columns.append(",");
                 columns.append(nameHandler.getSqlName(field));
@@ -378,6 +382,8 @@ public class SqlGenerator {
                 identities.append(" AND ");
             identities.append(nameHandler.getSqlName(field)).append("=:").append(field.getName());
         }
+        if (updates.length() == 0)
+            throw new DaoException("没有需要更新的属性！");
         return "UPDATE " + nameHandler.getSqlName(clazz) + " SET " + updates + " WHERE " + identities;
     }
 
@@ -400,6 +406,8 @@ public class SqlGenerator {
                 identities.append(" AND ");
             identities.append(nameHandler.getSqlName(field)).append("=:").append(field.getName());
         }
+        if (updates.length() == 0)
+            throw new DaoException("没有需要更新的属性！");
         return "UPDATE " + nameHandler.getSqlName(clazz) + " SET " + updates + " WHERE " + identities;
     }
 
