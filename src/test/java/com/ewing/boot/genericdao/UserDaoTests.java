@@ -243,7 +243,7 @@ public class UserDaoTests {
 
         // 分页查询
         String sql = sqlGenerator.getSelectWhereTrue(MyUser.class);
-        PageData<MyUser> users = userDao.queryPageData(new PageParam(), MyUser.class, sql);
+        PageData<MyUser> users = userDao.queryObjectPage(new PageParam(), MyUser.class, sql);
         Assert.assertTrue(users.getTotal() > 0);
 
         // 清理测试数据

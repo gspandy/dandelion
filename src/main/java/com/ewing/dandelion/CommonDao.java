@@ -283,7 +283,7 @@ public interface CommonDao {
      * @param querySql 查询语句。
      * @return 指定类型的对象。
      */
-    <T> PageData<T> queryPageData(PageParam pageParam, Class<T> clazz, String querySql, Object... params);
+    <T> PageData<T> queryObjectPage(PageParam pageParam, Class<T> clazz, String querySql, Object... params);
 
     /**
      * 分页查询多条记录并封装成Map集合。
@@ -291,6 +291,6 @@ public interface CommonDao {
      * @param querySql 查询语句。
      * @return 存储结果的Map集合。
      */
-    PageData<Map<String, Object>> queryPageMap(PageParam pageParam, String querySql, Object... params);
+    PageData<Map<String, Object>> queryMapPage(PageParam pageParam, String querySql, Object... params);
 
 }

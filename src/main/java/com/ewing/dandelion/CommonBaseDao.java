@@ -352,7 +352,7 @@ public class CommonBaseDao implements CommonDao {
         if (clazz == null)
             throw new DaoException("对象类型为空！");
         String querySql = sqlGenerator.getSelectWhereTrue(clazz);
-        return queryPageData(pageParam, clazz, querySql);
+        return queryObjectPage(pageParam, clazz, querySql);
     }
 
     /**
@@ -484,7 +484,7 @@ public class CommonBaseDao implements CommonDao {
      * 分页查询多条记录并封装成指定类型的对象集合。
      */
     @Override
-    public <T> PageData<T> queryPageData(PageParam pageParam, Class<T> clazz, String querySql, Object... params) {
+    public <T> PageData<T> queryObjectPage(PageParam pageParam, Class<T> clazz, String querySql, Object... params) {
         if (clazz == null || querySql == null || pageParam == null)
             throw new DaoException("对象类型或查询语句或分页参数为空！");
         PageData<T> pageData = new PageData<>();
@@ -506,7 +506,7 @@ public class CommonBaseDao implements CommonDao {
      * 分页查询多条记录并封装成Map集合。
      */
     @Override
-    public PageData<Map<String, Object>> queryPageMap(PageParam pageParam, String querySql, Object... params) {
+    public PageData<Map<String, Object>> queryMapPage(PageParam pageParam, String querySql, Object... params) {
         if (querySql == null || pageParam == null)
             throw new DaoException("查询语句或分页参数为空！");
         PageData<Map<String, Object>> pageData = new PageData<>();

@@ -220,7 +220,7 @@ public class TeamDaoTests {
 
         // 分页查询
         String sql = sqlGenerator.getSelectWhereTrue(Team.class);
-        PageData<Team> teams = teamDao.queryPageData(new PageParam(), Team.class, sql);
+        PageData<Team> teams = teamDao.queryObjectPage(new PageParam(), Team.class, sql);
         Assert.assertTrue(teams.getTotal() > 0);
 
         // 清理测试数据
