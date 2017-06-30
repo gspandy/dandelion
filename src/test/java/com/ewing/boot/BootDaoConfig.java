@@ -2,7 +2,6 @@ package com.ewing.boot;
 
 import com.ewing.dandelion.CommonBaseDao;
 import com.ewing.dandelion.CommonDao;
-import com.ewing.dandelion.generation.NameHandler;
 import com.ewing.dandelion.generation.SqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +24,7 @@ public class BootDaoConfig {
 
     @Bean
     public SqlGenerator sqlGenerator() {
-        NameHandler nameHandler = new NameHandler();
-        return new SqlGenerator(nameHandler);
+        return new SqlGenerator();
     }
 
     @Bean

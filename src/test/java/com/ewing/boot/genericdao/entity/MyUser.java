@@ -1,7 +1,6 @@
 package com.ewing.boot.genericdao.entity;
 
 import com.ewing.dandelion.annotation.Identity;
-import com.ewing.dandelion.annotation.SqlName;
 import com.ewing.dandelion.annotation.Temporary;
 
 import java.math.BigDecimal;
@@ -10,10 +9,8 @@ import java.util.Date;
 /**
  * 用户实体。
  **/
-@SqlName("MYUSER")
 public class MyUser {
-
-    @Identity(generate = true)
+    @Identity
     private String userId;
 
     private String name;

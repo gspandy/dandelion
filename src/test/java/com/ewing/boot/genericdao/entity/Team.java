@@ -1,6 +1,7 @@
 package com.ewing.boot.genericdao.entity;
 
 import com.ewing.dandelion.annotation.Identity;
+import com.ewing.dandelion.annotation.SqlName;
 import com.ewing.dandelion.annotation.Temporary;
 
 import java.util.Date;
@@ -8,15 +9,15 @@ import java.util.Date;
 /**
  * 团队实体，多ID。
  **/
+@SqlName("TEAM")
 public class Team {
-
-    @Identity(generate = true)
+    @Identity
     private String myId;
 
-    @Identity(generate = true)
+    @Identity
     private String yourId;
 
-    @Identity(generate = true)
+    @Identity
     private String hisId;
 
     private String name;

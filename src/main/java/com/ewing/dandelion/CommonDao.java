@@ -245,52 +245,52 @@ public interface CommonDao {
     /**
      * 查询一条记录并封装成指定类型的对象。
      *
-     * @param clazz    指定对象类型。
-     * @param querySql 查询语句。
+     * @param clazz 指定对象类型。
+     * @param sql   查询语句。
      * @return 指定类型的对象。
      */
-    <T> T queryObject(Class<T> clazz, String querySql, Object... params);
+    <T> T queryObject(Class<T> clazz, String sql, Object... params);
 
     /**
      * 查询多条记录并封装成指定类型的对象集合。
      *
-     * @param clazz    指定对象类型。
-     * @param querySql 查询语句。
+     * @param clazz 指定对象类型。
+     * @param sql   查询语句。
      * @return 指定类型的对象。
      */
-    <T> List<T> queryObjectList(Class<T> clazz, String querySql, Object... params);
+    <T> List<T> queryObjectList(Class<T> clazz, String sql, Object... params);
 
     /**
      * 查询一条记录并封装成Map。
      *
-     * @param querySql 查询语句。
+     * @param sql 查询语句。
      * @return 存储结果的Map。
      */
-    Map queryMap(String querySql, Object... params);
+    Map queryMap(String sql, Object... params);
 
     /**
      * 查询多条记录并封装成Map集合。
      *
-     * @param querySql 查询语句。
+     * @param sql 查询语句。
      * @return 存储结果的Map集合。
      */
-    List<Map<String, Object>> queryMapList(String querySql, Object... params);
+    List<Map<String, Object>> queryMapList(String sql, Object... params);
 
     /**
      * 分页查询多条记录并封装成指定类型的对象集合。
      *
-     * @param clazz    指定对象类型。
-     * @param querySql 查询语句。
+     * @param clazz 指定对象类型。
+     * @param sql   查询语句。
      * @return 指定类型的对象。
      */
-    <T> PageData<T> queryObjectPage(PageParam pageParam, Class<T> clazz, String querySql, Object... params);
+    <T> PageData<T> queryObjectPage(PageParam pageParam, Class<T> clazz, String sql, Object... params);
 
     /**
      * 分页查询多条记录并封装成Map集合。
      *
-     * @param querySql 查询语句。
+     * @param sql 查询语句。
      * @return 存储结果的Map集合。
      */
-    PageData<Map<String, Object>> queryMapPage(PageParam pageParam, String querySql, Object... params);
+    PageData<Map<String, Object>> queryMapPage(PageParam pageParam, String sql, Object... params);
 
 }

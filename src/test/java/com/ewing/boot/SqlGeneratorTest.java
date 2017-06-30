@@ -1,7 +1,6 @@
 package com.ewing.boot;
 
 import com.ewing.boot.genericdao.entity.MyUser;
-import com.ewing.dandelion.generation.NameHandler;
 import com.ewing.dandelion.generation.SqlGenerator;
 
 import java.lang.reflect.Method;
@@ -37,19 +36,17 @@ public class SqlGeneratorTest {
         CountDownLatch latch = new CountDownLatch(threads);
         long time = System.currentTimeMillis();
         for (int i = 0; i < threads; i++) {
-            new Thread(new Runnable() {
-                public void run() {
-                    for (int n = 0; n < perThread; n++) {
-                        MyUser myUser = new MyUser();
-                        myUser.setName("ABC123");
-                        sqlGenerator.getInsertPositive(config);
-                        sqlGenerator.generateIdentity(myUser);
-                        sqlGenerator.getSelectPositiveWhereIdEquals(config);
-                        sqlGenerator.getUpdatePositiveWhereIdEquals(config);
-                        sqlGenerator.getDeleteNamedIdEquals(MyUser.class);
-                    }
-                    latch.countDown();
+            new Thread(() -> {
+                for (int n = 0; n < perThread; n++) {
+                    MyUser myUser = new MyUser();
+                    myUser.setName("ABC123");
+                    sqlGenerator.getInsertPositive(config);
+                    sqlGenerator.generateIdentity(myUser);
+                    sqlGenerator.getSelectPositiveWhereIdEquals(config);
+                    sqlGenerator.getUpdatePositiveWhereIdEquals(config);
+                    sqlGenerator.getDeleteNamedIdEquals(MyUser.class);
                 }
+                latch.countDown();
             }).start();
         }
         latch.await();
@@ -77,7 +74,6 @@ public class SqlGeneratorTest {
         for (int i = 0; i < times; i++)
             sqlGenerator.getSelectPositiveWhereIdEquals(config);
         System.out.println("单线程生成查询语句 " + times + " 次用时：" + (System.currentTimeMillis() - time) + " 毫秒");
-
     }
 
     /**
@@ -90,13 +86,13 @@ public class SqlGeneratorTest {
         config.setBytesValue(new byte[0]);
 
         // 使用下划线风格的Sql命名（@SqlName注解优先）
-        NameHandler nameHandler = new NameHandler(true);
-        SqlGenerator sqlGenerator = new SqlGenerator(nameHandler);
+        SqlGenerator sqlGenerator = new SqlGenerator(true);
 
         // 按方法名字典顺序调用SqlGenerator中的方法
         Method[] methods = SqlGenerator.class.getDeclaredMethods();
         Arrays.sort(methods, Comparator.comparing(Method::getName));
         for (Method method : methods) {
+            method.setAccessible(true);
             StringBuilder name = new StringBuilder(method.getName()).append("(");
             List<Object> params = new ArrayList<>();
             Class[] types = method.getParameterTypes();
