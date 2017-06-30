@@ -29,26 +29,23 @@ public class PageParam {
         return offset;
     }
 
-    public PageParam setOffset(int offset) {
+    public void setOffset(int offset) {
         this.offset = offset;
-        return this;
     }
 
     public int getLimit() {
         return limit;
     }
 
-    public PageParam setLimit(int limit) {
+    public void setLimit(int limit) {
         this.limit = limit;
-        return this;
     }
 
     public boolean isCount() {
         return count;
     }
 
-    public PageParam setCount(boolean count) {
+    public void setCount(boolean count) {
         this.count = count;
-        return this;
     }
 }
