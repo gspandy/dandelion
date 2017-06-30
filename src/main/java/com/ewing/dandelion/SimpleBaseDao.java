@@ -162,14 +162,15 @@ public class SimpleBaseDao implements SimpleDao {
             String countSql = "SELECT COUNT(*) FROM ( " + sql + " ) _Total_";
             pageData.setTotal(queryLong(countSql, params));
             if (pageData.getTotal() == 0) {
-                pageData.setContent(new ArrayList<>(0));
-                return pageData;
+                return pageData.setContent(new ArrayList<>(0));
             }
         }
         String pageSql = sql + " LIMIT " + pageParam.getLimit() + " OFFSET " + pageParam.getOffset();
         LOGGER.debug(pageSql);
-        pageData.setContent(jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params));
-        return pageData;
+        List<T> content = jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params);
+        if (!pageParam.isCount())
+            pageData.setTotal(content.size());
+        return pageData.setContent(content);
     }
 
     /**
@@ -184,14 +185,15 @@ public class SimpleBaseDao implements SimpleDao {
             String countSql = "SELECT COUNT(*) FROM ( " + sql + " ) _Total_";
             pageData.setTotal(queryLong(countSql, params));
             if (pageData.getTotal() == 0) {
-                pageData.setContent(new ArrayList<>(0));
-                return pageData;
+                return pageData.setContent(new ArrayList<>(0));
             }
         }
         String pageSql = sql + " LIMIT " + pageParam.getLimit() + " OFFSET " + pageParam.getOffset();
         LOGGER.debug(pageSql);
-        pageData.setContent(jdbcOperations.queryForList(pageSql, params));
-        return pageData;
+        List<Map<String, Object>> content = jdbcOperations.queryForList(pageSql, params);
+        if (!pageParam.isCount())
+            pageData.setTotal(content.size());
+        return pageData.setContent(content);
     }
 
 }

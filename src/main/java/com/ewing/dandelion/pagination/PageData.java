@@ -26,15 +26,17 @@ public class PageData<T> {
         return total;
     }
 
-    public void setTotal(long total) {
+    public PageData<T> setTotal(long total) {
         this.total = total;
+        return this;
     }
 
     public List<T> getContent() {
         return content;
     }
 
-    public void setContent(List<T> content) {
+    public PageData<T> setContent(List<T> content) {
         this.content = content;
+        return this;
     }
 }
