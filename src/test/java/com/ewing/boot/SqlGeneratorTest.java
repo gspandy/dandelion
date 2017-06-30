@@ -1,6 +1,6 @@
 package com.ewing.boot;
 
-import com.ewing.boot.genericdao.entity.MyUser;
+import com.ewing.boot.entity.MyUser;
 import com.ewing.dandelion.generation.SqlGenerator;
 
 import java.lang.reflect.Method;

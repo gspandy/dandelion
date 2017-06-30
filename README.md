@@ -3,21 +3,21 @@
 ##### Spring Jdbc具有强大的参数解析、简化执行过程、返回值封装等特性，加上所有执行过程都调试可达，修改即时生效，使得开发和维护具有极高的效率。
 ##### 该工具作为Spring jdbc的增强，以原生SQL为核心，自动生成对象操作的SQL，简化分页和查询，同时可使用其中的JdbcTemplate，无后顾之忧。
 
-##### 1、对象基本CRUD操作，可轻松选取或屏蔽部分属性，支持定义临时属性，支持批量操作。
+##### 1、实体对象基本CRUD操作，可轻松选取或屏蔽部分属性，支持定义临时属性，支持批量操作。
 ##### 2、支持生成全局唯一ID，支持多ID组成的联合主键，手动赋值和自动生成两种方式可选。
-##### 3、该工具使用原生SQL，可使用SQL生成器生成主体SQL，少量编码即可实现自定义查询。
+##### 3、支持多数据源，可用数据库原生SQL，使用SQL生成器生成主体SQL，少量编码即可实现自定义操作。
 ##### 4、使用LIMIT OFFSET分页语法，支持MySql、PostgreSQL和H2等数据库，其他数据库须简单修改。
-##### 5、清晰有序的方法命名、完善的文档注释、使用原生SQL，极低的学习成本。
+##### 5、清晰有序的方法命名、完善的文档注释、使用标准SQL，极低的学习成本。
 
 -----
 
 ## 该工具遵循以下约定
 
-##### 1、积极的属性：非null的对象类型（包括包装类型），基本类型大于0或为true的值，反之则为消极的属性，系统默认初始化的值都是消极属性。
-##### 2、积极或消极的属性可以作为属性名单配置，用于选取或屏蔽对象的部分属性，故不建议在实体类中使用默认值，也不建议使用基本类型。
-##### 3、实体属性名默认与数据库表的列名相同，配置类中SqlGenerator的构造参数为true即可使用下划线风格，MySql建议保持与对象属性名称一致。
-##### 4、主键ID为20位36进制数组成的字符串，多机器部署、单机多实例都ID不重复、保持递增趋势、尾数分布均匀，可分库分表可移植数据库。
-##### 5、除分页查询使用LIMIT语句外，其他语句均为标准SQL语句，理论上支持所有关系型数据库。
+##### 1、实体说明：含有带Getter和Setter方法的属性且不能全部标记为临时属性。若没有标记为ID的属性，则依赖ID相关的方法无法使用。
+##### 2、积极属性：非null的对象类型（包括包装类型），基本类型大于0或为true的值，反之则为消极的属性，系统默认初始化的值都是消极属性。
+##### 3、积极或消极的属性可以作为属性名单配置，用于选取或屏蔽对象的部分属性，故不建议在实体类中使用默认值，也不建议使用基本类型。
+##### 4、实体属性名默认与数据库表的列名相同，配置类中SqlGenerator的构造参数为true即可使用下划线风格，MySql建议保持与对象属性名称一致。
+##### 5、主键ID为20位字符串或31位（从30位递增）整数，多机器多实例生成ID不重复、保持递增趋势、尾数分布均匀，可分库分表可移植数据库。
 
 -----
 
@@ -32,15 +32,16 @@
 #####  Spring Boot 项目：添加 spring-boot-starter-jdbc 依赖，参考或者复制 src/test/java 下的 com.ewing.boot.BootDaoConfig 类到项目中，并使Spring能扫描到该配置类。
 ##### 普通 Spring 项目：先配置一个数据源 DataSource，参考或者复制 src/test/java 下的 com.ewing.normal.NormalDaoConfig 类到项目中，并使Spring能扫描到该配置类。
 ##### 原理：该工具需要配置JdbcOperations和NamedParameterJdbcOperations的实现，即JdbcTemplate和NamedParameterJdbcTemplate（这两个类依赖DataSource）。
+##### 多数据源：每个EntityBaseDao使用对应数据源创建；继承GenericBaseDao的实体Dao类，覆盖父类的setJdbcOperations和setNamedParamOperations方法可自定义数据源。
 
 -----
 
 ## 接口及实现类包说明
 
-#### 源码有详细注释，可生成Java文档，使用案例可参考测试用例中的UserDaoTests、UserDaoImpl和CommonDaoTest类。
+#### 源码有详细注释，可生成Java文档，使用案例可参考测试用例中的UserDaoTests、UserDaoImpl和EntityDaoTest类。
 
 ##### GenericDao接口及实现类GenericBaseDao，普通DAO类通过继承该接口，可以让该DAO类具有特定实体专用的CRUD方法。
-##### CommonDao接口及实现类CommonBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。
+##### EntityDao接口及实现类EntityBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。
 ##### SqlGenerator可以生成任意实体的查询SQL语句主体，可自由使用原生SQL追加条件和参数，灵活度非常高。
 ##### Identity注解可以标记属性为ID，支持多个ID（联合主键），参数generate表示是否生成ID值，默认生成，支持String和BigInteger的ID生成。
 ##### Temporary注解标记的属性在生成Sql语句时被忽略，成为临时属性，但不影响Spring Jdbc使用该属性，常用于附加关联数据。

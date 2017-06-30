@@ -1,6 +1,5 @@
 package com.ewing.dandelion;
 
-import com.ewing.dandelion.generation.Property;
 import com.ewing.dandelion.generation.PropertyUtils;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
@@ -19,7 +18,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 基本数据访问类。
@@ -27,13 +25,12 @@ import java.util.Map;
  * @author Ewing
  * @since 2017-03-04
  **/
-public abstract class GenericBaseDao<E> implements GenericDao<E> {
+public abstract class GenericBaseDao<E> extends SimpleBaseDao implements GenericDao<E> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericBaseDao.class);
 
-    private final Class<E> entityClass;
-    private JdbcOperations jdbcOperations;
-    private NamedParameterJdbcOperations namedParamOperations;
-    private SqlGenerator sqlGenerator;
+    protected final Class<E> entityClass;
+
+    protected SqlGenerator sqlGenerator;
 
     /**
      * 快速初始化的构造方法。
@@ -51,10 +48,12 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         return entityClass;
     }
 
+
     /**
      * 获取Sql生成器。
      */
-    protected SqlGenerator getSqlGenerator() {
+    @Override
+    public SqlGenerator getSqlGenerator() {
         return sqlGenerator;
     }
 
@@ -68,26 +67,12 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     }
 
     /**
-     * 获取操作数据库的JdbcOperations。
-     */
-    protected JdbcOperations getJdbcOperations() {
-        return jdbcOperations;
-    }
-
-    /**
      * 设置操作数据库的JdbcOperations。
      */
     @Override
     @Autowired
     public void setJdbcOperations(JdbcOperations jdbcOperations) {
-        this.jdbcOperations = jdbcOperations;
-    }
-
-    /**
-     * 获取操作数据库的命名JdbcOperations。
-     */
-    protected NamedParameterJdbcOperations getNamedParamOperations() {
-        return namedParamOperations;
+        super.setJdbcOperations(jdbcOperations);
     }
 
     /**
@@ -96,32 +81,7 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
     @Override
     @Autowired
     public void setNamedParamOperations(NamedParameterJdbcOperations namedParamOperations) {
-        this.namedParamOperations = namedParamOperations;
-    }
-
-    /**
-     * 追加Sql子句并添加参数到参数列表。
-     */
-    protected void appendSqlParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
-        sqlBuilder.append(sqlPart);
-        for (Object param : newParams)
-            allParams.add(param);
-    }
-
-    /**
-     * 当存在参数时追加Sql语句并添加参数。
-     */
-    protected boolean appendHasParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
-        for (Object param : newParams) {
-            if (param != null && (!(param instanceof String) || ((String) param).trim().length() > 0)) {
-                sqlBuilder.append(sqlPart);
-                for (Object newParam : newParams) {
-                    allParams.add(newParam);
-                }
-                return true;
-            }
-        }
-        return false;
+        super.setNamedParamOperations(namedParamOperations);
     }
 
     /**
@@ -263,9 +223,8 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         LOGGER.debug(sql);
         try {
             if (entityClass.equals(id.getClass())) {
-                List<Property> identities = getSqlGenerator().getEntityInfo(entityClass).getIdentities();
-                List<Object> params = PropertyUtils.getValues(identities, id);
-                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), params.toArray());
+                Object[] params = PropertyUtils.getEntityIds(getSqlGenerator().getEntityInfo(entityClass), id);
+                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), params);
             } else {
                 return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), id);
             }
@@ -318,11 +277,8 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         LOGGER.debug(sql);
         // 如果则参数为该实体的实例 使用反射取ID值
         if (entityClass.equals(ids[0].getClass())) {
-            List<Property> identities = getSqlGenerator().getEntityInfo(entityClass).getIdentities();
-            List<Object> params = new ArrayList<>();
-            for (Object id : ids)
-                params.addAll(PropertyUtils.getValues(identities, id));
-            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params.toArray());
+            Object[] params = PropertyUtils.getEntitiesIds(getSqlGenerator().getEntityInfo(entityClass), ids);
+            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
         } else {
             return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), ids);
         }
@@ -399,9 +355,8 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         String sql = sqlGenerator.getDeleteIdEquals(entityClass);
         LOGGER.debug(sql);
         if (entityClass.equals(id.getClass())) {
-            List<Property> identities = getSqlGenerator().getEntityInfo(entityClass).getIdentities();
-            List<Object> params = PropertyUtils.getValues(identities, id);
-            if (jdbcOperations.update(sql, params.toArray()) < 0)
+            Object[] params = PropertyUtils.getEntityIds(getSqlGenerator().getEntityInfo(entityClass), id);
+            if (jdbcOperations.update(sql, params) < 0)
                 throw new DaoException("Delete object failed.");
         } else {
             if (jdbcOperations.update(sql, id) < 0)
@@ -417,113 +372,6 @@ public abstract class GenericBaseDao<E> implements GenericDao<E> {
         String sql = sqlGenerator.getDeleteWhereTrue(entityClass);
         LOGGER.debug(sql);
         jdbcOperations.update(sql);
-    }
-
-    /**
-     * 查询一个整数并封装成长整数。
-     */
-    @Override
-    public long queryLong(String sql, Object... params) {
-        if (sql == null)
-            throw new DaoException("Query sql is empty.");
-        LOGGER.debug(sql);
-        return jdbcOperations.queryForObject(sql, Long.class, params);
-    }
-
-    /**
-     * 查询一条记录并封装成指定类型的对象。
-     */
-    @Override
-    public <T> T queryObject(Class<T> clazz, String sql, Object... params) {
-        if (clazz == null || sql == null)
-            throw new DaoException("Class or sql is empty.");
-        LOGGER.debug(sql);
-        try {
-            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(clazz), params);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-
-    /**
-     * 查询多条记录并封装成指定类型的对象集合。
-     */
-    @Override
-    public <T> List<T> queryObjectList(Class<T> clazz, String sql, Object... params) {
-        if (clazz == null || sql == null)
-            throw new DaoException("Class or sql is empty.");
-        LOGGER.debug(sql);
-        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), params);
-    }
-
-    /**
-     * 查询一条记录并封装成Map。
-     */
-    @Override
-    public Map queryMap(String sql, Object... params) {
-        if (sql == null)
-            throw new DaoException("Query sql is empty.");
-        LOGGER.debug(sql);
-        try {
-            return jdbcOperations.queryForMap(sql, params);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-
-    /**
-     * 查询多条记录并封装成Map集合。
-     */
-    @Override
-    public List<Map<String, Object>> queryMapList(String sql, Object... params) {
-        if (sql == null)
-            throw new DaoException("Query sql is empty.");
-        LOGGER.debug(sql);
-        return jdbcOperations.queryForList(sql, params);
-    }
-
-    /**
-     * 分页查询多条记录并封装成指定类型的对象集合。
-     */
-    @Override
-    public <T> PageData<T> queryObjectPage(PageParam pageParam, Class<T> clazz, String sql, Object... params) {
-        if (pageParam == null || clazz == null || sql == null)
-            throw new DaoException("Page parameter or class or sql is empty.");
-        PageData<T> pageData = new PageData<>();
-        if (pageParam.isCount()) {
-            String countSql = "SELECT COUNT(*) FROM ( " + sql + " ) _Total_";
-            pageData.setTotal(queryLong(countSql, params));
-            if (pageData.getTotal() == 0) {
-                pageData.setContent(new ArrayList<>(0));
-                return pageData;
-            }
-        }
-        String pageSql = sql + " LIMIT " + pageParam.getLimit() + " OFFSET " + pageParam.getOffset();
-        LOGGER.debug(pageSql);
-        pageData.setContent(jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params));
-        return pageData;
-    }
-
-    /**
-     * 分页查询多条记录并封装成Map集合。
-     */
-    @Override
-    public PageData<Map<String, Object>> queryMapPage(PageParam pageParam, String sql, Object... params) {
-        if (pageParam == null || sql == null)
-            throw new DaoException("Page parameter or sql is empty.");
-        PageData<Map<String, Object>> pageData = new PageData<>();
-        if (pageParam.isCount()) {
-            String countSql = "SELECT COUNT(*) FROM ( " + sql + " ) _Total_";
-            pageData.setTotal(queryLong(countSql, params));
-            if (pageData.getTotal() == 0) {
-                pageData.setContent(new ArrayList<>(0));
-                return pageData;
-            }
-        }
-        String pageSql = sql + " LIMIT " + pageParam.getLimit() + " OFFSET " + pageParam.getOffset();
-        LOGGER.debug(pageSql);
-        pageData.setContent(jdbcOperations.queryForList(pageSql, params));
-        return pageData;
     }
 
 }

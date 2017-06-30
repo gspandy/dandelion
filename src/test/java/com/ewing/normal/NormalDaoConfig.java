@@ -1,7 +1,9 @@
 package com.ewing.normal;
 
-import com.ewing.dandelion.CommonBaseDao;
-import com.ewing.dandelion.CommonDao;
+import com.ewing.dandelion.EntityBaseDao;
+import com.ewing.dandelion.EntityDao;
+import com.ewing.dandelion.SimpleBaseDao;
+import com.ewing.dandelion.SimpleDao;
 import com.ewing.dandelion.generation.SqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,18 +36,38 @@ public class NormalDaoConfig {
         return new NamedParameterJdbcTemplate(jdbcOperations());
     }
 
+    /**
+     * 配置Sql生成器对象。
+     * 构造参数为true时使用下划线风格。
+     */
     @Bean
     public SqlGenerator sqlGenerator() {
         return new SqlGenerator();
     }
 
+    /**
+     * 配置EntityDao的实现EntityBaseDao对象。
+     */
     @Bean
-    public CommonDao commonDao() {
-        CommonDao commonDao = new CommonBaseDao();
-        commonDao.setJdbcOperations(jdbcOperations());
-        commonDao.setNamedParamOperations(namedParamOperations());
-        commonDao.setSqlGenerator(sqlGenerator());
-        return commonDao;
+    public EntityDao EntityDao() {
+        EntityDao entityDao = new EntityBaseDao();
+        entityDao.setJdbcOperations(jdbcOperations());
+        entityDao.setNamedParamOperations(namedParamOperations());
+        entityDao.setSqlGenerator(sqlGenerator());
+        return entityDao;
+    }
+
+    /**
+     * 配置SimpleDao的实现SimpleBaseDao对象。
+     * EntityBaseDao继承自该类，包含该类所有方法。
+     * 如无需要可以不配置SimpleBaseDao对象。
+     */
+    // @Bean
+    public SimpleDao simpleDao() {
+        SimpleDao simpleDao = new SimpleBaseDao();
+        simpleDao.setJdbcOperations(jdbcOperations());
+        simpleDao.setNamedParamOperations(namedParamOperations());
+        return simpleDao;
     }
 
 }

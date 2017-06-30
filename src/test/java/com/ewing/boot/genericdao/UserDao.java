@@ -1,6 +1,6 @@
-package com.ewing.boot.genericdao.dao;
+package com.ewing.boot.genericdao;
 
-import com.ewing.boot.genericdao.entity.MyUser;
+import com.ewing.boot.entity.MyUser;
 import com.ewing.dandelion.GenericDao;
 
 /**

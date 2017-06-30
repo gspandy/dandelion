@@ -1,4 +1,4 @@
-package com.ewing.boot.genericdao.entity;
+package com.ewing.boot.entity;
 
 import com.ewing.dandelion.annotation.Identity;
 import com.ewing.dandelion.annotation.Temporary;

@@ -1,8 +1,8 @@
 package com.ewing.boot;
 
 import com.ewing.boot.common.RandomString;
-import com.ewing.boot.genericdao.entity.MyUser;
-import com.ewing.dandelion.CommonDao;
+import com.ewing.boot.entity.MyUser;
+import com.ewing.dandelion.EntityDao;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
@@ -20,10 +20,10 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CommonDaoTests {
+public class EntityDaoTests {
 
     @Autowired
-    private CommonDao commonDao;
+    private EntityDao entityDao;
 
     /**
      * 创建属性齐全的User对象。
@@ -50,7 +50,7 @@ public class CommonDaoTests {
      */
     private MyUser addUser() {
         MyUser myUser = createUser();
-        commonDao.add(myUser);
+        entityDao.add(myUser);
         return myUser;
     }
 
@@ -58,30 +58,30 @@ public class CommonDaoTests {
      * 清理测试数据。
      */
     private void clean(MyUser... myUsers) {
-        commonDao.deleteBatch(myUsers);
+        entityDao.deleteBatch(myUsers);
     }
 
     @Test
     public void addUserTest() {
         // 保存全部属性
         MyUser user = createUser();
-        commonDao.add(user);
+        entityDao.add(user);
         Assert.assertTrue(StringUtils.hasText(user.getUserId()));
         // 清理测试数据
         clean(user);
 
         // 批量添加对象
         MyUser[] users = {createUser(), createUser(), createUser()};
-        commonDao.addBatch(users);
-        Assert.assertTrue(commonDao.countAll(MyUser.class) >= users.length);
+        entityDao.addBatch(users);
+        Assert.assertTrue(entityDao.countAll(MyUser.class) >= users.length);
         clean(users);
 
         // 只保存name属性
         user = createUser();
         MyUser config = new MyUser();
         config.setName("");
-        commonDao.addPositive(user, config);
-        MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
+        entityDao.addPositive(user, config);
+        MyUser myUser = entityDao.get(MyUser.class, user.getUserId());
         Assert.assertNotNull(myUser.getName());
         Assert.assertNull(myUser.getDescription());
         // 清理测试数据
@@ -91,8 +91,8 @@ public class CommonDaoTests {
         user = createUser();
         config = new MyUser();
         config.setName("");
-        commonDao.addNegative(user, config);
-        myUser = commonDao.get(MyUser.class, user.getUserId());
+        entityDao.addNegative(user, config);
+        myUser = entityDao.get(MyUser.class, user.getUserId());
         Assert.assertNotNull(myUser.getDescription());
         Assert.assertNull(myUser.getName());
         // 清理测试数据
@@ -115,8 +115,8 @@ public class CommonDaoTests {
         myUser.setFloatValue(1523.23F);
         myUser.setShortValue((short) 1623);
         myUser.setBytesValue(new byte[]{11, 15, 112});
-        commonDao.update(myUser);
-        MyUser result = commonDao.get(MyUser.class, myUser.getUserId());
+        entityDao.update(myUser);
+        MyUser result = entityDao.get(MyUser.class, myUser.getUserId());
         Assert.assertTrue(result.getName().equals(myUser.getName()));
 
         // 只更新name属性
@@ -124,8 +124,8 @@ public class CommonDaoTests {
         config.setName("");
         myUser.setName(RandomString.randomChinese(3));
         myUser.setLevel(8);
-        commonDao.updatePositive(myUser, config);
-        result = commonDao.get(MyUser.class, myUser.getUserId());
+        entityDao.updatePositive(myUser, config);
+        result = entityDao.get(MyUser.class, myUser.getUserId());
         Assert.assertTrue(result.getName().equals(myUser.getName()));
         Assert.assertTrue(!result.getLevel().equals(myUser.getLevel()));
 
@@ -134,19 +134,19 @@ public class CommonDaoTests {
         config.setName("");
         myUser.setName(RandomString.randomChinese(3));
         myUser.setLevel(8);
-        commonDao.updateNegative(myUser, config);
-        result = commonDao.get(MyUser.class, myUser.getUserId());
+        entityDao.updateNegative(myUser, config);
+        result = entityDao.get(MyUser.class, myUser.getUserId());
         Assert.assertTrue(!result.getName().equals(myUser.getName()));
         Assert.assertTrue(result.getLevel().equals(myUser.getLevel()));
 
         // 批量更新对象
         MyUser[] users = {createUser(), createUser(), createUser()};
-        commonDao.addBatch(users);
+        entityDao.addBatch(users);
         for (MyUser user : users)
             user.setName(RandomString.randomChinese(3));
-        commonDao.updateBatch(users);
+        entityDao.updateBatch(users);
         for (MyUser user : users)
-            Assert.assertTrue(user.getName().equals(commonDao.get(MyUser.class, user.getUserId()).getName()));
+            Assert.assertTrue(user.getName().equals(entityDao.get(MyUser.class, user.getUserId()).getName()));
         clean(users);
 
         // 清理测试数据
@@ -157,35 +157,35 @@ public class CommonDaoTests {
     public void getUserTest() {
         // 根据ID获取对象
         MyUser user = addUser();
-        MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
+        MyUser myUser = entityDao.get(MyUser.class, user.getUserId());
         // 没有异常 简单验证
         Assert.assertTrue(user.getName().equals(myUser.getName()));
 
         // 只取name属性
         MyUser config = new MyUser();
         config.setName("");
-        myUser = commonDao.getPositive(config, user.getUserId());
+        myUser = entityDao.getPositive(config, user.getUserId());
         Assert.assertNull(myUser.getDescription());
         Assert.assertNotNull(myUser.getName());
 
         // 屏蔽name属性
         config = new MyUser();
         config.setName("");
-        myUser = commonDao.getNegative(config, user.getUserId());
+        myUser = entityDao.getNegative(config, user.getUserId());
         Assert.assertNull(myUser.getName());
         Assert.assertNotNull(myUser.getDescription());
 
         // 统计总数
-        long count = commonDao.countAll(MyUser.class);
+        long count = entityDao.countAll(MyUser.class);
         Assert.assertTrue(count > 0);
 
         // 查询所有
-        List<MyUser> myUsers = commonDao.getAll(MyUser.class);
+        List<MyUser> myUsers = entityDao.getAll(MyUser.class);
         Assert.assertTrue(myUsers.size() > 0);
 
         // 根据ID批量查询
         MyUser user2 = addUser();
-        myUsers = commonDao.getBatch(MyUser.class, user.getUserId(), user2.getUserId());
+        myUsers = entityDao.getBatch(MyUser.class, user.getUserId(), user2.getUserId());
         Assert.assertTrue(myUsers.size() > 1);
 
         // 清理测试数据
@@ -196,27 +196,27 @@ public class CommonDaoTests {
     public void deleteUserTest() {
         // 删除对象
         MyUser user = addUser();
-        commonDao.delete(user);
-        MyUser myUser = commonDao.get(MyUser.class, user.getUserId());
+        entityDao.delete(user);
+        MyUser myUser = entityDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
 
         // 根据ID删除对象
         user = addUser();
-        commonDao.deleteById(MyUser.class, user.getUserId());
-        myUser = commonDao.get(MyUser.class, user.getUserId());
+        entityDao.deleteById(MyUser.class, user.getUserId());
+        myUser = entityDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
 
         // 批量删除对象
         MyUser[] users = new MyUser[]{createUser(), createUser(), createUser()};
-        commonDao.addBatch(users);
-        commonDao.deleteBatch(users);
-        myUser = commonDao.get(MyUser.class, users[0].getUserId());
+        entityDao.addBatch(users);
+        entityDao.deleteBatch(users);
+        myUser = entityDao.get(MyUser.class, users[0].getUserId());
         Assert.assertNull(myUser);
 
         // 删除全部对象
         user = addUser();
-        commonDao.deleteAll(MyUser.class);
-        myUser = commonDao.get(MyUser.class, user.getUserId());
+        entityDao.deleteAll(MyUser.class);
+        myUser = entityDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
     }
 
@@ -225,12 +225,12 @@ public class CommonDaoTests {
         MyUser user = addUser();
 
         // 分页查询所有
-        PageData<MyUser> pageUsers = commonDao.getByPage(MyUser.class, new PageParam(0, 10));
+        PageData<MyUser> pageUsers = entityDao.getByPage(MyUser.class, new PageParam(0, 10));
         Assert.assertTrue(pageUsers.getContent().size() > 0);
 
         // 分页查询
         String sql = new SqlGenerator().getSelectWhereTrue(MyUser.class);
-        PageData<MyUser> users = commonDao.queryObjectPage(new PageParam(), MyUser.class, sql);
+        PageData<MyUser> users = entityDao.queryObjectPage(new PageParam(), MyUser.class, sql);
         Assert.assertTrue(users.getTotal() > 0);
 
         // 清理测试数据

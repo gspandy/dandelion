@@ -9,8 +9,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 实体类型及属性信息，该类是只读的。
@@ -21,9 +21,9 @@ public class EntityInfo {
 
     private String sqlName;
 
-    private List<Property> properties = new CopyOnWriteArrayList<>();
+    private Property[] properties;
 
-    private List<Property> identities = new CopyOnWriteArrayList<>();
+    private Property[] identities;
 
     /**
      * 初始化实体信息。
@@ -61,6 +61,8 @@ public class EntityInfo {
             throw new DaoException("Getting Bean information failure.", e);
         }
         PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
+        List<Property> properties = new ArrayList<>(descriptors.length);
+        List<Property> identities = new ArrayList<>(3);
         for (PropertyDescriptor descriptor : descriptors) {
             // 需要可用的属性
             if (descriptor.getWriteMethod() == null || descriptor.getReadMethod() == null)
@@ -75,12 +77,14 @@ public class EntityInfo {
             if (field.getAnnotation(Temporary.class) != null)
                 continue;
             Property property = new Property(entityClass, descriptor, underscore);
-            this.properties.add(property);
+            properties.add(property);
             if (property.isIdentity())
                 identities.add(property);
         }
         if (properties.size() == 0)
             throw new DaoException("Class has no property available.");
+        this.properties = properties.toArray(new Property[properties.size()]);
+        this.identities = identities.toArray(new Property[identities.size()]);
     }
 
     /**
@@ -100,14 +104,14 @@ public class EntityInfo {
     /**
      * 获取实体中可用的属性。
      */
-    public List<Property> getProperties() {
+    public Property[] getProperties() {
         return properties;
     }
 
     /**
      * 获取实体中的ID属性。
      */
-    public List<Property> getIdentities() {
+    public Property[] getIdentities() {
         return identities;
     }
 

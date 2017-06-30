@@ -4,7 +4,6 @@ import com.ewing.dandelion.DaoException;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -45,18 +44,19 @@ public class SqlGenerator {
     /**
      * 获取实体对象信息。
      *
-     * @param clazz 对象类型。
+     * @param entityClass 对象类型。
      * @return 实体对象信息。
      */
-    public EntityInfo getEntityInfo(Class clazz) {
-        return entityInfoCache.computeIfAbsent(clazz, ec -> new EntityInfo(ec, underscore));
+    public EntityInfo getEntityInfo(Class entityClass) {
+        return entityInfoCache.computeIfAbsent(entityClass,
+                clazz -> new EntityInfo(clazz, underscore));
     }
 
     /**
      * 生成实体对象的ID。
      */
     public void generateIdentity(Object object) {
-        List<Property> properties = getEntityInfo(object.getClass()).getIdentities();
+        Property[] properties = getEntityInfo(object.getClass()).getIdentities();
         for (Property property : properties) {
             // 处理ID 可能有0个或多个ID属性
             if (property.isGenerate()) {
@@ -81,7 +81,7 @@ public class SqlGenerator {
      */
     public String getResultColumns(Class clazz, String tableAlias) {
         StringBuilder columns = new StringBuilder();
-        List<Property> properties = getEntityInfo(clazz).getProperties();
+        Property[] properties = getEntityInfo(clazz).getProperties();
         for (Property property : properties) {
             // 添加到结果列表
             if (columns.length() > 0)
@@ -105,7 +105,7 @@ public class SqlGenerator {
      */
     public String getColumnsByConfig(Object config, boolean positive) {
         StringBuilder columns = new StringBuilder();
-        List<Property> properties = getEntityInfo(config.getClass()).getProperties();
+        Property[] properties = getEntityInfo(config.getClass()).getProperties();
         for (Property property : properties) {
             // 添加到结果列表 ID属性必须添加
             if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
@@ -140,7 +140,7 @@ public class SqlGenerator {
         StringBuilder columns = new StringBuilder();
         StringBuilder values = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getProperties();
+        Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到插入列表
             if (columns.length() > 0) {
@@ -164,7 +164,7 @@ public class SqlGenerator {
         StringBuilder columns = new StringBuilder();
         StringBuilder values = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getProperties();
+        Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到插入列表 ID属性必须插入
             if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
@@ -209,7 +209,7 @@ public class SqlGenerator {
     public String getDeleteIdEquals(Class clazz) {
         StringBuilder identities = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getIdentities();
+        Property[] properties = entityInfo.getIdentities();
         for (Property property : properties) {
             // 添加ID属性到查询条件
             if (identities.length() > 0)
@@ -225,7 +225,7 @@ public class SqlGenerator {
     public String getDeleteNamedIdEquals(Class clazz) {
         StringBuilder identities = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getIdentities();
+        Property[] properties = entityInfo.getIdentities();
         for (Property property : properties) {
             // 添加ID属性到查询条件
             if (identities.length() > 0)
@@ -274,7 +274,7 @@ public class SqlGenerator {
         StringBuilder columns = new StringBuilder();
         StringBuilder identities = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getProperties();
+        Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到查询结果
             if (columns.length() > 0)
@@ -297,14 +297,14 @@ public class SqlGenerator {
     public String getSelectWhereBatchIds(Class clazz, int length) {
         StringBuilder identities = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getIdentities();
+        Property[] properties = entityInfo.getIdentities();
         // 当只有一个ID属性时用IN查询
-        if (properties.size() == 1) {
+        if (properties.length == 1) {
             while (length-- > 0) {
                 if (identities.length() > 0) {
                     identities.append(",");
                 } else {
-                    identities.append(properties.get(0).getSqlName()).append(" IN (");
+                    identities.append(properties[0].getSqlName()).append(" IN (");
                 }
                 identities.append("?");
             }
@@ -335,7 +335,7 @@ public class SqlGenerator {
         StringBuilder columns = new StringBuilder();
         StringBuilder identities = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getProperties();
+        Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到查询结果
             if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
@@ -375,7 +375,7 @@ public class SqlGenerator {
         StringBuilder updates = new StringBuilder();
         StringBuilder identities = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getProperties();
+        Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             if (property.isIdentity()) {
                 // ID添加到更新条件
@@ -403,7 +403,7 @@ public class SqlGenerator {
         StringBuilder updates = new StringBuilder();
         StringBuilder identities = new StringBuilder();
         EntityInfo entityInfo = getEntityInfo(clazz);
-        List<Property> properties = entityInfo.getProperties();
+        Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             if (property.isIdentity()) {
                 // ID添加到更新条件

@@ -3,11 +3,8 @@ package com.ewing.dandelion;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 基本数据访问接口。
@@ -15,7 +12,14 @@ import java.util.Map;
  * @author Ewing
  * @since 2017-03-01
  **/
-public interface GenericDao<E> {
+public interface GenericDao<E> extends SimpleDao {
+
+    /**
+     * 获取Sql生成器。
+     *
+     * @return Sql生成器。
+     */
+    SqlGenerator getSqlGenerator();
 
     /**
      * 设置Sql生成器。
@@ -23,20 +27,6 @@ public interface GenericDao<E> {
      * @param sqlGenerator Sql生成器。
      */
     void setSqlGenerator(SqlGenerator sqlGenerator);
-
-    /**
-     * 设置操作数据库的JdbcOperations。
-     *
-     * @param jdbcOperations JdbcOperations。
-     */
-    void setJdbcOperations(JdbcOperations jdbcOperations);
-
-    /**
-     * 设置命名的操作数据库的JdbcOperations。
-     *
-     * @param namedParamOperations 命名的操作数据库的JdbcOperations。
-     */
-    void setNamedParamOperations(NamedParameterJdbcOperations namedParamOperations);
 
     /**
      * 把对象实例的所有属性插入到数据库。
@@ -192,64 +182,5 @@ public interface GenericDao<E> {
      * 删除所有对象。
      */
     void deleteAll();
-
-    /**
-     * 查询一个整数并封装成长整数。
-     *
-     * @param sql 查询SQL。
-     * @return 查询返回长整数。
-     */
-    long queryLong(String sql, Object... params);
-
-    /**
-     * 查询一条记录并封装成指定类型的对象。
-     *
-     * @param clazz 指定对象类型。
-     * @param sql   查询语句。
-     * @return 指定类型的对象。
-     */
-    <T> T queryObject(Class<T> clazz, String sql, Object... params);
-
-    /**
-     * 查询多条记录并封装成指定类型的对象集合。
-     *
-     * @param clazz 指定对象类型。
-     * @param sql   查询语句。
-     * @return 指定类型的对象。
-     */
-    <T> List<T> queryObjectList(Class<T> clazz, String sql, Object... params);
-
-    /**
-     * 查询一条记录并封装成Map。
-     *
-     * @param sql 查询语句。
-     * @return 存储结果的Map。
-     */
-    Map queryMap(String sql, Object... params);
-
-    /**
-     * 查询多条记录并封装成Map集合。
-     *
-     * @param sql 查询语句。
-     * @return 存储结果的Map集合。
-     */
-    List<Map<String, Object>> queryMapList(String sql, Object... params);
-
-    /**
-     * 分页查询多条记录并封装成指定类型的对象集合。
-     *
-     * @param clazz 指定对象类型。
-     * @param sql   查询语句。
-     * @return 指定类型的对象。
-     */
-    <T> PageData<T> queryObjectPage(PageParam pageParam, Class<T> clazz, String sql, Object... params);
-
-    /**
-     * 分页查询多条记录并封装成Map集合。
-     *
-     * @param sql 查询语句。
-     * @return 存储结果的Map集合。
-     */
-    PageData<Map<String, Object>> queryMapPage(PageParam pageParam, String sql, Object... params);
 
 }
