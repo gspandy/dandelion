@@ -16,7 +16,7 @@
 ##### 1、实体说明：含有带Getter和Setter方法的属性且不能全部标记为临时属性。若没有标记为ID的属性，则依赖ID相关的方法无法使用。
 ##### 2、积极属性：非null的对象类型（包括包装类型），基本类型大于0或为true的值，反之则为消极的属性，系统默认初始化的值都是消极属性。
 ##### 3、积极或消极的属性可以作为属性名单配置，用于选取或屏蔽对象的部分属性，故不建议在实体类中使用默认值，也不建议使用基本类型。
-##### 4、实体属性名默认与数据库表的列名相同，配置类中SqlGenerator的构造参数为true即可使用下划线风格，MySql建议保持与对象属性名称一致。
+##### 4、实体属性名默认与数据库表的列名相同，配置类中SqlGenerator的构造参数为true即可使用下划线风格，MySql建议保持与对象属性名称相同。
 ##### 5、主键ID为20位字符串或31位（从30位递增）整数，多机器多实例生成ID不重复、保持递增趋势、尾数分布均匀，可分库分表可移植数据库。
 
 -----
@@ -40,12 +40,13 @@
 
 #### 源码有详细注释，可生成Java文档，使用案例可参考测试用例中的UserDaoTests、UserDaoImpl和EntityDaoTest类。
 
-##### GenericDao接口及实现类GenericBaseDao，普通DAO类通过继承该接口，可以让该DAO类具有特定实体专用的CRUD方法。
-##### EntityDao接口及实现类EntityBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。
-##### SqlGenerator可以生成任意实体的查询SQL语句主体，可自由使用原生SQL追加条件和参数，灵活度非常高。
-##### Identity注解可以标记属性为ID，支持多个ID（联合主键），参数generate表示是否生成ID值，默认生成，支持String和BigInteger的ID生成。
-##### Temporary注解标记的属性在生成Sql语句时被忽略，成为临时属性，但不影响Spring Jdbc使用该属性，常用于附加关联数据。
-##### SqlName注解可以自定义对象类型在Sql中的名称，即数据库的表名，通常用于带前缀的表名。
+##### SimpleDao接口：实现类SimpleBaseDao，该类是下面两个类的父类，具有查询为对象或Map、分页查询等功能。
+##### GenericDao接口：实现类GenericBaseDao，普通DAO类通过继承该接口，可以让该DAO类具有特定实体专用的CRUD方法。
+##### EntityDao接口：实现类EntityBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。
+##### SqlGenerator类：可以生成任意实体的查询SQL语句主体，可自由使用原生SQL追加条件和参数，灵活度非常高。
+##### Identity注解：可以标记属性为ID，支持多个ID（联合主键），参数generate可配置是否生成ID值，支持String和BigInteger的ID生成。
+##### Temporary注解：该注解标记的属性在生成Sql语句时被忽略，成为临时属性，但不影响Spring Jdbc使用该属性，常用于附加关联数据。
+##### SqlName注解：可以自定义对象类型在Sql中的名称，即数据库的表名，通常用于带前缀的表名。
 
 ##### 注1：可配合Spring Cache使用，使用注解声明式的本地缓存或Redis共享缓存，可很好地降低数据库访问次数。
 ##### 注2：可使用Maven的MyBatisGenerator插件从数据库生成对象模型，插件<overwrite>配置设为false可避免覆盖。
