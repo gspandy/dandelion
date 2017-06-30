@@ -230,8 +230,8 @@ public class SqlGenerator {
             // 添加ID属性到查询条件
             if (identities.length() > 0)
                 identities.append(" AND ");
-            identities.append(property.getSqlName()).append("=");
-            identities.append(":").append(property.getName());
+            identities.append(property.getSqlName())
+                    .append("=:").append(property.getName());
         }
         return "DELETE FROM " + entityInfo.getSqlName() + " WHERE " + identities;
     }
