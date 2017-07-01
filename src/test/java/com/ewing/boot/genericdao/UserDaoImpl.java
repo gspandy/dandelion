@@ -22,8 +22,8 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
      */
     @Override
     public MyUser findByName(String name) {
-        String sql = getSqlGenerator().getSelectWhereTrue(getEntityClass()) + " AND name = ?";
-        return queryObject(getEntityClass(), sql, name);
+        String sql = sqlGenerator.getSelectWhereTrue(entityClass) + " AND name = ?";
+        return queryObject(entityClass, sql, name);
     }
 
     /**
@@ -31,7 +31,7 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
      */
     @Override
     public MyUser findMyUser(String name, String description, Integer level) {
-        StringBuilder sql = new StringBuilder(getSqlGenerator().getSelectWhereTrue(getEntityClass()));
+        StringBuilder sql = new StringBuilder(sqlGenerator.getSelectWhereTrue(entityClass));
         List<Object> params = new ArrayList<>();
 
         // 当名称有值时根据名称精确查询
@@ -44,6 +44,6 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
         // 直接添加等级查询条件
         appendSqlParam(sql, " AND level = ?", params, level);
 
-        return queryObject(getEntityClass(), sql.toString(), params.toArray());
+        return queryObject(entityClass, sql.toString(), params.toArray());
     }
 }
