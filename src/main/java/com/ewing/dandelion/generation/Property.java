@@ -57,7 +57,7 @@ public class Property {
                 String s = this.name.substring(i, i + 1);
                 String slc = s.toLowerCase();
                 if (!s.equals(slc)) {
-                    result.append("_").append(slc);
+                    result.append('_').append(slc);
                 } else {
                     result.append(s);
                 }

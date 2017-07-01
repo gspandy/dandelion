@@ -93,7 +93,7 @@ public class SqlGeneratorTest {
         Arrays.sort(methods, Comparator.comparing(Method::getName));
         for (Method method : methods) {
             method.setAccessible(true);
-            StringBuilder name = new StringBuilder(method.getName()).append("(");
+            StringBuilder name = new StringBuilder(method.getName()).append('(');
             List<Object> params = new ArrayList<>();
             Class[] types = method.getParameterTypes();
             // 准备方法的参数
@@ -101,19 +101,19 @@ public class SqlGeneratorTest {
                 if (type.equals(Class.class)) {
                     params.add(config.getClass());
                     name.append(config.getClass().getSimpleName())
-                            .append(".class").append(",");
+                            .append(".class").append(',');
                 } else if (type.equals(String.class)) {
                     params.add("A");
-                    name.append("A").append(",");
+                    name.append('A').append(',');
                 } else if (type.equals(Object.class)) {
                     params.add(config);
-                    name.append("config").append(",");
+                    name.append("config").append(',');
                 } else if (type.equals(boolean.class)) {
                     params.add(true);
-                    name.append(true).append(",");
+                    name.append(true).append(',');
                 } else if (type.equals(int.class)) {
                     params.add(5);
-                    name.append(5).append(",");
+                    name.append(5).append(',');
                 }
             }
             name.deleteCharAt(name.length() - 1).append(")：");

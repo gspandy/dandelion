@@ -80,14 +80,14 @@ public class SqlGenerator {
      * 生成与Class对应的结果列，可指定表别名。
      */
     public String getResultColumns(Class clazz, String tableAlias) {
-        StringBuilder columns = new StringBuilder();
+        StringBuilder columns = new StringBuilder(32);
         Property[] properties = getEntityInfo(clazz).getProperties();
         for (Property property : properties) {
             // 添加到结果列表
             if (columns.length() > 0)
-                columns.append(",");
+                columns.append(',');
             if (tableAlias != null)
-                columns.append(tableAlias).append(".");
+                columns.append(tableAlias).append('.');
             columns.append(property.getSqlName());
         }
         return columns.toString();
@@ -104,13 +104,13 @@ public class SqlGenerator {
      * 生成与配置类的属性对应的结果列。
      */
     public String getColumnsByConfig(Object config, boolean positive) {
-        StringBuilder columns = new StringBuilder();
+        StringBuilder columns = new StringBuilder(32);
         Property[] properties = getEntityInfo(config.getClass()).getProperties();
         for (Property property : properties) {
             // 添加到结果列表 ID属性必须添加
             if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
                 if (columns.length() > 0)
-                    columns.append(",");
+                    columns.append(',');
                 columns.append(property.getSqlName());
             }
         }
@@ -137,18 +137,18 @@ public class SqlGenerator {
      * 生成与实例对应的Insert语句。
      */
     public String getInsertValues(Class clazz) {
-        StringBuilder columns = new StringBuilder();
-        StringBuilder values = new StringBuilder();
+        StringBuilder columns = new StringBuilder(32);
+        StringBuilder values = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到插入列表
             if (columns.length() > 0) {
-                columns.append(",");
-                values.append(",");
+                columns.append(',');
+                values.append(',');
             }
             columns.append(property.getSqlName());
-            values.append(":").append(property.getName());
+            values.append(':').append(property.getName());
         }
         if (columns.length() == 0)
             throw new DaoException("No property available.");
@@ -161,19 +161,19 @@ public class SqlGenerator {
      */
     public String getInsertByConfig(Object config, boolean positive) {
         Class clazz = config.getClass();
-        StringBuilder columns = new StringBuilder();
-        StringBuilder values = new StringBuilder();
+        StringBuilder columns = new StringBuilder(32);
+        StringBuilder values = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到插入列表 ID属性必须插入
             if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
                 if (columns.length() > 0) {
-                    columns.append(",");
-                    values.append(",");
+                    columns.append(',');
+                    values.append(',');
                 }
                 columns.append(property.getSqlName());
-                values.append(":").append(property.getName());
+                values.append(':').append(property.getName());
             }
         }
         if (columns.length() == 0)
@@ -207,7 +207,7 @@ public class SqlGenerator {
      * 生成与Class对应的Delete语句带ID条件。
      */
     public String getDeleteIdEquals(Class clazz) {
-        StringBuilder identities = new StringBuilder();
+        StringBuilder identities = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getIdentities();
         for (Property property : properties) {
@@ -223,7 +223,7 @@ public class SqlGenerator {
      * 生成与Class对应的Delete语句带命名ID条件。
      */
     public String getDeleteNamedIdEquals(Class clazz) {
-        StringBuilder identities = new StringBuilder();
+        StringBuilder identities = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getIdentities();
         for (Property property : properties) {
@@ -271,14 +271,14 @@ public class SqlGenerator {
      * 生成与Class对应的Select语句带ID条件。
      */
     public String getSelectWhereIdEquals(Class clazz) {
-        StringBuilder columns = new StringBuilder();
-        StringBuilder identities = new StringBuilder();
+        StringBuilder columns = new StringBuilder(32);
+        StringBuilder identities = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到查询结果
             if (columns.length() > 0)
-                columns.append(",");
+                columns.append(',');
             columns.append(property.getSqlName());
             // 添加到ID查询条件
             if (property.isIdentity()) {
@@ -295,32 +295,32 @@ public class SqlGenerator {
      * 生成与Class对应的Select语句带批量ID条件。
      */
     public String getSelectWhereBatchIds(Class clazz, int length) {
-        StringBuilder identities = new StringBuilder();
+        StringBuilder identities = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getIdentities();
         // 当只有一个ID属性时用IN查询
         if (properties.length == 1) {
             while (length-- > 0) {
                 if (identities.length() > 0) {
-                    identities.append(",");
+                    identities.append(',');
                 } else {
                     identities.append(properties[0].getSqlName()).append(" IN (");
                 }
-                identities.append("?");
+                identities.append('?');
             }
-            identities.append(")");
+            identities.append(')');
         } else { // 当有多个ID属性时用OR查询
             while (length-- > 0) {
                 if (identities.length() > 0)
                     identities.append(" OR ");
-                identities.append("(");
-                StringBuilder identity = new StringBuilder();
+                identities.append('(');
+                StringBuilder identity = new StringBuilder(32);
                 for (Property property : properties) {
                     if (identity.length() > 0)
                         identity.append(" AND ");
                     identity.append(property.getSqlName()).append("=?");
                 }
-                identities.append(identity).append(")");
+                identities.append(identity).append(')');
             }
         }
         return "SELECT " + getResultColumns(clazz) + " FROM "
@@ -332,15 +332,15 @@ public class SqlGenerator {
      */
     public String getSelectByConfig(Object config, boolean positive) {
         Class clazz = config.getClass();
-        StringBuilder columns = new StringBuilder();
-        StringBuilder identities = new StringBuilder();
+        StringBuilder columns = new StringBuilder(32);
+        StringBuilder identities = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到查询结果
             if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
                 if (columns.length() > 0)
-                    columns.append(",");
+                    columns.append(',');
                 columns.append(property.getSqlName());
             }
             // 添加到ID查询条件
@@ -372,8 +372,8 @@ public class SqlGenerator {
      */
     public String getUpdateByConfig(Object config, boolean positive) {
         Class clazz = config.getClass();
-        StringBuilder updates = new StringBuilder();
-        StringBuilder identities = new StringBuilder();
+        StringBuilder updates = new StringBuilder(32);
+        StringBuilder identities = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
@@ -386,7 +386,7 @@ public class SqlGenerator {
             } else if (PropertyUtils.isPositive(property, config) == positive) {
                 // 添加到要更新的字段
                 if (updates.length() > 0)
-                    updates.append(",");
+                    updates.append(',');
                 updates.append(property.getSqlName())
                         .append("=:").append(property.getName());
             }
@@ -400,8 +400,8 @@ public class SqlGenerator {
      * 生成与Class对应的Update语句。
      */
     public String getUpdateWhereIdEquals(Class clazz) {
-        StringBuilder updates = new StringBuilder();
-        StringBuilder identities = new StringBuilder();
+        StringBuilder updates = new StringBuilder(32);
+        StringBuilder identities = new StringBuilder(32);
         EntityInfo entityInfo = getEntityInfo(clazz);
         Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
@@ -414,7 +414,7 @@ public class SqlGenerator {
             } else {
                 // 添加到要更新的字段
                 if (updates.length() > 0)
-                    updates.append(",");
+                    updates.append(',');
                 updates.append(property.getSqlName())
                         .append("=:").append(property.getName());
             }

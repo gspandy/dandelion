@@ -43,7 +43,7 @@ public class EntityInfo {
                     String s = name.substring(i, i + 1);
                     String slc = s.toLowerCase();
                     if (!s.equals(slc)) {
-                        result.append("_").append(slc);
+                        result.append('_').append(slc);
                     } else {
                         result.append(s);
                     }

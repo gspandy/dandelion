@@ -1,8 +1,8 @@
 package com.ewing.boot;
 
 import com.ewing.boot.common.RandomString;
-import com.ewing.boot.genericdao.TeamDao;
 import com.ewing.boot.entity.Team;
+import com.ewing.boot.genericdao.TeamDao;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
