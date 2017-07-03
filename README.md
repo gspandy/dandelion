@@ -24,10 +24,27 @@
 ## 相关依赖及使用说明
 
 ##### 相关依赖：Spring framework、Spring jdbc，建议4.0.0以上的版本，日志扩展slf4j，目前最低JDK版本为1.8。
-#### 三种方式引入到项目：
-##### 1、直接作为源码引入，进行二次定制化开发。
-##### 2、使用Maven打成Jar包引入（mvn package），也可以直接下载 Jar 包。
-##### 3、以Maven依赖方式引入（先执行mvn install，也可以直接 install Jar 包）。
+#### 引入到项目的几种方式参考：
+##### 源码引入：直接作为源码引入，进行二次定制化开发。
+##### 直接添加Jar包：非Maven项目直接添加Jar包到项目依赖库中。
+##### Maven项目Jar包：使用Maven打成Jar包（mvn package，也可以直接下载 Jar 包）放到项目根/lib目录，pom文件中添加以下依赖：
+```xml
+<dependency>
+    <groupId>com.ewing</groupId>
+    <artifactId>dandelion</artifactId>
+    <version>2.8.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/lib/dandelion-2.8.0.jar</systemPath>
+</dependency>
+```
+##### Maven本地仓库或私服：先执行mvn install（也可以直接 install Jar 包）到本地仓库或私服，pom文件中添加以下依赖：
+```xml
+<dependency>
+    <groupId>com.ewing</groupId>
+    <artifactId>dandelion</artifactId>
+    <version>2.8.0</version>
+</dependency>
+```
 #### 轻松在项目中使用：
 #####  Spring Boot 项目：添加 spring-boot-starter-jdbc 依赖，参考或者复制 src/test/java 下的 com.ewing.boot.BootDaoConfig 类到项目中，并使Spring能扫描到该配置类。
 ##### 普通 Spring 项目：先配置一个数据源 DataSource，参考或者复制 src/test/java 下的 com.ewing.normal.NormalDaoConfig 类到项目中，并使Spring能扫描到该配置类。
