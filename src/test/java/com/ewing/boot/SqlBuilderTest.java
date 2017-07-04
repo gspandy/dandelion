@@ -20,14 +20,13 @@ public class SqlBuilderTest {
                 .appendSqlParams(" AND appendSqlParams in (?,?,?)", 3, 4, 5)
                 .appendHasValue(" AND appendHasValue = ?", "Value")
                 .extendSqlParams(" AND extendSqlParams IN ", 1, null, 3)
-                .extendHasValues(" AND extendHasValues IN ", "A", null, "C", null)
+                .extendHasValues(" AND extendHasValues IN ", "A", "C", null)
                 .appendStartWith(" AND appendStartWith like ?", "StartWith")
                 .appendEndWith(" AND appendEndWith like ?", "EndWith")
                 .appendContains(" AND appendContains like ?", "Contains");
 
         System.out.println(sqlBuilder.toString());
         System.out.println(Arrays.toString(sqlBuilder.getParams()));
-
     }
 
 }
