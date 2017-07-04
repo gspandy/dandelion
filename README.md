@@ -60,7 +60,7 @@
 ##### SimpleDao接口：实现类SimpleBaseDao，该类是下面两个类的父类，具有查询为对象或Map、分页查询等功能。
 ##### GenericDao接口：实现类GenericBaseDao，普通DAO类通过继承该接口，可以让该DAO类具有特定实体专用的CRUD方法。
 ##### EntityDao接口：实现类EntityBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。
-##### SqlGenerator类：可以生成任意实体的查询SQL语句主体，可自由使用原生SQL追加条件和参数，灵活度非常高。
+##### SqlGenerator和SqlBuilder类：可以生成任意实体的查询SQL语句主体，可自由使用原生SQL追加条件和参数，灵活度非常高。
 ##### Identity注解：可以标记属性为ID，支持多个ID（联合主键），参数generate可配置是否生成ID值，支持String和BigInteger的ID生成。
 ##### Temporary注解：该注解标记的属性在生成Sql语句时被忽略，成为临时属性，但不影响Spring Jdbc使用该属性，常用于附加关联数据。
 ##### SqlName注解：可以自定义对象类型在Sql中的名称，即数据库的表名，通常用于带前缀的表名。

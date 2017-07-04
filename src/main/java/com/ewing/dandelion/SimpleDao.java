@@ -42,16 +42,6 @@ public interface SimpleDao {
     void setNamedParamOperations(NamedParameterJdbcOperations namedParamOperations);
 
     /**
-     * 追加Sql子句并添加参数到参数列表。
-     */
-    void appendSqlParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams);
-
-    /**
-     * 当存在参数时追加Sql语句并添加参数。
-     */
-    boolean appendHasParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams);
-
-    /**
      * 查询一个整数并封装成长整数。
      *
      * @param sql 查询SQL。

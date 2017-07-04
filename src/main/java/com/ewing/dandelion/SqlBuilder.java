@@ -1,7 +1,6 @@
 package com.ewing.dandelion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,93 +11,147 @@ public class SqlBuilder {
     private StringBuilder builder;
     private List<Object> params;
 
-    private static boolean hasValue(Object object) {
-        return object != null && (!(object instanceof String)
-                || ((String) object).trim().length() > 0);
-    }
-
     public SqlBuilder() {
         this.builder = new StringBuilder(32);
-        this.params = new ArrayList<>(10);
+        this.params = new ArrayList<>();
     }
 
     public SqlBuilder(String sql) {
         this.builder = new StringBuilder(sql);
-        this.params = new ArrayList<>(10);
+        this.params = new ArrayList<>();
     }
 
-    public SqlBuilder(String sql, Object... params) {
-        this.builder = new StringBuilder(sql);
-        this.params = Arrays.asList(params);
+    /**
+     * 获取Sql语句。
+     */
+    @Override
+    public String toString() {
+        return this.builder.toString();
     }
 
-    public String getSql() {
-        return builder.toString();
-    }
-
+    /**
+     * 获取参数数组。
+     */
     public Object[] getParams() {
         return this.params.toArray(new Object[params.size()]);
     }
 
     /**
-     * 追加Sql子句并添加参数到参数列表。
+     * 判断参数是否有值。
      */
-    public void append(String sqlPart, Object param) {
-        this.builder.append(sqlPart);
-        this.params.add(param);
+    public static boolean hasValue(Object value) {
+        return value != null && (!(value instanceof String)
+                || ((String) value).length() > 0);
     }
 
     /**
-     * 当参数存在时追加Sql语句并添加参数。
+     * 追加Sql语句。
      */
-    public void appendExists(String sqlPart, Object param) {
-        if (sqlPart != null && param != null)
-            this.append(sqlPart, param);
+    public SqlBuilder appendSql(String sqlPart) {
+        this.builder.append(sqlPart);
+        return this;
+    }
+
+    /**
+     * 添加参数。
+     */
+    public SqlBuilder appendParams(Object... params) {
+        for (Object param : params)
+            this.params.add(param);
+        return this;
+    }
+
+    /**
+     * 追加Sql语句并添加参数。
+     */
+    public SqlBuilder appendSqlParams(String sqlPart, Object... params) {
+        this.builder.append(sqlPart);
+        for (Object param : params)
+            this.params.add(param);
+        return this;
     }
 
     /**
      * 当参数有值时追加Sql语句并添加参数。
      */
-    public void appendHasParam(String sqlPart, Object param) {
-        if (sqlPart != null && hasValue(param))
-            this.append(sqlPart, param);
-    }
-
-    /**
-     * 当存在参数时扩展Sql并添加参数，Sql扩展为 sqlPart + (?,?,?)格式。
-     */
-    public SqlBuilder appendParams(String sqlPart, Object... params) {
-        if (sqlPart == null) return this;
-        StringBuilder list = new StringBuilder();
-        for (Object param : params) {
-            if (list.length() > 0)
-                list.append(',');
-            list.append('?');
+    public SqlBuilder appendHasValue(String sqlPart, Object param) {
+        if (sqlPart != null && hasValue(param)) {
+            this.builder.append(sqlPart);
             this.params.add(param);
         }
-        if (list.length() > 0)
-            this.builder.append(sqlPart).append('(')
-                    .append(list).append(')');
         return this;
     }
 
     /**
-     * 当参数存在且有值时扩展Sql并添加参数，Sql扩展为 sqlPart + (?,?,?)格式。
+     * 当存在参数时扩展Sql并添加参数，Sql扩展为sqlPart + (?,?,?)格式。
      */
-    public SqlBuilder appendHasParams(String sqlPart, Object... params) {
-        if (sqlPart == null) return this;
-        StringBuilder list = new StringBuilder();
-        for (Object param : params) {
-            if (hasValue(param)) {
+    public SqlBuilder extendSqlParams(String sqlPart, Object... params) {
+        if (sqlPart != null && params != null) {
+            StringBuilder list = new StringBuilder();
+            for (Object param : params) {
                 if (list.length() > 0)
                     list.append(',');
                 list.append('?');
                 this.params.add(param);
             }
+            if (list.length() > 0)
+                this.builder.append(sqlPart).append('(')
+                        .append(list).append(')');
         }
-        if (list.length() > 0)
-            this.builder.append(sqlPart).append('(')
-                    .append(list).append(')');
+        return this;
+    }
+
+    /**
+     * 当参数存在且有值时扩展Sql并添加参数，Sql扩展为sqlPart + (?,?,?)格式。
+     */
+    public SqlBuilder extendHasValues(String sqlPart, Object... params) {
+        if (sqlPart != null && params != null) {
+            StringBuilder list = new StringBuilder();
+            for (Object param : params) {
+                if (hasValue(param)) {
+                    if (list.length() > 0)
+                        list.append(',');
+                    list.append('?');
+                    this.params.add(param);
+                }
+            }
+            if (list.length() > 0)
+                this.builder.append(sqlPart).append('(')
+                        .append(list).append(')');
+        }
+        return this;
+    }
+
+    /**
+     * 当参数有值时追加Like语句并且以参数开头。
+     */
+    public SqlBuilder appendStartWith(String sqlPart, String param) {
+        if (sqlPart != null && param != null && param.length() > 0) {
+            this.builder.append(sqlPart);
+            this.params.add(param + "%");
+        }
+        return this;
+    }
+
+    /**
+     * 当参数有值时追加Like语句并且以参数结束。
+     */
+    public SqlBuilder appendEndWith(String sqlPart, String param) {
+        if (sqlPart != null && param != null && param.length() > 0) {
+            this.builder.append(sqlPart);
+            this.params.add("%" + param);
+        }
+        return this;
+    }
+
+    /**
+     * 当参数有值时追加Like语句并且包含参数。
+     */
+    public SqlBuilder appendContains(String sqlPart, String param) {
+        if (sqlPart != null && param != null && param.length() > 0) {
+            this.builder.append(sqlPart);
+            this.params.add("%" + param + "%");
+        }
         return this;
     }
 

@@ -61,33 +61,6 @@ public class SimpleBaseDao implements SimpleDao {
     }
 
     /**
-     * 追加Sql子句并添加参数到参数列表。
-     */
-    @Override
-    public void appendSqlParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
-        sqlBuilder.append(sqlPart);
-        for (Object param : newParams)
-            allParams.add(param);
-    }
-
-    /**
-     * 当存在参数时追加Sql语句并添加参数。
-     */
-    @Override
-    public boolean appendHasParam(StringBuilder sqlBuilder, String sqlPart, List<Object> allParams, Object... newParams) {
-        for (Object param : newParams) {
-            if (param != null && (!(param instanceof String) || ((String) param).trim().length() > 0)) {
-                sqlBuilder.append(sqlPart);
-                for (Object newParam : newParams) {
-                    allParams.add(newParam);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * 查询一个整数并封装成长整数。
      */
     @Override

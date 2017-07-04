@@ -48,7 +48,6 @@ public abstract class GenericBaseDao<E> extends SimpleBaseDao implements Generic
         return entityClass;
     }
 
-
     /**
      * 获取Sql生成器。
      */
