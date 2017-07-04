@@ -83,7 +83,7 @@ public class SqlBuilder {
     }
 
     /**
-     * 当存在参数时扩展Sql并添加参数，Sql扩展为sqlPart + (?,?,?)格式。
+     * 当存在参数时扩展Sql并添加参数，sqlPart扩展为sqlPart+(?,?,?)格式。
      */
     public SqlBuilder extendSqlParams(String sqlPart, Object... params) {
         if (sqlPart != null && params != null) {
@@ -102,7 +102,7 @@ public class SqlBuilder {
     }
 
     /**
-     * 当参数存在且有值时扩展Sql并添加参数，Sql扩展为sqlPart + (?,?,?)格式。
+     * 当参数存在且有值时扩展Sql并添加参数，sqlPart扩展为sqlPart+(?,?,?)格式。
      */
     public SqlBuilder extendHasValues(String sqlPart, Object... params) {
         if (sqlPart != null && params != null) {
@@ -123,7 +123,7 @@ public class SqlBuilder {
     }
 
     /**
-     * 当参数有值时追加Like语句并且以参数开头。
+     * 当参数有值时追加Like语句并且以参数开头，即param+%。
      */
     public SqlBuilder appendStartWith(String sqlPart, String param) {
         if (sqlPart != null && param != null && param.length() > 0) {
@@ -134,7 +134,7 @@ public class SqlBuilder {
     }
 
     /**
-     * 当参数有值时追加Like语句并且以参数结束。
+     * 当参数有值时追加Like语句并且以参数结束，即%+param。
      */
     public SqlBuilder appendEndWith(String sqlPart, String param) {
         if (sqlPart != null && param != null && param.length() > 0) {
@@ -145,7 +145,7 @@ public class SqlBuilder {
     }
 
     /**
-     * 当参数有值时追加Like语句并且包含参数。
+     * 当参数有值时追加Like语句并且包含参数，即%+param+%。
      */
     public SqlBuilder appendContains(String sqlPart, String param) {
         if (sqlPart != null && param != null && param.length() > 0) {
