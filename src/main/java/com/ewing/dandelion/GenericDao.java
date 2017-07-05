@@ -60,7 +60,7 @@ public interface GenericDao<E> extends SimpleDao {
      * @param objects 对象数组。
      * @return 添加成功的对象。
      */
-    List<E> addBatch(E... objects);
+    E[] addBatch(E... objects);
 
     /**
      * 把对象实例的所有属性更新到数据库。
@@ -94,7 +94,7 @@ public interface GenericDao<E> extends SimpleDao {
      * @param objects 要更新到数据库的对象。
      * @return 更新成功的对象。
      */
-    List<E> updateBatch(E... objects);
+    E[] updateBatch(E... objects);
 
     /**
      * 根据ID获取对象的所有属性。

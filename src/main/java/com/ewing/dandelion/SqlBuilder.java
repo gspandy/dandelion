@@ -73,19 +73,24 @@ public class SqlBuilder {
 
     /**
      * 当参数有值时追加Sql语句并添加参数。
+     *
+     * @return 是否添加成功，参数有值则添加。
      */
-    public SqlBuilder appendHasValue(String sqlPart, Object param) {
+    public boolean appendHasValue(String sqlPart, Object param) {
         if (sqlPart != null && hasValue(param)) {
             this.builder.append(sqlPart);
             this.params.add(param);
+            return true;
         }
-        return this;
+        return false;
     }
 
     /**
      * 当存在参数时扩展Sql并添加参数，sqlPart扩展为sqlPart+(?,?,?)格式。
+     *
+     * @return 是否添加成功，参数不为空则添加。
      */
-    public SqlBuilder extendSqlParams(String sqlPart, Object... params) {
+    public boolean extendSqlParams(String sqlPart, Object... params) {
         if (sqlPart != null && params != null) {
             StringBuilder list = new StringBuilder();
             for (Object param : params) {
@@ -94,17 +99,21 @@ public class SqlBuilder {
                 list.append('?');
                 this.params.add(param);
             }
-            if (list.length() > 0)
+            if (list.length() > 0) {
                 this.builder.append(sqlPart).append('(')
                         .append(list).append(')');
+                return true;
+            }
         }
-        return this;
+        return false;
     }
 
     /**
      * 当参数存在且有值时扩展Sql并添加参数，sqlPart扩展为sqlPart+(?,?,?)格式。
+     *
+     * @return 是否添加成功，参数有值则添加。
      */
-    public SqlBuilder extendHasValues(String sqlPart, Object... params) {
+    public boolean extendHasValues(String sqlPart, Object... params) {
         if (sqlPart != null && params != null) {
             StringBuilder list = new StringBuilder();
             for (Object param : params) {
@@ -115,44 +124,55 @@ public class SqlBuilder {
                     this.params.add(param);
                 }
             }
-            if (list.length() > 0)
+            if (list.length() > 0) {
                 this.builder.append(sqlPart).append('(')
                         .append(list).append(')');
+                return true;
+            }
         }
-        return this;
+        return false;
     }
 
     /**
      * 当参数有值时追加Like语句并且以参数开头，即param+%。
+     *
+     * @return 是否添加成功，参数有值则添加。
      */
-    public SqlBuilder appendStartWith(String sqlPart, String param) {
+    public boolean appendStartWith(String sqlPart, String param) {
         if (sqlPart != null && param != null && param.length() > 0) {
             this.builder.append(sqlPart);
             this.params.add(param + "%");
+            return true;
         }
-        return this;
+        return false;
     }
 
     /**
      * 当参数有值时追加Like语句并且以参数结束，即%+param。
+     *
+     * @return 是否添加成功，参数有值则添加。
      */
-    public SqlBuilder appendEndWith(String sqlPart, String param) {
+    public boolean appendEndWith(String sqlPart, String param) {
         if (sqlPart != null && param != null && param.length() > 0) {
             this.builder.append(sqlPart);
             this.params.add("%" + param);
+            return true;
         }
-        return this;
+        return false;
     }
 
     /**
      * 当参数有值时追加Like语句并且包含参数，即%+param+%。
+     *
+     * @return 是否添加成功，参数有值则添加。
      */
-    public SqlBuilder appendContains(String sqlPart, String param) {
+    public boolean appendContains(String sqlPart, String param) {
         if (sqlPart != null && param != null && param.length() > 0) {
             this.builder.append(sqlPart);
             this.params.add("%" + param + "%");
+            return true;
         }
-        return this;
+        return false;
     }
 
 }

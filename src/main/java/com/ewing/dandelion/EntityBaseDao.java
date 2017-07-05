@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -89,10 +88,9 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      * 批量把对象实例的所有属性插入到数据库。
      */
     @Override
-    public <E> List<E> addBatch(E... objects) {
+    public <E> E[] addBatch(E... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("Object instances is empty.");
-        List<E> entities = new ArrayList<>(objects.length);
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
         for (int i = 0; i < objects.length; i++) {
             E object = objects[i];
@@ -100,12 +98,11 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
                 throw new DaoException("Object instance is empty.");
             sqlGenerator.generateIdentity(object);
             sources[i] = new BeanPropertySqlParameterSource(object);
-            entities.add(object);
         }
         String sql = sqlGenerator.getInsertValues(objects[0].getClass());
         LOGGER.debug(sql);
         namedParamOperations.batchUpdate(sql, sources);
-        return entities;
+        return objects;
     }
 
     /**
@@ -155,22 +152,20 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      * 批量更新对象实例的所有属性。
      */
     @Override
-    public <E> List<E> updateBatch(E... objects) {
+    public <E> E[] updateBatch(E... objects) {
         if (objects == null || objects.length == 0)
             throw new DaoException("Object instances is empty.");
-        List<E> entities = new ArrayList<>(objects.length);
         SqlParameterSource[] sources = new SqlParameterSource[objects.length];
         for (int i = 0; i < objects.length; i++) {
             E object = objects[i];
             if (object == null)
                 throw new DaoException("Object instance is empty.");
             sources[i] = new BeanPropertySqlParameterSource(object);
-            entities.add(object);
         }
         String sql = sqlGenerator.getUpdateWhereIdEquals(objects[0].getClass());
         LOGGER.debug(sql);
         namedParamOperations.batchUpdate(sql, sources);
-        return entities;
+        return objects;
     }
 
     /**

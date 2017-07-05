@@ -18,12 +18,14 @@ public class SqlBuilderTest {
 
         sqlBuilder.appendSql(" AND appendSql = ?").appendParams("appendParams")
                 .appendSqlParams(" AND appendSqlParams in (?,?,?)", 3, 4, 5)
-                .appendHasValue(" AND appendHasValue = ?", "Value")
-                .extendSqlParams(" AND extendSqlParams IN ", 1, null, 3)
-                .extendHasValues(" AND extendHasValues IN ", "A", "C", null)
-                .appendStartWith(" AND appendStartWith like ?", "StartWith")
-                .appendEndWith(" AND appendEndWith like ?", "EndWith")
-                .appendContains(" AND appendContains like ?", "Contains");
+                .appendHasValue(" AND appendHasValue = ?", "Value");
+
+        sqlBuilder.extendSqlParams(" AND extendSqlParams IN ", 1, null, 3);
+        sqlBuilder.extendHasValues(" AND extendHasValues IN ", "A", "C", null);
+
+        sqlBuilder.appendStartWith(" AND appendStartWith like ?", "StartWith");
+        sqlBuilder.appendEndWith(" AND appendEndWith like ?", "EndWith");
+        sqlBuilder.appendContains(" AND appendContains like ?", "Contains");
 
         System.out.println(sqlBuilder.toString());
         System.out.println(Arrays.toString(sqlBuilder.getParams()));
