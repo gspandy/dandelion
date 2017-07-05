@@ -1,7 +1,6 @@
 package com.ewing.dandelion.generation;
 
 import com.ewing.dandelion.DaoException;
-import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ewing
  * @since 2017-03-06
  **/
-@Component
 public class SqlGenerator {
 
     /**
