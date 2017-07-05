@@ -36,22 +36,7 @@ public class EntityInfo {
             this.sqlName = sqlName.value();
         } else {
             String name = entityClass.getSimpleName();
-            if (underscore) {
-                StringBuilder result = new StringBuilder(
-                        name.substring(0, 1).toLowerCase());
-                for (int i = 1; i < name.length(); i++) {
-                    String s = name.substring(i, i + 1);
-                    String slc = s.toLowerCase();
-                    if (!s.equals(slc)) {
-                        result.append('_').append(slc);
-                    } else {
-                        result.append(s);
-                    }
-                }
-                this.sqlName = result.toString().toUpperCase();
-            } else {
-                this.sqlName = name;
-            }
+            this.sqlName = underscore ? PropertyUtils.underscore(name) : name;
         }
         // 初始化实体中的属性列表
         BeanInfo beanInfo;

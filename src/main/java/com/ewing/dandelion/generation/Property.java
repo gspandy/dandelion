@@ -38,6 +38,8 @@ public class Property {
         }
         this.type = field.getType();
         this.name = field.getName();
+        // 初始化属性在Sql中的名称
+        this.sqlName = underscore ? PropertyUtils.underscore(this.name) : this.name;
         this.readMethod = descriptor.getReadMethod();
         this.writeMethod = descriptor.getWriteMethod();
         // 是否为ID以及是否生成ID值
@@ -48,23 +50,6 @@ public class Property {
         } else {
             this.identity = true;
             this.generate = identity.generate();
-        }
-        // 初始化属性在Sql中的名称
-        if (underscore) {
-            StringBuilder result = new StringBuilder(
-                    this.name.substring(0, 1).toLowerCase());
-            for (int i = 1; i < this.name.length(); i++) {
-                String s = this.name.substring(i, i + 1);
-                String slc = s.toLowerCase();
-                if (!s.equals(slc)) {
-                    result.append('_').append(slc);
-                } else {
-                    result.append(s);
-                }
-            }
-            this.sqlName = result.toString().toUpperCase();
-        } else {
-            this.sqlName = name;
         }
     }
 

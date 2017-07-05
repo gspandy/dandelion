@@ -2,6 +2,8 @@ package com.ewing.dandelion.generation;
 
 import com.ewing.dandelion.DaoException;
 
+import java.util.Locale;
+
 /**
  * 对象类型属性处理器。
  */
@@ -11,6 +13,24 @@ public class PropertyUtils {
      * 私有化构造方法。
      */
     private PropertyUtils() {
+    }
+
+    /**
+     * 属性名或实体名转换成下划线风格。
+     */
+    public static String underscore(String name) {
+        StringBuilder result = new StringBuilder();
+        result.append(name.substring(0, 1).toLowerCase(Locale.US));
+        for (int i = 1; i < name.length(); ++i) {
+            String s = name.substring(i, i + 1);
+            String slc = s.toLowerCase(Locale.US);
+            if (!s.equals(slc)) {
+                result.append('_').append(slc);
+            } else {
+                result.append(s);
+            }
+        }
+        return result.toString().toUpperCase(Locale.US);
     }
 
     /**

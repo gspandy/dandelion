@@ -13,10 +13,10 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 全局ID生成器，保持趋势递增，尾数均匀，每秒获取不超过262144000个就不会重复。
- * 值位组成：毫秒去掉低6位(约1/16秒)+24位机器标识+16位进程标识+24位累加数。
- * 使用31位10进制整数或20位36进制字符串可再用1000多年，到时扩展字段长度即可。
+ * 全局ID生成器，保持趋势递增，尾数均匀，每秒可获取262144000个全局唯一值。
  * 实测生成千万个用时约16秒，即每秒60万个，相对于2亿6千万来说是非常安全的。
+ * 位值组成：毫秒去掉低6位(精度为64毫秒)+24位机器标识+16位进程标识+24位累加数。
+ * 使用31位10进制整数或20位36进制字符串可再用1000多年，到时扩展字段长度即可。
  *
  * @author Ewing
  */
@@ -126,7 +126,7 @@ public class GlobalIdWorker {
             machineHash = sb.toString().hashCode();
         } catch (Throwable t) {
             machineHash = new SecureRandom().nextInt();
-            LOGGER.warn("无法获取机器标识，使用随机数值替代！", t);
+            LOGGER.warn("Use random number instead mac address!", t);
         }
         return machineHash;
     }
@@ -145,7 +145,7 @@ public class GlobalIdWorker {
             }
         } catch (Throwable t) {
             processId = (short) new SecureRandom().nextInt();
-            LOGGER.warn("无法获取进程标识，使用随机数值替代！", t);
+            LOGGER.warn("Use random number instead process id!", t);
         }
         return processId;
     }
