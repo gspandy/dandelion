@@ -15,7 +15,6 @@ import java.util.concurrent.CountDownLatch;
  * SQL生成器测试。
  *
  * @author Ewing
- * @date 2017/5/23
  */
 public class SqlGeneratorTest {
 

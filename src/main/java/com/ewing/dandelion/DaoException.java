@@ -4,7 +4,6 @@ package com.ewing.dandelion;
  * 数据访问异常类。
  *
  * @author Ewing
- * @date 2017/3/6
  */
 public class DaoException extends RuntimeException {
 
