@@ -1,6 +1,6 @@
 package com.ewing.boot;
 
-import com.ewing.boot.common.RandomString;
+import com.ewing.utils.RandomString;
 import com.ewing.boot.entity.MyUser;
 import com.ewing.dandelion.EntityDao;
 import com.ewing.dandelion.generation.SqlGenerator;

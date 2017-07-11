@@ -1,6 +1,6 @@
 package com.ewing.boot;
 
-import com.ewing.boot.common.RandomString;
+import com.ewing.utils.RandomString;
 import com.ewing.boot.entity.Team;
 import com.ewing.boot.genericdao.TeamDao;
 import com.ewing.dandelion.generation.SqlGenerator;

@@ -1,4 +1,4 @@
-package com.ewing.boot.common;
+package com.ewing.utils;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;

@@ -1,4 +1,4 @@
-package com.ewing.boot;
+package com.ewing.normal;
 
 import com.ewing.boot.entity.MyUser;
 import com.ewing.dandelion.generation.SqlGenerator;

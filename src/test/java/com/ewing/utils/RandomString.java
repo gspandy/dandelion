@@ -1,4 +1,4 @@
-package com.ewing.boot.common;
+package com.ewing.utils;
 
 import java.util.Random;
 
