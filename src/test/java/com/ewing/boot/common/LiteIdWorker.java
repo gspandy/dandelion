@@ -1,7 +1,8 @@
 package com.ewing.boot.common;
 
+import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 /**
  * 全局ID生成器，初始化instance[0~2047]参数不能重复，最多可使用到2248年。
@@ -62,36 +63,30 @@ public class LiteIdWorker {
     }
 
     /**
-     * 测试方法，无侵入不导包，可直接删除。
+     * 使用JDK生成UUID并转换成25位36进制字符串。
      */
-    public static void main(String[] args) throws Exception {
-        String date = "2248年";
-        long time = new java.text.SimpleDateFormat("yyyy年").parse(date).getTime();
-        System.out.println(date + "时间：" + Long.toBinaryString(time) + " 长度：" + Long.toBinaryString(time).length());
-        // 高并发性能测试
-        int threads = 1000;
-        int perThread = 1000;
-        LiteIdWorker liteIdWorker = new LiteIdWorker(0);
-        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(threads);
-        long[] longs = new long[threads * perThread];
-        final AtomicInteger index = new AtomicInteger();
-        time = System.currentTimeMillis();
-        for (int i = 0; i < threads; i++) {
-            new Thread(new Runnable() {
-                public void run() {
-                    for (int n = 0; n < perThread; n++)
-                        longs[index.getAndIncrement()] = liteIdWorker.nextLong();
-                    latch.countDown();
-                }
-            }).start();
-        }
-        latch.await();
-        System.out.print("\n" + threads + "个线程线程各生成" + perThread + "个用时："
-                + (System.currentTimeMillis() - time) + " 毫秒\n共：" + index.get() + " 个");
-        // 验证是否唯一
-        java.util.Set<Object> ids = new java.util.HashSet<>(threads * perThread);
-        for (long lo : longs) ids.add(lo);
-        System.out.println(" 唯一值：" + ids.size() + " 个");
+    public static String uuidString() {
+        UUID id = UUID.randomUUID();
+        // 取高低位转换成36进制 低位部分须补足16位
+        String mb = Long.toHexString(id.getMostSignificantBits());
+        StringBuilder lb = new StringBuilder(Long.toHexString(id.getLeastSignificantBits()));
+        while (lb.length() < 16) lb.insert(0, '0');
+        StringBuilder idb = new StringBuilder(new BigInteger(mb + lb.toString(), 16).toString(36));
+        while (idb.length() < 25) idb.insert(0, '0');
+        return idb.toString();
+    }
+
+    /**
+     * 使用JDK生成UUID并转换成32位16进制字符串。
+     */
+    public static String uuidHex() {
+        UUID id = UUID.randomUUID();
+        // 取高低位转换成16进制 比直接toString效率好很多
+        StringBuilder mb = new StringBuilder(Long.toHexString(id.getMostSignificantBits()));
+        while (mb.length() < 16) mb.insert(0, '0');
+        StringBuilder lb = new StringBuilder(Long.toHexString(id.getLeastSignificantBits()));
+        while (lb.length() < 16) lb.insert(0, '0');
+        return mb.append(lb).toString();
     }
 
 }

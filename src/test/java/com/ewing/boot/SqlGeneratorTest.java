@@ -53,7 +53,7 @@ public class SqlGeneratorTest {
                 + "次）CRUD语句及ID生成用时：" + (System.currentTimeMillis() - time) + " 毫秒");
 
         // 单线程性能测试
-        int times = 1000000;
+        int times = 2000000;
         time = System.currentTimeMillis();
         for (int i = 0; i < times; i++)
             sqlGenerator.getInsertPositive(config);
