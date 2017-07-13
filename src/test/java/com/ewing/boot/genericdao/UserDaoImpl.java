@@ -28,8 +28,7 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
      */
     @Override
     public MyUser findMyUser(String name, String description, Integer level) {
-        String sql = sqlGenerator.getSelectWhereTrue(entityClass);
-        SqlBuilder sqlBuilder = new SqlBuilder(sql);
+        SqlBuilder sqlBuilder = new SqlBuilder(sqlGenerator.getSelectWhereTrue(entityClass));
 
         // 当名称有值时根据名称精确查询
         sqlBuilder.appendHasValue(" AND name = ?", name);
