@@ -36,7 +36,7 @@ public class EntityInfo {
             this.sqlName = sqlName.value();
         } else {
             String name = entityClass.getSimpleName();
-            this.sqlName = underscore ? PropertyUtils.underscore(name) : name;
+            this.sqlName = underscore ? EntityUtils.underscore(name) : name;
         }
         // 初始化实体中的属性列表
         BeanInfo beanInfo;
@@ -52,12 +52,7 @@ public class EntityInfo {
             // 需要可用的属性
             if (descriptor.getWriteMethod() == null || descriptor.getReadMethod() == null)
                 continue;
-            Field field;
-            try {
-                field = entityClass.getDeclaredField(descriptor.getName());
-            } catch (NoSuchFieldException e) {
-                throw new DaoException("Field not found.", e);
-            }
+            Field field = EntityUtils.fieldInClassOrSuper(descriptor.getName(), entityClass);
             // 忽略临时属性
             if (field.getAnnotation(Temporary.class) != null)
                 continue;

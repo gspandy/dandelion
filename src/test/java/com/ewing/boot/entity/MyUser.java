@@ -1,24 +1,14 @@
 package com.ewing.boot.entity;
 
-import com.ewing.dandelion.annotation.Identity;
 import com.ewing.dandelion.annotation.Temporary;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 用户实体。
+ * 扩展的用户实体类。
  **/
-public class MyUser {
-    @Identity
-    private String userId;
-
-    private String name;
-
-    private Integer level;
-
-    private String description;
-
+public class MyUser extends User {
     @Temporary
     private String temporary;
 
@@ -39,38 +29,6 @@ public class MyUser {
     private Short shortValue;
 
     private byte[] bytesValue;
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public String getTemporary() {
         return temporary;

@@ -4,9 +4,9 @@ Spring Jdbc具有强大的参数解析、简化执行过程、返回值封装等
 
 该工具作为Spring jdbc的增强，以原生SQL为核心，自动生成对象操作的SQL，简化分页和查询，同时可使用其中的JdbcTemplate，无后顾之忧。  
 
-1、实体对象基本CRUD操作，可轻松选取或屏蔽部分属性，支持定义临时属性，支持批量操作。  
+1、实体对象基本CRUD操作，可轻松选取或屏蔽部分属性，支持定义临时属性，支持批量操作、支持继承的属性。  
 
-2、支持生成全局唯一ID，支持多ID组成的联合主键，手动赋值和自动生成两种方式可选。  
+2、支持生成全局唯一ID，支持多ID组成的联合主键，手动赋值和自动生成两种方式可选，默认为自动生成。  
 
 3、支持多数据源，可用数据库原生SQL，使用SQL生成器生成主体SQL，少量编码即可实现自定义操作。  
 
@@ -18,7 +18,7 @@ Spring Jdbc具有强大的参数解析、简化执行过程、返回值封装等
 
 ## 该工具遵循以下约定
 
-1、实体说明：含有带Getter和Setter方法的属性且不能全部标记为临时属性。若没有标记为ID的属性，则依赖ID相关的方法无法使用。  
+1、实体说明：含有带Getter和Setter方法的属性且不能全部标记为临时属性，支持继承的属性。若没有ID属性，则依赖ID相关的方法无法使用。  
 
 2、积极属性：非null的对象类型（包括包装类型），基本类型大于0或为true的值，反之则为消极的属性，系统默认初始化的值都是消极属性。  
 
@@ -43,9 +43,9 @@ Maven项目Jar包：使用Maven打成Jar包（mvn package，也可以直接下�
 <dependency>
     <groupId>com.ewing</groupId>
     <artifactId>dandelion</artifactId>
-    <version>2.8.0</version>
+    <version>3.2.0</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/lib/dandelion-2.8.0.jar</systemPath>
+    <systemPath>${project.basedir}/lib/dandelion-3.2.0.jar</systemPath>
 </dependency>
 ```
 Maven本地仓库或私服：先执行mvn install（也可以直接 install Jar 包）到本地仓库或私服，pom文件中添加以下依赖：
@@ -53,7 +53,7 @@ Maven本地仓库或私服：先执行mvn install（也可以直接 install Jar 
 <dependency>
     <groupId>com.ewing</groupId>
     <artifactId>dandelion</artifactId>
-    <version>2.8.0</version>
+    <version>3.2.0</version>
 </dependency>
 ```
 #### 轻松在项目中使用：

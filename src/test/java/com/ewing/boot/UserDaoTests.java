@@ -1,11 +1,12 @@
 package com.ewing.boot;
 
-import com.ewing.utils.RandomString;
 import com.ewing.boot.entity.MyUser;
+import com.ewing.boot.entity.User;
 import com.ewing.boot.genericdao.UserDao;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
+import com.ewing.utils.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -163,7 +164,10 @@ public class UserDaoTests {
     public void getUserTest() {
         // 根据ID获取对象
         MyUser user = addUser();
-        MyUser myUser = userDao.get(user.getUserId());
+        // 使用父类作为ID 父类中包含其所有ID属性
+        User userId = new User();
+        userId.setUserId(user.getUserId());
+        MyUser myUser = userDao.get(userId);
         // 没有异常 简单验证
         Assert.assertTrue(user.getName().equals(myUser.getName()));
 

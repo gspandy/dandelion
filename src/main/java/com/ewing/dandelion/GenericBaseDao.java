@@ -1,6 +1,6 @@
 package com.ewing.dandelion;
 
-import com.ewing.dandelion.generation.PropertyUtils;
+import com.ewing.dandelion.generation.EntityUtils;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
@@ -216,8 +216,8 @@ public abstract class GenericBaseDao<E> extends SimpleBaseDao implements Generic
     private E getObject(Object id, String sql) {
         LOGGER.debug(sql);
         try {
-            if (entityClass.equals(id.getClass())) {
-                Object[] params = PropertyUtils.getEntityIds(getSqlGenerator().getEntityInfo(entityClass), id);
+            if (EntityUtils.isClassOrSuper(id, entityClass)) {
+                Object[] params = EntityUtils.getEntityIds(getSqlGenerator().getEntityInfo(entityClass), id);
                 return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), params);
             } else {
                 return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), id);
@@ -270,8 +270,8 @@ public abstract class GenericBaseDao<E> extends SimpleBaseDao implements Generic
         String sql = sqlGenerator.getSelectWhereBatchIds(entityClass, ids.length);
         LOGGER.debug(sql);
         // 如果则参数为该实体的实例 使用反射取ID值
-        if (entityClass.equals(ids[0].getClass())) {
-            Object[] params = PropertyUtils.getEntitiesIds(getSqlGenerator().getEntityInfo(entityClass), ids);
+        if (EntityUtils.isClassOrSuper(ids[0], entityClass)) {
+            Object[] params = EntityUtils.getEntitiesIds(getSqlGenerator().getEntityInfo(entityClass), ids);
             return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
         } else {
             return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), ids);
@@ -348,8 +348,8 @@ public abstract class GenericBaseDao<E> extends SimpleBaseDao implements Generic
             throw new DaoException("Identity is empty.");
         String sql = sqlGenerator.getDeleteIdEquals(entityClass);
         LOGGER.debug(sql);
-        if (entityClass.equals(id.getClass())) {
-            Object[] params = PropertyUtils.getEntityIds(getSqlGenerator().getEntityInfo(entityClass), id);
+        if (EntityUtils.isClassOrSuper(id, entityClass)) {
+            Object[] params = EntityUtils.getEntityIds(getSqlGenerator().getEntityInfo(entityClass), id);
             if (jdbcOperations.update(sql, params) < 0)
                 throw new DaoException("Delete object failed.");
         } else {

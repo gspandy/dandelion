@@ -1,6 +1,5 @@
 package com.ewing.dandelion.generation;
 
-import com.ewing.dandelion.DaoException;
 import com.ewing.dandelion.annotation.Identity;
 
 import java.beans.PropertyDescriptor;
@@ -30,16 +29,11 @@ public class Property {
      * 初始化属性信息。
      */
     public Property(Class entityClass, PropertyDescriptor descriptor, boolean underscore) {
-        Field field;
-        try {
-            field = entityClass.getDeclaredField(descriptor.getName());
-        } catch (NoSuchFieldException e) {
-            throw new DaoException("Field not found.", e);
-        }
+        Field field = EntityUtils.fieldInClassOrSuper(descriptor.getName(), entityClass);
         this.type = field.getType();
         this.name = field.getName();
         // 初始化属性在Sql中的名称
-        this.sqlName = underscore ? PropertyUtils.underscore(this.name) : this.name;
+        this.sqlName = underscore ? EntityUtils.underscore(this.name) : this.name;
         this.readMethod = descriptor.getReadMethod();
         this.writeMethod = descriptor.getWriteMethod();
         // 是否为ID以及是否生成ID值

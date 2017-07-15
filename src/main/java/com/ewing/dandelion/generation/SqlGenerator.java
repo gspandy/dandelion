@@ -60,9 +60,9 @@ public class SqlGenerator {
             if (property.isGenerate()) {
                 Class type = property.getType();
                 try {
-                    if (String.class.equals(type)) {
+                    if (String.class == type) {
                         property.getWriteMethod().invoke(object, GlobalIdWorker.nextString());
-                    } else if (BigInteger.class.equals(type)) {
+                    } else if (BigInteger.class == type) {
                         property.getWriteMethod().invoke(object, GlobalIdWorker.nextBigInteger());
                     } else {
                         throw new DaoException("Can not generate this identity type.");
@@ -106,7 +106,7 @@ public class SqlGenerator {
         Property[] properties = getEntityInfo(config.getClass()).getProperties();
         for (Property property : properties) {
             // 添加到结果列表 ID属性必须添加
-            if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
+            if (property.isIdentity() || EntityUtils.isPositive(property, config) == positive) {
                 if (columns.length() > 0)
                     columns.append(',');
                 columns.append(property.getSqlName());
@@ -165,7 +165,7 @@ public class SqlGenerator {
         Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到插入列表 ID属性必须插入
-            if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
+            if (property.isIdentity() || EntityUtils.isPositive(property, config) == positive) {
                 if (columns.length() > 0) {
                     columns.append(',');
                     values.append(',');
@@ -336,7 +336,7 @@ public class SqlGenerator {
         Property[] properties = entityInfo.getProperties();
         for (Property property : properties) {
             // 添加属性到查询结果
-            if (property.isIdentity() || PropertyUtils.isPositive(property, config) == positive) {
+            if (property.isIdentity() || EntityUtils.isPositive(property, config) == positive) {
                 if (columns.length() > 0)
                     columns.append(',');
                 columns.append(property.getSqlName());
@@ -381,7 +381,7 @@ public class SqlGenerator {
                     identities.append(" AND ");
                 identities.append(property.getSqlName())
                         .append("=:").append(property.getName());
-            } else if (PropertyUtils.isPositive(property, config) == positive) {
+            } else if (EntityUtils.isPositive(property, config) == positive) {
                 // 添加到要更新的字段
                 if (updates.length() > 0)
                     updates.append(',');

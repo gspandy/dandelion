@@ -2,17 +2,18 @@ package com.ewing.dandelion.generation;
 
 import com.ewing.dandelion.DaoException;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 
 /**
  * 对象类型属性处理器。
  */
-public class PropertyUtils {
+public class EntityUtils {
 
     /**
      * 私有化构造方法。
      */
-    private PropertyUtils() {
+    private EntityUtils() {
     }
 
     /**
@@ -37,24 +38,53 @@ public class PropertyUtils {
      * 判断该属性是否为积极的。
      */
     public static boolean isPositive(Property property, Object object) {
-        Object propertyValue;
+        Object value;
         try {
-            propertyValue = property.getReadMethod().invoke(object);
+            value = property.getReadMethod().invoke(object);
         } catch (ReflectiveOperationException e) {
             throw new DaoException("Failed to read object property value.", e);
         }
-        if (propertyValue == null) return false;
+        if (value == null) return false;
         Class clazz = property.getType();
         if (!clazz.isPrimitive()) return true;
             // 下面虽然对基本类型提供了支持，但不建议使用基本类型。
-        else if (clazz == int.class) return ((int) propertyValue) > 0;
-        else if (clazz == long.class) return ((long) propertyValue) > 0;
-        else if (clazz == short.class) return ((short) propertyValue) > 0;
-        else if (clazz == byte.class) return ((byte) propertyValue) > 0;
-        else if (clazz == char.class) return ((char) propertyValue) > 0;
-        else if (clazz == double.class) return ((double) propertyValue) > 0;
-        else if (clazz == float.class) return ((float) propertyValue) > 0;
-        else return clazz == boolean.class && (boolean) propertyValue;
+        else if (clazz == int.class) return ((int) value) > 0;
+        else if (clazz == long.class) return ((long) value) > 0;
+        else if (clazz == short.class) return ((short) value) > 0;
+        else if (clazz == byte.class) return ((byte) value) > 0;
+        else if (clazz == char.class) return ((char) value) > 0;
+        else if (clazz == double.class) return ((double) value) > 0;
+        else if (clazz == float.class) return ((float) value) > 0;
+        else return clazz == boolean.class && (boolean) value;
+    }
+
+    /**
+     * 根据名称查找指定类型或其父类中的字段。
+     */
+    public static Field fieldInClassOrSuper(String name, Class clazz) {
+        while (clazz != Object.class) {
+            try {
+                return clazz.getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+                clazz = clazz.getSuperclass();
+            }
+        }
+        throw new DaoException("No such field:" + name);
+    }
+
+    /**
+     * 判断对象类型是否和指定类型或其父类相同。
+     */
+    public static boolean isClassOrSuper(Object object, Class clazz) {
+        Class cls = object.getClass();
+        while (clazz != Object.class) {
+            if (clazz == cls) {
+                return true;
+            } else {
+                clazz = clazz.getSuperclass();
+            }
+        }
+        return false;
     }
 
     /**

@@ -1,11 +1,12 @@
 package com.ewing.boot;
 
-import com.ewing.utils.RandomString;
 import com.ewing.boot.entity.Team;
+import com.ewing.boot.entity.TeamId;
 import com.ewing.boot.genericdao.TeamDao;
 import com.ewing.dandelion.generation.SqlGenerator;
 import com.ewing.dandelion.pagination.PageData;
 import com.ewing.dandelion.pagination.PageParam;
+import com.ewing.utils.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -145,7 +146,9 @@ public class TeamDaoTests {
     public void getTeamTest() {
         // 根据ID获取对象
         Team team = addTeam();
-        Team myTeam = teamDao.get(team);
+        // 使用父类作为ID 父类中包含其所有ID属性
+        TeamId teamId = new TeamId(team.getMyId(), team.getYourId(), team.getHisId());
+        Team myTeam = teamDao.get(teamId);
         // 没有异常 简单验证
         Assert.assertTrue(team.getName().equals(myTeam.getName()));
 
