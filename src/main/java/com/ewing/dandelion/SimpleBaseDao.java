@@ -132,7 +132,7 @@ public class SimpleBaseDao implements SimpleDao {
             throw new DaoException("Page parameter or class or sql is empty.");
         PageData<T> pageData = new PageData<>();
         if (pageParam.isCount()) {
-            String countSql = "SELECT COUNT(*) FROM ( " + sql + " ) _Total_";
+            String countSql = "SELECT COUNT(*) FROM ( " + sql + " ) _TOTAL_";
             pageData.setTotal(queryLong(countSql, params));
             if (pageData.getTotal() == 0) {
                 return pageData.setContent(new ArrayList<>(0));
@@ -155,7 +155,7 @@ public class SimpleBaseDao implements SimpleDao {
             throw new DaoException("Page parameter or sql is empty.");
         PageData<Map<String, Object>> pageData = new PageData<>();
         if (pageParam.isCount()) {
-            String countSql = "SELECT COUNT(*) FROM ( " + sql + " ) _Total_";
+            String countSql = "SELECT COUNT(*) FROM ( " + sql + " ) _TOTAL_";
             pageData.setTotal(queryLong(countSql, params));
             if (pageData.getTotal() == 0) {
                 return pageData.setContent(new ArrayList<>(0));
