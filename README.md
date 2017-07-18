@@ -41,7 +41,7 @@ Spring Jdbc具有强大的参数解析、简化执行过程、返回值封装等
 Maven项目Jar包：使用Maven打成Jar包（mvn package，也可以直接下载 Jar 包）放到项目根/lib目录，pom文件中添加以下依赖：
 ```xml
 <dependency>
-    <groupId>tsai.ewing</groupId>
+    <groupId>ewing</groupId>
     <artifactId>dandelion</artifactId>
     <version>3.2.0</version>
     <scope>system</scope>
@@ -51,15 +51,15 @@ Maven项目Jar包：使用Maven打成Jar包（mvn package，也可以直接下�
 Maven本地仓库或私服：先执行mvn install（也可以直接 install Jar 包）到本地仓库或私服，pom文件中添加以下依赖：
 ```xml
 <dependency>
-    <groupId>tsai.ewing</groupId>
+    <groupId>ewing</groupId>
     <artifactId>dandelion</artifactId>
     <version>3.2.0</version>
 </dependency>
 ```
 #### 轻松在项目中使用：
-Spring Boot 项目：添加 spring-boot-starter-jdbc 依赖，参考或者复制 src/test/java 下的 tsai.ewing.boot.BootDaoConfig 类到项目中，并使Spring能扫描到该配置类。  
+Spring Boot 项目：添加 spring-boot-starter-jdbc 依赖，参考或者复制 src/test/java 下的 ewing.boot.BootDaoConfig 类到项目中，并使Spring能扫描到该配置类。  
 
-普通 Spring 项目：先配置一个数据源 DataSource，参考或者复制 src/test/java 下的 tsai.ewing.normal.NormalDaoConfig 类到项目中，并使Spring能扫描到该配置类。  
+普通 Spring 项目：先配置一个数据源 DataSource，参考或者复制 src/test/java 下的 ewing.normal.NormalDaoConfig 类到项目中，并使Spring能扫描到该配置类。  
 
 原理：该工具需要配置JdbcOperations和NamedParameterJdbcOperations的实现，即JdbcTemplate和NamedParameterJdbcTemplate（这两个类依赖DataSource）。  
 
@@ -83,7 +83,7 @@ Identity注解：可以标记属性为ID，支持多个ID（联合主键），�
 
 Temporary注解：该注解标记的属性在生成Sql语句时被忽略，成为临时属性，但不影响Spring Jdbc使用该属性，常用于附加关联数据。  
 
-SqlName注解：可以自定义对象类型在Sql中的名称，即数据库的表名，通常用于带前缀的表名。  
+SqlName注解：可以自定义实体类型在Sql中的名称，即数据库的表名，通常用于带前缀的表名。  
 
 注1：可配合Spring Cache使用，使用注解声明式的本地缓存或Redis共享缓存，可很好地降低数据库访问次数。  
 
