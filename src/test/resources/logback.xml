@@ -10,5 +10,5 @@
         <level value="INFO"/>
         <appender-ref ref="STDOUT"/>
     </root>
-    <logger name="com.ewing.dandelion" level="DEBUG"/>
+    <logger name="tsai.ewing.dandelion" level="DEBUG"/>
 </configuration>
