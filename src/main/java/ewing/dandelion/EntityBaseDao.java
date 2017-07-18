@@ -240,6 +240,8 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      */
     @Override
     public long countAll(Class entityClass) {
+        if (entityClass == null)
+            throw new DaoException("Entity class is empty.");
         String sql = sqlGenerator.getCountWhereTrue(entityClass);
         LOGGER.debug(sql);
         return jdbcOperations.queryForObject(sql, Long.class);
@@ -324,6 +326,8 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      */
     @Override
     public void deleteAll(Class entityClass) {
+        if (entityClass == null)
+            throw new DaoException("Entity class is empty.");
         String sql = sqlGenerator.getDeleteWhereTrue(entityClass);
         LOGGER.debug(sql);
         jdbcOperations.update(sql);
