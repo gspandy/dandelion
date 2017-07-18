@@ -24,7 +24,7 @@ Spring Jdbc具有强大的参数解析、简化执行过程、返回值封装等
 
 3、积极或消极的属性可以作为属性名单配置，用于选取或屏蔽对象的部分属性，故不建议在实体类中使用默认值，也不建议使用基本类型。  
 
-4、实体属性名默认与数据库表的列名相同，配置类中SqlGenerator的构造参数为true即可使用下划线风格，MySql建议保持与对象属性名称相同。  
+4、实体属性名默认与数据库表的列名相同，配置SqlGenerator的构造参数为true即可使用下划线风格，SqlName注解可自定义实体对应的表名。  
 
 5、主键ID为20位字符串或31位（从30位递增）整数，多机器多实例生成ID不重复、保持递增趋势、尾数分布均匀，可分库分表可移植数据库。  
 
@@ -32,13 +32,13 @@ Spring Jdbc具有强大的参数解析、简化执行过程、返回值封装等
 
 ## 相关依赖及使用说明
 
-相关依赖：Spring framework、Spring jdbc，建议4.0.0以上的版本，日志扩展slf4j，目前最低JDK版本为1.8。  
+相关依赖：Spring framework、Spring jdbc，建议4.0.0以上的版本，日志扩展slf4j及实现，目前最低JDK版本为1.8。  
 #### 引入到项目的几种方式参考：
 源码引入：直接作为源码引入，进行二次定制化开发。  
 
 直接添加Jar包：非Maven项目直接添加Jar包到项目依赖库中。  
 
-Maven项目Jar包：使用Maven打成Jar包（mvn package，也可以直接下载 Jar 包）放到项目根/lib目录，pom文件中添加以下依赖：
+Maven项目Jar包：使用Maven打成Jar包（也可以直接下载 Jar 包）放到项目根/lib目录，pom文件中添加以下依赖：
 ```xml
 <dependency>
     <groupId>ewing</groupId>
@@ -73,7 +73,7 @@ Spring Boot 项目：添加 spring-boot-starter-jdbc 依赖，参考或者复制
 
 SimpleDao接口：实现类SimpleBaseDao，该类是下面两个类的父类，具有查询为对象或Map、分页查询等功能。  
 
-GenericDao接口：实现类GenericBaseDao，普通DAO类通过继承该接口，可以让该DAO类具有特定实体专用的CRUD方法。  
+GenericDao接口：实现类GenericBaseDao，普通DAO类通过继承该泛型接口，可以让该DAO类具有特定实体专用的CRUD方法。  
 
 EntityDao接口：实现类EntityBaseDao，该类可以通过传递class参数来对任意实体对象进行操作，不需要单独继承泛型接口。  
 
