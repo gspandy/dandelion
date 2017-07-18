@@ -29,7 +29,7 @@ public class Property {
      * 初始化属性信息。
      */
     public Property(Class entityClass, PropertyDescriptor descriptor, boolean underscore) {
-        Field field = EntityUtils.fieldInClassOrSuper(descriptor.getName(), entityClass);
+        Field field = EntityUtils.getEntityField(descriptor.getName(), entityClass);
         this.type = field.getType();
         this.name = field.getName();
         // 初始化属性在Sql中的名称

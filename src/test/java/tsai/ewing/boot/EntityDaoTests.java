@@ -1,11 +1,5 @@
 package tsai.ewing.boot;
 
-import tsai.ewing.boot.entity.MyUser;
-import tsai.ewing.dandelion.EntityDao;
-import tsai.ewing.dandelion.generation.SqlGenerator;
-import tsai.ewing.dandelion.pagination.PageData;
-import tsai.ewing.dandelion.pagination.PageParam;
-import tsai.ewing.utils.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
+import tsai.ewing.boot.entity.MyUser;
+import tsai.ewing.dandelion.EntityDao;
+import tsai.ewing.dandelion.generation.SqlGenerator;
+import tsai.ewing.dandelion.pagination.PageData;
+import tsai.ewing.dandelion.pagination.PageParam;
+import tsai.ewing.utils.RandomString;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -230,7 +230,7 @@ public class EntityDaoTests {
 
         // 分页查询
         String sql = new SqlGenerator().getSelectWhereTrue(MyUser.class);
-        PageData<MyUser> users = entityDao.queryObjectPage(new PageParam(), MyUser.class, sql);
+        PageData<MyUser> users = entityDao.queryEntityPage(new PageParam(), MyUser.class, sql);
         Assert.assertTrue(users.getTotal() > 0);
 
         // 清理测试数据

@@ -1,8 +1,8 @@
 package tsai.ewing.boot.genericdao;
 
+import org.springframework.stereotype.Repository;
 import tsai.ewing.boot.entity.Team;
 import tsai.ewing.dandelion.GenericBaseDao;
-import org.springframework.stereotype.Repository;
 
 /**
  * 团队实体泛型DAO。

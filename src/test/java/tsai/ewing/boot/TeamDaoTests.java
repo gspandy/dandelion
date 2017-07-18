@@ -1,12 +1,5 @@
 package tsai.ewing.boot;
 
-import tsai.ewing.boot.entity.Team;
-import tsai.ewing.boot.entity.TeamId;
-import tsai.ewing.boot.genericdao.TeamDao;
-import tsai.ewing.dandelion.generation.SqlGenerator;
-import tsai.ewing.dandelion.pagination.PageData;
-import tsai.ewing.dandelion.pagination.PageParam;
-import tsai.ewing.utils.RandomString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
+import tsai.ewing.boot.entity.Team;
+import tsai.ewing.boot.entity.TeamId;
+import tsai.ewing.boot.genericdao.TeamDao;
+import tsai.ewing.dandelion.generation.SqlGenerator;
+import tsai.ewing.dandelion.pagination.PageData;
+import tsai.ewing.dandelion.pagination.PageParam;
+import tsai.ewing.utils.RandomString;
 
 import java.util.Date;
 import java.util.List;
@@ -223,7 +223,7 @@ public class TeamDaoTests {
 
         // 分页查询
         String sql = sqlGenerator.getSelectWhereTrue(Team.class);
-        PageData<Team> teams = teamDao.queryObjectPage(new PageParam(), Team.class, sql);
+        PageData<Team> teams = teamDao.queryEntityPage(new PageParam(), Team.class, sql);
         Assert.assertTrue(teams.getTotal() > 0);
 
         // 清理测试数据

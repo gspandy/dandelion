@@ -1,9 +1,9 @@
 package tsai.ewing.dandelion;
 
-import tsai.ewing.dandelion.pagination.PageData;
-import tsai.ewing.dandelion.pagination.PageParam;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import tsai.ewing.dandelion.pagination.PageData;
+import tsai.ewing.dandelion.pagination.PageParam;
 
 import java.util.List;
 import java.util.Map;
@@ -52,20 +52,20 @@ public interface SimpleDao {
     /**
      * 查询一条记录并封装成指定类型的对象。
      *
-     * @param clazz 指定对象类型。
-     * @param sql   查询语句。
+     * @param entityClass 指定对象类型。
+     * @param sql         查询语句。
      * @return 指定类型的对象。
      */
-    <T> T queryObject(Class<T> clazz, String sql, Object... params);
+    <T> T queryEntity(Class<T> entityClass, String sql, Object... params);
 
     /**
      * 查询多条记录并封装成指定类型的对象集合。
      *
-     * @param clazz 指定对象类型。
-     * @param sql   查询语句。
+     * @param entityClass 指定对象类型。
+     * @param sql         查询语句。
      * @return 指定类型的对象。
      */
-    <T> List<T> queryObjectList(Class<T> clazz, String sql, Object... params);
+    <T> List<T> queryEntityList(Class<T> entityClass, String sql, Object... params);
 
     /**
      * 查询一条记录并封装成Map。
@@ -86,11 +86,11 @@ public interface SimpleDao {
     /**
      * 分页查询多条记录并封装成指定类型的对象集合。
      *
-     * @param clazz 指定对象类型。
-     * @param sql   查询语句。
+     * @param entityClass 指定对象类型。
+     * @param sql         查询语句。
      * @return 指定类型的对象。
      */
-    <T> PageData<T> queryObjectPage(PageParam pageParam, Class<T> clazz, String sql, Object... params);
+    <T> PageData<T> queryEntityPage(PageParam pageParam, Class<T> entityClass, String sql, Object... params);
 
     /**
      * 分页查询多条记录并封装成Map集合。

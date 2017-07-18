@@ -52,7 +52,7 @@ public class EntityInfo {
             // 需要可用的属性
             if (descriptor.getWriteMethod() == null || descriptor.getReadMethod() == null)
                 continue;
-            Field field = EntityUtils.fieldInClassOrSuper(descriptor.getName(), entityClass);
+            Field field = EntityUtils.getEntityField(descriptor.getName(), entityClass);
             // 忽略临时属性
             if (field.getAnnotation(Temporary.class) != null)
                 continue;

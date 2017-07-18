@@ -1,9 +1,9 @@
 package tsai.ewing.boot.genericdao;
 
+import org.springframework.stereotype.Repository;
 import tsai.ewing.boot.entity.MyUser;
 import tsai.ewing.dandelion.GenericBaseDao;
 import tsai.ewing.dandelion.SqlBuilder;
-import org.springframework.stereotype.Repository;
 
 /**
  * 用户实体泛型DAO接口。
@@ -20,7 +20,7 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
     @Override
     public MyUser findByName(String name) {
         String sql = sqlGenerator.getSelectWhereTrue(entityClass) + " AND name = ?";
-        return queryObject(entityClass, sql, name);
+        return queryEntity(entityClass, sql, name);
     }
 
     /**
@@ -39,6 +39,6 @@ public class UserDaoImpl extends GenericBaseDao<MyUser> implements UserDao {
         // 直接添加等级查询条件
         sqlBuilder.appendSqlParams(" AND level = ?", level);
 
-        return queryObject(entityClass, sqlBuilder.toString(), sqlBuilder.getParams());
+        return queryEntity(entityClass, sqlBuilder.toString(), sqlBuilder.getParams());
     }
 }

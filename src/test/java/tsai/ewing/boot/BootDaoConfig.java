@@ -1,15 +1,15 @@
 package tsai.ewing.boot;
 
-import tsai.ewing.dandelion.EntityBaseDao;
-import tsai.ewing.dandelion.EntityDao;
-import tsai.ewing.dandelion.SimpleBaseDao;
-import tsai.ewing.dandelion.SimpleDao;
-import tsai.ewing.dandelion.generation.SqlGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import tsai.ewing.dandelion.EntityBaseDao;
+import tsai.ewing.dandelion.EntityDao;
+import tsai.ewing.dandelion.SimpleBaseDao;
+import tsai.ewing.dandelion.SimpleDao;
+import tsai.ewing.dandelion.generation.SqlGenerator;
 
 /**
  * SQL数据库访问配置。

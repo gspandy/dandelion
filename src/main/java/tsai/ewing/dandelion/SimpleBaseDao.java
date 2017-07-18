@@ -1,13 +1,13 @@
 package tsai.ewing.dandelion;
 
-import tsai.ewing.dandelion.pagination.PageData;
-import tsai.ewing.dandelion.pagination.PageParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import tsai.ewing.dandelion.pagination.PageData;
+import tsai.ewing.dandelion.pagination.PageParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,12 +75,12 @@ public class SimpleBaseDao implements SimpleDao {
      * 查询一条记录并封装成指定类型的对象。
      */
     @Override
-    public <T> T queryObject(Class<T> clazz, String sql, Object... params) {
-        if (clazz == null || sql == null)
+    public <T> T queryEntity(Class<T> entityClass, String sql, Object... params) {
+        if (entityClass == null || sql == null)
             throw new DaoException("Class or sql is empty.");
         LOGGER.debug(sql);
         try {
-            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(clazz), params);
+            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -90,11 +90,11 @@ public class SimpleBaseDao implements SimpleDao {
      * 查询多条记录并封装成指定类型的对象集合。
      */
     @Override
-    public <T> List<T> queryObjectList(Class<T> clazz, String sql, Object... params) {
-        if (clazz == null || sql == null)
+    public <T> List<T> queryEntityList(Class<T> entityClass, String sql, Object... params) {
+        if (entityClass == null || sql == null)
             throw new DaoException("Class or sql is empty.");
         LOGGER.debug(sql);
-        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), params);
+        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
     }
 
     /**
@@ -127,8 +127,8 @@ public class SimpleBaseDao implements SimpleDao {
      * 分页查询多条记录并封装成指定类型的对象集合。
      */
     @Override
-    public <T> PageData<T> queryObjectPage(PageParam pageParam, Class<T> clazz, String sql, Object... params) {
-        if (pageParam == null || clazz == null || sql == null)
+    public <T> PageData<T> queryEntityPage(PageParam pageParam, Class<T> entityClass, String sql, Object... params) {
+        if (pageParam == null || entityClass == null || sql == null)
             throw new DaoException("Page parameter or class or sql is empty.");
         PageData<T> pageData = new PageData<>();
         if (pageParam.isCount()) {
@@ -140,7 +140,7 @@ public class SimpleBaseDao implements SimpleDao {
         }
         String pageSql = sql + " LIMIT " + pageParam.getLimit() + " OFFSET " + pageParam.getOffset();
         LOGGER.debug(pageSql);
-        List<T> content = jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(clazz), params);
+        List<T> content = jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(entityClass), params);
         if (!pageParam.isCount())
             pageData.setTotal(content.size());
         return pageData.setContent(content);

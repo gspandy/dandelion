@@ -31,70 +31,70 @@ public interface GenericDao<E> extends SimpleDao {
     /**
      * 把对象实例的所有属性插入到数据库。
      *
-     * @param object 要插入到数据库的对象。
+     * @param entity 要插入到数据库的对象。
      * @return 插入成功的对象。
      */
-    E add(E object);
+    E add(E entity);
 
     /**
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
      *
-     * @param object 要插入到数据库的对象。
+     * @param entity 要插入到数据库的对象。
      * @param config 配置对象。
      * @return 插入成功的对象。
      */
-    E addPositive(E object, E config);
+    E addPositive(E entity, E config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
      *
-     * @param object 要插入到数据库的对象。
+     * @param entity 要插入到数据库的对象。
      * @param config 配置对象。
      * @return 插入成功的对象。
      */
-    E addNegative(E object, E config);
+    E addNegative(E entity, E config);
 
     /**
      * 批量把对象实例的所有属性插入到数据库。
      *
-     * @param objects 对象数组。
+     * @param entities 对象数组。
      * @return 添加成功的对象。
      */
-    E[] addBatch(E... objects);
+    E[] addBatch(E... entities);
 
     /**
      * 把对象实例的所有属性更新到数据库。
      *
-     * @param object 要更新到数据库的对象。
+     * @param entity 要更新到数据库的对象。
      * @return 更新成功的对象。
      */
-    E update(E object);
+    E update(E entity);
 
     /**
      * 把配置对象积极属性对应的对象实例属性更新到数据库。
      *
-     * @param object 要更新到数据库的对象。
+     * @param entity 要更新到数据库的对象。
      * @param config 配置对象。
      * @return 更新成功的对象。
      */
-    E updatePositive(E object, E config);
+    E updatePositive(E entity, E config);
 
     /**
      * 把配置对象消极属性对应的对象实例属性更新到数据库。
      *
-     * @param object 要更新到数据库的对象。
+     * @param entity 要更新到数据库的对象。
      * @param config 配置对象。
      * @return 更新成功的对象。
      */
-    E updateNegative(E object, E config);
+    E updateNegative(E entity, E config);
 
     /**
      * 批量更新对象实例的所有属性。
      *
-     * @param objects 要更新到数据库的对象。
+     * @param entities 要更新到数据库的对象。
      * @return 更新成功的对象。
      */
-    E[] updateBatch(E... objects);
+    E[] updateBatch(E... entities);
 
     /**
      * 根据ID获取对象的所有属性。
@@ -159,16 +159,16 @@ public interface GenericDao<E> extends SimpleDao {
     /**
      * 根据对象的ID属性删除对象。
      *
-     * @param object 要删除的数据对象。
+     * @param entity 要删除的数据对象。
      */
-    void delete(E object);
+    void delete(E entity);
 
     /**
      * 批量把对象实例从数据库删除。
      *
-     * @param objects 对象数组。
+     * @param entities 对象数组。
      */
-    void deleteBatch(E... objects);
+    void deleteBatch(E... entities);
 
     /**
      * 根据对象的ID属性删除对象。

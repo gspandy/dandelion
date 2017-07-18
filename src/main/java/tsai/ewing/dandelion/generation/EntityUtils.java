@@ -37,51 +37,51 @@ public class EntityUtils {
     /**
      * 判断该属性是否为积极的。
      */
-    public static boolean isPositive(Property property, Object object) {
+    public static boolean isPositive(Property property, Object entity) {
         Object value;
         try {
-            value = property.getReadMethod().invoke(object);
+            value = property.getReadMethod().invoke(entity);
         } catch (ReflectiveOperationException e) {
-            throw new DaoException("Failed to read object property value.", e);
+            throw new DaoException("Failed to read entity property value.", e);
         }
         if (value == null) return false;
-        Class clazz = property.getType();
-        if (!clazz.isPrimitive()) return true;
+        Class type = property.getType();
+        if (!type.isPrimitive()) return true;
             // 下面虽然对基本类型提供了支持，但不建议使用基本类型。
-        else if (clazz == int.class) return ((int) value) > 0;
-        else if (clazz == long.class) return ((long) value) > 0;
-        else if (clazz == short.class) return ((short) value) > 0;
-        else if (clazz == byte.class) return ((byte) value) > 0;
-        else if (clazz == char.class) return ((char) value) > 0;
-        else if (clazz == double.class) return ((double) value) > 0;
-        else if (clazz == float.class) return ((float) value) > 0;
-        else return clazz == boolean.class && (boolean) value;
+        else if (type == int.class) return ((int) value) > 0;
+        else if (type == long.class) return ((long) value) > 0;
+        else if (type == short.class) return ((short) value) > 0;
+        else if (type == byte.class) return ((byte) value) > 0;
+        else if (type == char.class) return ((char) value) > 0;
+        else if (type == double.class) return ((double) value) > 0;
+        else if (type == float.class) return ((float) value) > 0;
+        else return type == boolean.class && (boolean) value;
     }
 
     /**
      * 根据名称查找指定类型或其父类中的字段。
      */
-    public static Field fieldInClassOrSuper(String name, Class clazz) {
-        while (clazz != Object.class) {
+    public static Field getEntityField(String name, Class entityClass) {
+        while (entityClass != Object.class) {
             try {
-                return clazz.getDeclaredField(name);
+                return entityClass.getDeclaredField(name);
             } catch (NoSuchFieldException e) {
-                clazz = clazz.getSuperclass();
+                entityClass = entityClass.getSuperclass();
             }
         }
         throw new DaoException("No such field:" + name);
     }
 
     /**
-     * 判断对象类型是否和指定类型或其父类相同。
+     * 判断实体类型是否和指定类型或其父类相同。
      */
-    public static boolean isClassOrSuper(Object object, Class clazz) {
-        Class cls = object.getClass();
-        while (clazz != Object.class) {
-            if (clazz == cls) {
+    public static boolean isEntityOrSuper(Object entity, Class entityClass) {
+        Class cls = entity.getClass();
+        while (entityClass != Object.class) {
+            if (entityClass == cls) {
                 return true;
             } else {
-                clazz = clazz.getSuperclass();
+                entityClass = entityClass.getSuperclass();
             }
         }
         return false;
@@ -90,14 +90,14 @@ public class EntityUtils {
     /**
      * 从对象中获取实体ID属性的值。
      */
-    public static Object[] getEntityIds(EntityInfo entityInfo, Object object) {
+    public static Object[] getEntityIds(EntityInfo entityInfo, Object entity) {
         Property[] identities = entityInfo.getIdentities();
         Object[] params = new Object[identities.length];
         for (int i = 0; i < identities.length; i++) {
             try {
-                params[i] = identities[i].getReadMethod().invoke(object);
+                params[i] = identities[i].getReadMethod().invoke(entity);
             } catch (ReflectiveOperationException e) {
-                throw new DaoException("Failed to read object property value.", e);
+                throw new DaoException("Failed to read entity property value.", e);
             }
         }
         return params;
@@ -106,16 +106,16 @@ public class EntityUtils {
     /**
      * 批量从对象数组中获取实体ID属性的值。
      */
-    public static Object[] getEntitiesIds(EntityInfo entityInfo, Object[] objects) {
+    public static Object[] getEntitiesIds(EntityInfo entityInfo, Object[] entities) {
         Property[] identities = entityInfo.getIdentities();
-        Object[] params = new Object[objects.length * identities.length];
+        Object[] params = new Object[entities.length * identities.length];
         int index = 0;
-        for (Object object : objects) {
+        for (Object entity : entities) {
             for (Property identity : identities) {
                 try {
-                    params[index++] = identity.getReadMethod().invoke(object);
+                    params[index++] = identity.getReadMethod().invoke(entity);
                 } catch (ReflectiveOperationException e) {
-                    throw new DaoException("Failed to read object property value.", e);
+                    throw new DaoException("Failed to read entity property value.", e);
                 }
             }
         }

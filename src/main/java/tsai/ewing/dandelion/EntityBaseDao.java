@@ -1,15 +1,15 @@
 package tsai.ewing.dandelion;
 
-import tsai.ewing.dandelion.generation.EntityUtils;
-import tsai.ewing.dandelion.generation.SqlGenerator;
-import tsai.ewing.dandelion.pagination.PageData;
-import tsai.ewing.dandelion.pagination.PageParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import tsai.ewing.dandelion.generation.EntityUtils;
+import tsai.ewing.dandelion.generation.SqlGenerator;
+import tsai.ewing.dandelion.pagination.PageData;
+import tsai.ewing.dandelion.pagination.PageParam;
 
 import java.util.List;
 
@@ -43,142 +43,142 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
     /**
      * 私有方法，根据Sql添加对象。
      */
-    private <E> E addObject(E object, String sql) {
+    private <E> E addEntity(E entity, String sql) {
         LOGGER.debug(sql);
-        sqlGenerator.generateIdentity(object);
-        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
-            throw new DaoException("Add object failed.");
-        return object;
+        sqlGenerator.generateIdentity(entity);
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(entity)) < 1)
+            throw new DaoException("Add entity failed.");
+        return entity;
     }
 
     /**
      * 把对象实例的所有属性插入到数据库。
      */
     @Override
-    public <E> E add(E object) {
-        if (object == null)
+    public <E> E add(E entity) {
+        if (entity == null)
             throw new DaoException("Object instance is empty.");
-        String sql = sqlGenerator.getInsertValues(object.getClass());
-        return addObject(object, sql);
+        String sql = sqlGenerator.getInsertValues(entity.getClass());
+        return addEntity(entity, sql);
     }
 
     /**
      * 把配置对象积极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public <E> E addPositive(E object, E config) {
-        if (object == null || config == null)
+    public <E> E addPositive(E entity, E config) {
+        if (entity == null || config == null)
             throw new DaoException("Object instance or config is empty.");
         String sql = sqlGenerator.getInsertPositive(config);
-        return addObject(object, sql);
+        return addEntity(entity, sql);
     }
 
     /**
      * 把配置对象消极属性对应的对象实例属性插入到数据库。
      */
     @Override
-    public <E> E addNegative(E object, E config) {
-        if (object == null || config == null)
+    public <E> E addNegative(E entity, E config) {
+        if (entity == null || config == null)
             throw new DaoException("Object instance or config is empty.");
         String sql = sqlGenerator.getInsertNegative(config);
-        return addObject(object, sql);
+        return addEntity(entity, sql);
     }
 
     /**
      * 批量把对象实例的所有属性插入到数据库。
      */
     @Override
-    public <E> E[] addBatch(E... objects) {
-        if (objects == null || objects.length == 0)
+    public <E> E[] addBatch(E... entities) {
+        if (entities == null || entities.length == 0)
             throw new DaoException("Object instances is empty.");
-        SqlParameterSource[] sources = new SqlParameterSource[objects.length];
-        for (int i = 0; i < objects.length; i++) {
-            E object = objects[i];
-            if (object == null)
+        SqlParameterSource[] sources = new SqlParameterSource[entities.length];
+        for (int i = 0; i < entities.length; i++) {
+            E entity = entities[i];
+            if (entity == null)
                 throw new DaoException("Object instance is empty.");
-            sqlGenerator.generateIdentity(object);
-            sources[i] = new BeanPropertySqlParameterSource(object);
+            sqlGenerator.generateIdentity(entity);
+            sources[i] = new BeanPropertySqlParameterSource(entity);
         }
-        String sql = sqlGenerator.getInsertValues(objects[0].getClass());
+        String sql = sqlGenerator.getInsertValues(entities[0].getClass());
         LOGGER.debug(sql);
         namedParamOperations.batchUpdate(sql, sources);
-        return objects;
+        return entities;
     }
 
     /**
      * 私有方法，根据Sql更新对象。
      */
-    private <E> E updateObject(E object, String sql) {
+    private <E> E updateEntity(E entity, String sql) {
         LOGGER.debug(sql);
-        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 1)
-            throw new DaoException("Update object failed.");
-        return object;
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(entity)) < 1)
+            throw new DaoException("Update entity failed.");
+        return entity;
     }
 
     /**
      * 把对象实例的所有属性更新到数据库。
      */
     @Override
-    public <E> E update(E object) {
-        if (object == null)
+    public <E> E update(E entity) {
+        if (entity == null)
             throw new DaoException("Object instance is empty.");
-        String sql = sqlGenerator.getUpdateWhereIdEquals(object.getClass());
-        return updateObject(object, sql);
+        String sql = sqlGenerator.getUpdateWhereIdEquals(entity.getClass());
+        return updateEntity(entity, sql);
     }
 
     /**
      * 把配置对象积极属性对应的对象实例属性更新到数据库。
      */
     @Override
-    public <E> E updatePositive(E object, E config) {
-        if (object == null || config == null)
+    public <E> E updatePositive(E entity, E config) {
+        if (entity == null || config == null)
             throw new DaoException("Object instance or config is empty.");
         String sql = sqlGenerator.getUpdatePositiveWhereIdEquals(config);
-        return updateObject(object, sql);
+        return updateEntity(entity, sql);
     }
 
     /**
      * 把配置对象消极属性对应的对象实例属性更新到数据库。
      */
     @Override
-    public <E> E updateNegative(E object, E config) {
-        if (object == null || config == null)
+    public <E> E updateNegative(E entity, E config) {
+        if (entity == null || config == null)
             throw new DaoException("Object instance or config is empty.");
         String sql = sqlGenerator.getUpdateNegativeWhereIdEquals(config);
-        return updateObject(object, sql);
+        return updateEntity(entity, sql);
     }
 
     /**
      * 批量更新对象实例的所有属性。
      */
     @Override
-    public <E> E[] updateBatch(E... objects) {
-        if (objects == null || objects.length == 0)
+    public <E> E[] updateBatch(E... entities) {
+        if (entities == null || entities.length == 0)
             throw new DaoException("Object instances is empty.");
-        SqlParameterSource[] sources = new SqlParameterSource[objects.length];
-        for (int i = 0; i < objects.length; i++) {
-            E object = objects[i];
-            if (object == null)
+        SqlParameterSource[] sources = new SqlParameterSource[entities.length];
+        for (int i = 0; i < entities.length; i++) {
+            E entity = entities[i];
+            if (entity == null)
                 throw new DaoException("Object instance is empty.");
-            sources[i] = new BeanPropertySqlParameterSource(object);
+            sources[i] = new BeanPropertySqlParameterSource(entity);
         }
-        String sql = sqlGenerator.getUpdateWhereIdEquals(objects[0].getClass());
+        String sql = sqlGenerator.getUpdateWhereIdEquals(entities[0].getClass());
         LOGGER.debug(sql);
         namedParamOperations.batchUpdate(sql, sources);
-        return objects;
+        return entities;
     }
 
     /**
      * 私有方法，根据ID和Sql获取对象。
      */
-    private <E> E getObject(Class<E> clazz, Object id, String sql) {
+    private <E> E getEntity(Class<E> entityClass, Object id, String sql) {
         LOGGER.debug(sql);
         try {
-            if (EntityUtils.isClassOrSuper(id, clazz)) {
-                Object[] params = EntityUtils.getEntityIds(getSqlGenerator().getEntityInfo(clazz), id);
-                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(clazz), params);
+            if (EntityUtils.isEntityOrSuper(id, entityClass)) {
+                Object[] params = EntityUtils.getEntityIds(getSqlGenerator().getEntityInfo(entityClass), id);
+                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), params);
             } else {
-                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(clazz), id);
+                return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), id);
             }
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -189,11 +189,11 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      * 根据ID获取指定类型的对象的所有属性。
      */
     @Override
-    public <E> E get(Class<E> clazz, Object id) {
-        if (clazz == null || id == null)
+    public <E> E get(Class<E> entityClass, Object id) {
+        if (entityClass == null || id == null)
             throw new DaoException("Object instance or identity is empty.");
-        String sql = sqlGenerator.getSelectWhereIdEquals(clazz);
-        return getObject(clazz, id, sql);
+        String sql = sqlGenerator.getSelectWhereIdEquals(entityClass);
+        return getEntity(entityClass, id, sql);
     }
 
     /**
@@ -202,9 +202,9 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
     @Override
     public <E> E getPositive(E config, Object id) {
         if (config == null || id == null)
-            throw new DaoException("Config object or identity is empty.");
+            throw new DaoException("Config entity or identity is empty.");
         String sql = sqlGenerator.getSelectPositiveWhereIdEquals(config);
-        return getObject((Class<E>) config.getClass(), id, sql);
+        return getEntity((Class<E>) config.getClass(), id, sql);
     }
 
     /**
@@ -213,26 +213,26 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
     @Override
     public <E> E getNegative(E config, Object id) {
         if (config == null || id == null)
-            throw new DaoException("Config object or identity is empty.");
+            throw new DaoException("Config entity or identity is empty.");
         String sql = sqlGenerator.getSelectNegativeWhereIdEquals(config);
-        return getObject((Class<E>) config.getClass(), id, sql);
+        return getEntity((Class<E>) config.getClass(), id, sql);
     }
 
     /**
      * 根据ID数组批量获取指定类型的对象的所有属性。
      */
     @Override
-    public <E> List<E> getBatch(Class<E> clazz, Object... ids) {
-        if (clazz == null || ids == null || ids.length == 0)
+    public <E> List<E> getBatch(Class<E> entityClass, Object... ids) {
+        if (entityClass == null || ids == null || ids.length == 0)
             throw new DaoException("Class or identities is empty.");
-        String sql = sqlGenerator.getSelectWhereBatchIds(clazz, ids.length);
+        String sql = sqlGenerator.getSelectWhereBatchIds(entityClass, ids.length);
         LOGGER.debug(sql);
         // 如果则参数为该实体的实例 使用反射取ID值
-        if (EntityUtils.isClassOrSuper(ids[0], clazz)) {
-            Object[] params = EntityUtils.getEntitiesIds(getSqlGenerator().getEntityInfo(clazz), ids);
-            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), params);
+        if (EntityUtils.isEntityOrSuper(ids[0], entityClass)) {
+            Object[] params = EntityUtils.getEntitiesIds(getSqlGenerator().getEntityInfo(entityClass), ids);
+            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
         } else {
-            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz), ids);
+            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), ids);
         }
     }
 
@@ -240,8 +240,8 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      * 查询指定类型的对象总数。
      */
     @Override
-    public long countAll(Class clazz) {
-        String sql = sqlGenerator.getCountWhereTrue(clazz);
+    public long countAll(Class entityClass) {
+        String sql = sqlGenerator.getCountWhereTrue(entityClass);
         LOGGER.debug(sql);
         return jdbcOperations.queryForObject(sql, Long.class);
     }
@@ -250,53 +250,53 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      * 查询指定类型的所有记录。
      */
     @Override
-    public <E> List<E> getAll(Class<E> clazz) {
-        if (clazz == null)
+    public <E> List<E> getAll(Class<E> entityClass) {
+        if (entityClass == null)
             throw new DaoException("Class is empty.");
-        String sql = sqlGenerator.getSelectWhereTrue(clazz);
+        String sql = sqlGenerator.getSelectWhereTrue(entityClass);
         LOGGER.debug(sql);
-        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(clazz));
+        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass));
     }
 
     /**
      * 分页查询所有记录。
      */
     @Override
-    public <E> PageData<E> getByPage(Class<E> clazz, PageParam pageParam) {
-        if (clazz == null)
+    public <E> PageData<E> getByPage(Class<E> entityClass, PageParam pageParam) {
+        if (entityClass == null)
             throw new DaoException("Class is empty.");
-        String sql = sqlGenerator.getSelectWhereTrue(clazz);
-        return queryObjectPage(pageParam, clazz, sql);
+        String sql = sqlGenerator.getSelectWhereTrue(entityClass);
+        return queryEntityPage(pageParam, entityClass, sql);
     }
 
     /**
      * 根据对象的ID属性删除对象。
      */
     @Override
-    public void delete(Object object) {
-        if (object == null)
+    public void delete(Object entity) {
+        if (entity == null)
             throw new DaoException("Object instance is empty.");
-        String sql = sqlGenerator.getDeleteNamedIdEquals(object.getClass());
+        String sql = sqlGenerator.getDeleteNamedIdEquals(entity.getClass());
         LOGGER.debug(sql);
-        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(object)) < 0)
-            throw new DaoException("Delete object failed.");
+        if (namedParamOperations.update(sql, new BeanPropertySqlParameterSource(entity)) < 0)
+            throw new DaoException("Delete entity failed.");
     }
 
     /**
      * 批量把对象实例从数据库删除。
      */
     @Override
-    public void deleteBatch(Object... objects) {
-        if (objects == null || objects.length == 0)
+    public void deleteBatch(Object... entities) {
+        if (entities == null || entities.length == 0)
             throw new DaoException("Object instances is empty.");
-        SqlParameterSource[] sources = new SqlParameterSource[objects.length];
-        for (int i = 0; i < objects.length; i++) {
-            Object object = objects[i];
-            if (object == null)
+        SqlParameterSource[] sources = new SqlParameterSource[entities.length];
+        for (int i = 0; i < entities.length; i++) {
+            Object entity = entities[i];
+            if (entity == null)
                 throw new DaoException("Object instance is empty.");
-            sources[i] = new BeanPropertySqlParameterSource(object);
+            sources[i] = new BeanPropertySqlParameterSource(entity);
         }
-        String sql = sqlGenerator.getDeleteNamedIdEquals(objects[0].getClass());
+        String sql = sqlGenerator.getDeleteNamedIdEquals(entities[0].getClass());
         LOGGER.debug(sql);
         namedParamOperations.batchUpdate(sql, sources);
     }
@@ -305,18 +305,18 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      * 根据对象的ID属性删除指定类型的对象。
      */
     @Override
-    public void deleteById(Class clazz, Object id) {
-        if (clazz == null || id == null)
+    public void deleteById(Class entityClass, Object id) {
+        if (entityClass == null || id == null)
             throw new DaoException("Object instance or identity is empty.");
-        String sql = sqlGenerator.getDeleteIdEquals(clazz);
+        String sql = sqlGenerator.getDeleteIdEquals(entityClass);
         LOGGER.debug(sql);
-        if (EntityUtils.isClassOrSuper(id, clazz)) {
-            Object[] params = EntityUtils.getEntityIds(getSqlGenerator().getEntityInfo(clazz), id);
+        if (EntityUtils.isEntityOrSuper(id, entityClass)) {
+            Object[] params = EntityUtils.getEntityIds(getSqlGenerator().getEntityInfo(entityClass), id);
             if (jdbcOperations.update(sql, params) < 0)
-                throw new DaoException("Delete object failed.");
+                throw new DaoException("Delete entity failed.");
         } else {
             if (jdbcOperations.update(sql, id) < 0)
-                throw new DaoException("Delete object failed.");
+                throw new DaoException("Delete entity failed.");
         }
     }
 
@@ -324,8 +324,8 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
      * 删除全部对象。
      */
     @Override
-    public void deleteAll(Class clazz) {
-        String sql = sqlGenerator.getDeleteWhereTrue(clazz);
+    public void deleteAll(Class entityClass) {
+        String sql = sqlGenerator.getDeleteWhereTrue(entityClass);
         LOGGER.debug(sql);
         jdbcOperations.update(sql);
     }
