@@ -1,7 +1,6 @@
 package ewing.boot;
 
 import ewing.boot.entity.MyUser;
-import ewing.boot.entity.User;
 import ewing.boot.genericdao.UserDao;
 import ewing.dandelion.generation.SqlGenerator;
 import ewing.dandelion.pagination.PageData;
@@ -164,11 +163,11 @@ public class UserDaoTests {
     public void getUserTest() {
         // 根据ID获取对象
         MyUser user = addUser();
-        // 使用父类作为ID 父类中包含其所有ID属性
-        User userId = new User();
-        userId.setUserId(user.getUserId());
-        MyUser myUser = userDao.get(userId);
-        // 没有异常 简单验证
+        MyUser myUser = userDao.get(user.getUserId());
+        Assert.assertTrue(user.getName().equals(myUser.getName()));
+
+        // 根据包含ID属性的对象获取实体对象
+        myUser = userDao.get(user);
         Assert.assertTrue(user.getName().equals(myUser.getName()));
 
         // 只取name属性
@@ -213,6 +212,12 @@ public class UserDaoTests {
         // 根据ID删除对象
         user = addUser();
         userDao.delete(user.getUserId());
+        myUser = userDao.get(user.getUserId());
+        Assert.assertNull(myUser);
+
+        // 根据包含ID属性的对象删除实体对象
+        user = addUser();
+        userDao.delete(user);
         myUser = userDao.get(user.getUserId());
         Assert.assertNull(myUser);
 

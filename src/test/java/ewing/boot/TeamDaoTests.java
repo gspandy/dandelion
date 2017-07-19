@@ -149,7 +149,6 @@ public class TeamDaoTests {
         // 使用父类作为ID 父类中包含其所有ID属性
         TeamId teamId = new TeamId(team.getMyId(), team.getYourId(), team.getHisId());
         Team myTeam = teamDao.get(teamId);
-        // 没有异常 简单验证
         Assert.assertTrue(team.getName().equals(myTeam.getName()));
 
         // 只取name属性

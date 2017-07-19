@@ -158,7 +158,10 @@ public class EntityDaoTests {
         // 根据ID获取对象
         MyUser user = addUser();
         MyUser myUser = entityDao.get(MyUser.class, user.getUserId());
-        // 没有异常 简单验证
+        Assert.assertTrue(user.getName().equals(myUser.getName()));
+
+        // 根据包含ID属性的对象获取实体对象
+        myUser = entityDao.get(MyUser.class, user);
         Assert.assertTrue(user.getName().equals(myUser.getName()));
 
         // 只取name属性
@@ -203,6 +206,12 @@ public class EntityDaoTests {
         // 根据ID删除对象
         user = addUser();
         entityDao.delete(MyUser.class, user.getUserId());
+        myUser = entityDao.get(MyUser.class, user.getUserId());
+        Assert.assertNull(myUser);
+
+        // 根据包含ID属性的对象删除实体对象
+        user = addUser();
+        entityDao.delete(MyUser.class, user);
         myUser = entityDao.get(MyUser.class, user.getUserId());
         Assert.assertNull(myUser);
 
