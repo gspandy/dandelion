@@ -17,9 +17,9 @@ import java.util.List;
  */
 public class EntityInfo {
 
-    private Class entityClass;
-
     private String sqlName;
+
+    private String sqlNameAlias;
 
     private Property[] properties;
 
@@ -29,7 +29,6 @@ public class EntityInfo {
      * 初始化实体信息。
      */
     public EntityInfo(Class entityClass, boolean underscore) {
-        this.entityClass = entityClass;
         // 获取实体在Sql语句中名称
         SqlName sqlName = (SqlName) entityClass.getAnnotation(SqlName.class);
         if (sqlName != null) {
@@ -38,6 +37,9 @@ public class EntityInfo {
             String name = entityClass.getSimpleName();
             this.sqlName = underscore ? EntityUtils.underscore(name) : name;
         }
+        // 使用Sql名称的第一个字母作为别名
+        String alias = this.sqlName.substring(0, 1);
+        this.sqlNameAlias = this.sqlName + " AS " + alias;
         // 初始化实体中的属性列表
         BeanInfo beanInfo;
         try {
@@ -56,7 +58,7 @@ public class EntityInfo {
             // 忽略临时属性
             if (field.getAnnotation(Temporary.class) != null)
                 continue;
-            Property property = new Property(entityClass, descriptor, underscore);
+            Property property = new Property(entityClass, descriptor, underscore, alias);
             properties.add(property);
             if (property.isIdentity())
                 identities.add(property);
@@ -68,17 +70,17 @@ public class EntityInfo {
     }
 
     /**
-     * 获取实体类型。
-     */
-    public Class getEntityClass() {
-        return entityClass;
-    }
-
-    /**
      * 获取实体在Sql中的名称。
      */
     public String getSqlName() {
         return sqlName;
+    }
+
+    /**
+     * 获取实体在Sql中的名称并取别名。
+     */
+    public String getSqlNameAlias() {
+        return sqlNameAlias;
     }
 
     /**

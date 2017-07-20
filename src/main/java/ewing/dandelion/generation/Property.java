@@ -17,6 +17,8 @@ public class Property {
 
     private String sqlName;
 
+    private String sqlNameAlias;
+
     private Method readMethod;
 
     private Method writeMethod;
@@ -28,10 +30,11 @@ public class Property {
     /**
      * 初始化属性信息。
      */
-    public Property(Class entityClass, PropertyDescriptor descriptor, boolean underscore) {
+    public Property(Class entityClass, PropertyDescriptor descriptor, boolean underscore, String alias) {
         Field field = EntityUtils.getEntityField(descriptor.getName(), entityClass);
         this.type = field.getType();
         this.name = field.getName();
+        this.sqlNameAlias = alias + '.' + this.name;
         // 初始化属性在Sql中的名称
         this.sqlName = underscore ? EntityUtils.underscore(this.name) : this.name;
         this.readMethod = descriptor.getReadMethod();
@@ -57,6 +60,10 @@ public class Property {
 
     public String getSqlName() {
         return sqlName;
+    }
+
+    public String getSqlNameAlias() {
+        return sqlNameAlias;
     }
 
     public Method getReadMethod() {

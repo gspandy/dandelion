@@ -95,7 +95,15 @@ public class SqlGenerator {
      * 生成与Class对应的结果列。
      */
     public String getResultColumns(Class entityClass) {
-        return getResultColumns(entityClass, null);
+        StringBuilder columns = new StringBuilder(32);
+        Property[] properties = getEntityInfo(entityClass).getProperties();
+        for (Property property : properties) {
+            // 添加到结果列表
+            if (columns.length() > 0)
+                columns.append(',');
+            columns.append(property.getSqlNameAlias());
+        }
+        return columns.toString();
     }
 
     /**
@@ -109,7 +117,7 @@ public class SqlGenerator {
             if (property.isIdentity() || EntityUtils.isPositive(property, config) == positive) {
                 if (columns.length() > 0)
                     columns.append(',');
-                columns.append(property.getSqlName());
+                columns.append(property.getSqlNameAlias());
             }
         }
         if (columns.length() == 0)
@@ -238,7 +246,7 @@ public class SqlGenerator {
      * 生成与配置类的属性对应的Select语句带ID条件。
      */
     public String getCountWhereTrue(Class entityClass) {
-        return "SELECT COUNT(*) FROM " + getEntityInfo(entityClass).getSqlName() + " WHERE 1=1";
+        return "SELECT COUNT(*) FROM " + getEntityInfo(entityClass).getSqlNameAlias() + " WHERE 1=1";
     }
 
     /**
@@ -246,7 +254,7 @@ public class SqlGenerator {
      */
     public String getSelectWhereTrue(Class entityClass) {
         return "SELECT " + getResultColumns(entityClass) + " FROM " +
-                getEntityInfo(entityClass).getSqlName() + " WHERE 1=1";
+                getEntityInfo(entityClass).getSqlNameAlias() + " WHERE 1=1";
     }
 
     /**
@@ -254,7 +262,7 @@ public class SqlGenerator {
      */
     public String getSelectPositiveWhereTrue(Object config) {
         return "SELECT " + getPositiveColumns(config) + " FROM " +
-                getEntityInfo(config.getClass()).getSqlName() + " WHERE 1=1";
+                getEntityInfo(config.getClass()).getSqlNameAlias() + " WHERE 1=1";
     }
 
     /**
@@ -262,7 +270,7 @@ public class SqlGenerator {
      */
     public String getSelectNegativeWhereTrue(Object config) {
         return "SELECT " + getNegativeColumns(config) + " FROM " +
-                getEntityInfo(config.getClass()).getSqlName() + " WHERE 1=1";
+                getEntityInfo(config.getClass()).getSqlNameAlias() + " WHERE 1=1";
     }
 
     /**
@@ -277,16 +285,16 @@ public class SqlGenerator {
             // 添加属性到查询结果
             if (columns.length() > 0)
                 columns.append(',');
-            columns.append(property.getSqlName());
+            columns.append(property.getSqlNameAlias());
             // 添加到ID查询条件
             if (property.isIdentity()) {
                 if (identities.length() > 0)
                     identities.append(" AND ");
-                identities.append(property.getSqlName()).append("=?");
+                identities.append(property.getSqlNameAlias()).append("=?");
             }
         }
         return "SELECT " + columns + " FROM "
-                + entityInfo.getSqlName() + " WHERE " + identities;
+                + entityInfo.getSqlNameAlias() + " WHERE " + identities;
     }
 
     /**
@@ -302,7 +310,7 @@ public class SqlGenerator {
                 if (identities.length() > 0) {
                     identities.append(',');
                 } else {
-                    identities.append(properties[0].getSqlName()).append(" IN (");
+                    identities.append(properties[0].getSqlNameAlias()).append(" IN (");
                 }
                 identities.append('?');
             }
@@ -316,13 +324,13 @@ public class SqlGenerator {
                 for (Property property : properties) {
                     if (identity.length() > 0)
                         identity.append(" AND ");
-                    identity.append(property.getSqlName()).append("=?");
+                    identity.append(property.getSqlNameAlias()).append("=?");
                 }
                 identities.append(identity).append(')');
             }
         }
         return "SELECT " + getResultColumns(entityClass) + " FROM "
-                + entityInfo.getSqlName() + " WHERE " + identities;
+                + entityInfo.getSqlNameAlias() + " WHERE " + identities;
     }
 
     /**
@@ -339,16 +347,16 @@ public class SqlGenerator {
             if (property.isIdentity() || EntityUtils.isPositive(property, config) == positive) {
                 if (columns.length() > 0)
                     columns.append(',');
-                columns.append(property.getSqlName());
+                columns.append(property.getSqlNameAlias());
             }
             // 添加到ID查询条件
             if (property.isIdentity()) {
                 if (identities.length() > 0)
                     identities.append(" AND ");
-                identities.append(property.getSqlName()).append("=?");
+                identities.append(property.getSqlNameAlias()).append("=?");
             }
         }
-        return "SELECT " + columns + " FROM " + entityInfo.getSqlName() + " WHERE " + identities;
+        return "SELECT " + columns + " FROM " + entityInfo.getSqlNameAlias() + " WHERE " + identities;
     }
 
     /**
