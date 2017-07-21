@@ -34,9 +34,9 @@ public class Property {
         Field field = EntityUtils.getEntityField(descriptor.getName(), entityClass);
         this.type = field.getType();
         this.name = field.getName();
-        this.sqlNameAlias = alias + '.' + this.name;
         // 初始化属性在Sql中的名称
         this.sqlName = underscore ? EntityUtils.underscore(this.name) : this.name;
+        this.sqlNameAlias = alias + '.' + this.sqlName;
         this.readMethod = descriptor.getReadMethod();
         this.writeMethod = descriptor.getWriteMethod();
         // 是否为ID以及是否生成ID值
