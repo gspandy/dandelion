@@ -229,9 +229,9 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
         LOGGER.debug(sql);
         if (EntityUtils.isEntityOrSuper(identities[0], entityClass)) {
             Object[] params = EntityUtils.getEntitiesIds(getSqlGenerator().getEntityInfo(entityClass), identities);
-            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
+            return jdbcOperations.query(sql, new BeanPropertyRowMapper<>(entityClass), params);
         } else {
-            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), identities);
+            return jdbcOperations.query(sql, new BeanPropertyRowMapper<>(entityClass), identities);
         }
     }
 
@@ -256,7 +256,7 @@ public class EntityBaseDao extends SimpleBaseDao implements EntityDao {
             throw new DaoException("Entity class is empty.");
         String sql = sqlGenerator.getSelectWhereTrue(entityClass);
         LOGGER.debug(sql);
-        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass));
+        return jdbcOperations.query(sql, new BeanPropertyRowMapper<>(entityClass));
     }
 
     /**

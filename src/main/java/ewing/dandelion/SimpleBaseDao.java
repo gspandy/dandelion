@@ -80,7 +80,7 @@ public class SimpleBaseDao implements SimpleDao {
             throw new DaoException("Entity class or sql is empty.");
         LOGGER.debug(sql);
         try {
-            return jdbcOperations.queryForObject(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
+            return jdbcOperations.queryForObject(sql, new BeanPropertyRowMapper<>(entityClass), params);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -94,7 +94,7 @@ public class SimpleBaseDao implements SimpleDao {
         if (entityClass == null || sql == null)
             throw new DaoException("Entity class or sql is empty.");
         LOGGER.debug(sql);
-        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
+        return jdbcOperations.query(sql, new BeanPropertyRowMapper<>(entityClass), params);
     }
 
     /**
@@ -140,7 +140,7 @@ public class SimpleBaseDao implements SimpleDao {
         }
         String pageSql = sql + " LIMIT " + pageParam.getLimit() + " OFFSET " + pageParam.getOffset();
         LOGGER.debug(pageSql);
-        List<T> content = jdbcOperations.query(pageSql, BeanPropertyRowMapper.newInstance(entityClass), params);
+        List<T> content = jdbcOperations.query(pageSql, new BeanPropertyRowMapper<>(entityClass), params);
         if (!pageParam.isCount())
             pageData.setTotal(content.size());
         return pageData.setContent(content);

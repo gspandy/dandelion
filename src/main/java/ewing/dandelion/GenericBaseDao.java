@@ -271,9 +271,9 @@ public abstract class GenericBaseDao<E> extends SimpleBaseDao implements Generic
         LOGGER.debug(sql);
         if (EntityUtils.isEntityOrSuper(identities[0], entityClass)) {
             Object[] params = EntityUtils.getEntitiesIds(getSqlGenerator().getEntityInfo(entityClass), identities);
-            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), params);
+            return jdbcOperations.query(sql, new BeanPropertyRowMapper<>(entityClass), params);
         } else {
-            return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass), identities);
+            return jdbcOperations.query(sql, new BeanPropertyRowMapper<>(entityClass), identities);
         }
     }
 
@@ -294,7 +294,7 @@ public abstract class GenericBaseDao<E> extends SimpleBaseDao implements Generic
     public List<E> getAll() {
         String sql = sqlGenerator.getSelectWhereTrue(entityClass);
         LOGGER.debug(sql);
-        return jdbcOperations.query(sql, BeanPropertyRowMapper.newInstance(entityClass));
+        return jdbcOperations.query(sql, new BeanPropertyRowMapper<>(entityClass));
     }
 
     /**
