@@ -91,7 +91,7 @@ public class SqlBuilder {
      * @return 是否添加成功，参数不为空则添加。
      */
     public boolean extendSqlParams(String sqlPart, Object... params) {
-        if (sqlPart != null && params != null) {
+        if (sqlPart != null && params != null && params.length > 0) {
             StringBuilder list = new StringBuilder();
             for (Object param : params) {
                 if (list.length() > 0)
@@ -114,7 +114,7 @@ public class SqlBuilder {
      * @return 是否添加成功，参数有值则添加。
      */
     public boolean extendHasValues(String sqlPart, Object... params) {
-        if (sqlPart != null && params != null) {
+        if (sqlPart != null && params != null && params.length > 0) {
             StringBuilder list = new StringBuilder();
             for (Object param : params) {
                 if (hasValue(param)) {
